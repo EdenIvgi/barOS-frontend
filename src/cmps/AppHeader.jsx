@@ -65,6 +65,16 @@ export function AppHeader() {
     <>
     <header className="app-header">
       <div className="header-content">
+        <button
+          className={`hamburger-btn ${isMenuOpen ? 'open' : ''}`}
+          onClick={() => setIsMenuOpen(prev => !prev)}
+          aria-label="Toggle menu"
+        >
+          <span className="bar"></span>
+          <span className="bar"></span>
+          <span className="bar"></span>
+        </button>
+
         <NavLink to="/home" className="header-brand">
           <span className="logo">BarOS</span>
         </NavLink>
@@ -76,6 +86,13 @@ export function AppHeader() {
           <NavLink to="/orders" className="nav-link" onClick={closeMenu}>{t('orders')}</NavLink>
           <NavLink to="/items-management" className="nav-link" onClick={closeMenu}>{t('itemsManagement')}</NavLink>
           <NavLink to="/about" className="nav-link" onClick={closeMenu}>{t('about')}</NavLink>
+          <button
+            className="nav-language-toggle"
+            onClick={() => { toggleLanguage(); closeMenu() }}
+            title={t('toggleLanguage')}
+          >
+            {t('toggleLanguage')}: {getLanguageLabel()}
+          </button>
         </nav>
 
         <div className="header-actions">
@@ -126,16 +143,6 @@ export function AppHeader() {
             {getLanguageLabel()}
           </button>
         </div>
-
-        <button
-          className={`hamburger-btn ${isMenuOpen ? 'open' : ''}`}
-          onClick={() => setIsMenuOpen(prev => !prev)}
-          aria-label="Toggle menu"
-        >
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
-        </button>
 
         {isMenuOpen && <div className="nav-overlay" onClick={closeMenu} />}
       </div>
