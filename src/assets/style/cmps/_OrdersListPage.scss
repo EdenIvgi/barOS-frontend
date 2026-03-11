@@ -292,7 +292,299 @@
     }
   }
 
+  .mobile-orders-list,
+  .mobile-date-filter {
+    display: none;
+  }
+
   @media (max-width: 768px) {
     padding: 1rem;
+
+    .orders-grid-wrapper {
+      display: none;
+    }
+
+    .mobile-date-filter {
+      display: block;
+      margin-bottom: 1rem;
+      padding: 0.85rem 1rem;
+      @include glass-card;
+    }
+
+    .mobile-date-filter-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.6rem;
+    }
+
+    .mobile-date-filter-row label {
+      flex: 1;
+      min-width: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .mobile-date-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $text-muted;
+    }
+
+    .mobile-date-input {
+      padding: 0.5rem 0.6rem;
+      background: $bg-surface;
+      border: 1px solid $glass-border;
+      color: $text-primary;
+      font-size: 0.85rem;
+      font-family: $font-body;
+
+      &:focus {
+        outline: none;
+        border-color: $accent-primary;
+      }
+    }
+
+    .mobile-date-filter-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-clear-date {
+      padding: 0.4rem 0.75rem;
+      background: transparent;
+      border: 1px solid $glass-border;
+      color: $text-secondary;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: $accent-primary;
+        color: $accent-text;
+      }
+    }
+
+    .mobile-orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      @include glass-card;
+      overflow: hidden;
+
+      .mobile-filter-empty {
+        padding: 1.5rem 1rem;
+        margin: 0;
+        text-align: center;
+        color: $text-muted;
+      }
+    }
+  }
+}
+
+// Mobile order cards
+.mobile-order-card {
+  border-bottom: 1px solid $glass-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.expanded {
+    .mobile-order-detail {
+      display: block;
+    }
+  }
+
+  .mobile-order-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    gap: 0.5rem;
+
+    &:hover {
+      background: $glass-bg-hover;
+    }
+  }
+
+  .mobile-order-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .mobile-order-date {
+    font-size: 0.72rem;
+    color: $text-muted;
+    font-weight: 500;
+  }
+
+  .mobile-order-supplier {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: $text-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-order-right {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .mobile-order-count {
+    font-size: 0.75rem;
+    color: $text-secondary;
+    white-space: nowrap;
+  }
+
+  .mobile-order-actions {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+
+    button {
+      padding: 0.3rem;
+      min-width: 26px;
+      min-height: 26px;
+      border: none;
+      border-radius: $border-radius;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+
+      svg { flex-shrink: 0; }
+
+      &.btn-download-pdf,
+      &.btn-edit {
+        @include glass-surface;
+        color: $text-primary;
+        &:hover { @include glass-surface-hover; }
+      }
+
+      &.btn-delete {
+        background: rgba($color-error, 0.15);
+        color: $color-error;
+        &:hover { background: rgba($color-error, 0.25); }
+      }
+
+      &.btn-save {
+        background: $accent-primary;
+        color: $text-primary;
+        &:hover { background: $accent-hover; }
+      }
+
+      &.btn-cancel {
+        @include glass-surface;
+        color: $text-secondary;
+        &:hover { @include glass-surface-hover; }
+      }
+    }
+  }
+
+  .mobile-order-toggle {
+    font-size: 0.65rem;
+    color: $text-muted;
+  }
+
+  .mobile-order-detail {
+    display: none;
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid $glass-border;
+    background: $glass-bg;
+
+    .order-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+
+      .th-actions,
+      .td-actions {
+        width: 36px;
+        text-align: center;
+      }
+
+      thead th {
+        text-align: start;
+        padding: 0.3rem 0.4rem;
+        font-weight: 700;
+        color: $text-primary;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid $glass-border;
+        &:last-child { border-bottom: none; }
+
+        &.row-deleted {
+          background: rgba(0, 0, 0, 0.15);
+
+          .item-removed {
+            text-decoration: line-through;
+            color: $text-muted;
+            font-size: 0.8rem;
+          }
+
+          .btn-undo-item {
+            padding: 0.3rem;
+            min-width: 24px;
+            min-height: 24px;
+            border: none;
+            border-radius: $border-radius;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            @include glass-surface;
+            color: $text-primary;
+          }
+        }
+      }
+
+      tbody td {
+        padding: 0.35rem 0.4rem;
+        color: $text-primary;
+
+        &:nth-child(2) { text-align: center; }
+
+        input {
+          width: 50px;
+          padding: 0.2rem 0.3rem;
+          border: 1px solid $glass-border;
+          text-align: center;
+          background: $glass-bg;
+          color: $text-primary;
+          font-size: 0.8rem;
+        }
+
+        .btn-delete-item {
+          padding: 0.3rem;
+          min-width: 24px;
+          min-height: 24px;
+          border: none;
+          border-radius: $border-radius;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba($color-error, 0.15);
+          color: $color-error;
+          &:hover { background: rgba($color-error, 0.25); }
+        }
+      }
+    }
   }
 }

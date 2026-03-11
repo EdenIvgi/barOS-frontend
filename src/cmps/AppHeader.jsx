@@ -14,7 +14,9 @@ export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [isSwitchModalOpen, setIsSwitchModalOpen] = useState(false)
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false)
   const avatarRef = useRef(null)
+  const langRef = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -22,12 +24,13 @@ export function AppHeader() {
         setIsUserDropdownOpen(false)
         setIsSwitchModalOpen(false)
       }
+      if (langRef.current && !langRef.current.contains(e.target)) {
+        setIsLangDropdownOpen(false)
+      }
     }
-    if (isUserDropdownOpen || isSwitchModalOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
+    document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isUserDropdownOpen, isSwitchModalOpen])
+  }, [])
 
   function getInitials(name) {
     if (!name) return '?'
@@ -36,15 +39,13 @@ export function AppHeader() {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
   }
 
-  function toggleLanguage() {
-    const currentLang = i18n.resolvedLanguage || 'en'
-    const nextLang = currentLang === 'en' ? 'he' : 'en'
-    i18n.changeLanguage(nextLang)
+  function setLanguage(lang) {
+    i18n.changeLanguage(lang)
+    setIsLangDropdownOpen(false)
   }
 
-  function getLanguageLabel() {
-    const currentLang = i18n.resolvedLanguage || 'en'
-    return currentLang === 'en' ? 'EN' : 'HE'
+  function getCurrentLang() {
+    return i18n.resolvedLanguage || 'en'
   }
 
   async function onLogout() {
@@ -80,19 +81,30 @@ export function AppHeader() {
         </NavLink>
 
         <nav className={`header-nav ${isMenuOpen ? 'open' : ''}`}>
-          <NavLink to="/home" className="nav-link" onClick={closeMenu}>{t('home')}</NavLink>
-          <NavLink to="/products" className="nav-link" onClick={closeMenu}>{t('products')}</NavLink>
-          <NavLink to="/bar-book" className="nav-link" onClick={closeMenu}>{t('barBook')}</NavLink>
-          <NavLink to="/orders" className="nav-link" onClick={closeMenu}>{t('orders')}</NavLink>
-          <NavLink to="/items-management" className="nav-link" onClick={closeMenu}>{t('itemsManagement')}</NavLink>
-          <NavLink to="/about" className="nav-link" onClick={closeMenu}>{t('about')}</NavLink>
-          <button
-            className="nav-language-toggle"
-            onClick={() => { toggleLanguage(); closeMenu() }}
-            title={t('toggleLanguage')}
-          >
-            {t('toggleLanguage')}: {getLanguageLabel()}
-          </button>
+          <NavLink to="/home" className="nav-link" onClick={closeMenu}>
+            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="1"/><path d="M8 21h8M12 17v4"/></svg>
+            {t('home')}
+          </NavLink>
+          <NavLink to="/products" className="nav-link" onClick={closeMenu}>
+            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M12 3v10M3 8l9 5M21 8l-9 5"/></svg>
+            {t('products')}
+          </NavLink>
+          <NavLink to="/bar-book" className="nav-link" onClick={closeMenu}>
+            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 2h12l4 4v16H4V2z"/><path d="M4 6h12M4 10h12M4 14h8"/><path d="M16 2v4h4"/></svg>
+            {t('barBook')}
+          </NavLink>
+          <NavLink to="/orders" className="nav-link" onClick={closeMenu}>
+            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+            {t('orders')}
+          </NavLink>
+          <NavLink to="/items-management" className="nav-link" onClick={closeMenu}>
+            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/><path d="M8 4v4M16 10v4M12 16v4"/></svg>
+            {t('itemsManagement')}
+          </NavLink>
+          <NavLink to="/about" className="nav-link" onClick={closeMenu}>
+            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="1"/><path d="M8 21h8M12 17v4M6 8l3 2.5L6 13"/></svg>
+            {t('about')}
+          </NavLink>
         </nav>
 
         <div className="header-actions">
@@ -135,13 +147,31 @@ export function AppHeader() {
             <Link to="/" className="header-login-link">{t('landingLoginBtn')}</Link>
           )}
           <CartIcon />
-          <button
-            className="language-toggle-btn"
-            onClick={toggleLanguage}
-            title={t('toggleLanguage')}
-          >
-            {getLanguageLabel()}
-          </button>
+          <div className="lang-picker" ref={langRef}>
+            <button
+              className="lang-picker-btn"
+              onClick={() => setIsLangDropdownOpen(prev => !prev)}
+              title={t('toggleLanguage')}
+              aria-expanded={isLangDropdownOpen}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+              </svg>
+            </button>
+            {isLangDropdownOpen && (
+              <div className="lang-dropdown">
+                <button
+                  className={`lang-option${getCurrentLang() === 'en' ? ' active' : ''}`}
+                  onClick={() => setLanguage('en')}
+                >EN</button>
+                <button
+                  className={`lang-option${getCurrentLang() === 'he' ? ' active' : ''}`}
+                  onClick={() => setLanguage('he')}
+                >HE</button>
+              </div>
+            )}
+          </div>
         </div>
 
         {isMenuOpen && <div className="nav-overlay" onClick={closeMenu} />}

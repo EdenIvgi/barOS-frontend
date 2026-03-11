@@ -28,7 +28,14 @@ export function ItemForm({
       }}
     >
       <div className="form-container" onMouseDown={() => { overlayMouseDownRef.current = false }} onClick={(e) => e.stopPropagation()}>
-        <h2>{isEditing ? t('editProduct') : t('addNewProduct')}</h2>
+        {isEditing ? (
+          <div className="form-header-info">
+            <span className="form-header-supplier">{editingItem?.supplier || t('noSupplier')}</span>
+            <span className="form-header-category">{editingItem?.categoryId || editingItem?.category || t('noCategory')}</span>
+          </div>
+        ) : (
+          <h2>{t('addNewProduct')}</h2>
+        )}
         <form onSubmit={onSubmit}>
           <div className="form-row">
             <div className="form-group">

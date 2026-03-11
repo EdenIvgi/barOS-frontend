@@ -602,15 +602,171 @@
     }
 
     .table-container {
-      overflow-x: auto;
+      display: none;
     }
 
-    .items-table {
-      min-width: 800px;
+    .mobile-items-list {
+      display: flex !important;
+      flex-direction: column;
+      gap: 0;
+      @include glass-card;
     }
 
     .form-container {
       padding: 1.5rem;
+    }
+  }
+
+  .mobile-items-list {
+    display: none;
+  }
+}
+
+// Mobile items list — table-like layout
+.mobile-items-list {
+  @include glass-card;
+  overflow: hidden;
+
+  .mobile-list-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    background: rgba($accent-primary, 0.15);
+    border-bottom: 1px solid $glass-border;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $text-primary;
+
+    .mobile-col-name,
+    .mobile-col-stock,
+    .mobile-col-order {
+      text-align: center;
+    }
+  }
+
+  .mobile-col-name {
+    flex: 1;
+    min-width: 0;
+    padding: 0 0.5rem;
+  }
+
+  .mobile-col-stock,
+  .mobile-col-order {
+    width: 80px;
+    flex-shrink: 0;
+    padding: 0 0.25rem;
+    border-inline-start: 1px solid $glass-border;
+  }
+}
+
+.mobile-item-card {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border-bottom: 1px solid $glass-border;
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $glass-bg-hover;
+  }
+
+  .mobile-col-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-primary;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    text-align: start;
+    padding: 0.6rem 0.5rem;
+  }
+
+  .mobile-col-stock,
+  .mobile-col-order {
+    width: 80px;
+    flex-shrink: 0;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 0.25rem;
+    border-inline-start: 1px solid $glass-border;
+    min-height: 38px;
+
+    .stock-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem 0.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      @include glass-surface;
+      color: $text-primary;
+      white-space: nowrap;
+      min-width: 35px;
+
+      &.ok {
+        color: $color-success;
+        border-color: rgba($color-success, 0.3);
+      }
+
+      &.low {
+        color: $color-error;
+        border-color: rgba($color-error, 0.3);
+      }
+    }
+
+    .order-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 35px;
+      border: 1px solid transparent;
+
+      &.needs-order {
+        background: $accent-subtle;
+        color: $accent-text;
+        border-color: rgba($accent-primary, 0.3);
+      }
+
+      &.ok {
+        @include glass-surface;
+        color: $text-secondary;
+      }
+    }
+  }
+
+  .mobile-inline-input {
+    width: 55px;
+    padding: 0.25rem 0.4rem;
+    border: 2px solid $accent-primary;
+    border-radius: 4px;
+    text-align: center;
+    background: $glass-bg;
+    color: $text-primary;
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px $accent-glow;
     }
   }
 }
@@ -664,6 +820,29 @@
     font-weight: 700;
     font-family: $font-heading;
     font-size: 1.05rem;
+  }
+
+  .form-header-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+    flex-wrap: wrap;
+
+    .form-header-supplier {
+      font-size: 1rem;
+      font-weight: 700;
+      color: $text-primary;
+    }
+
+    .form-header-category {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: $text-secondary;
+      padding: 0.15rem 0.5rem;
+      background: $glass-bg;
+      border: 1px solid $glass-border;
+    }
   }
 
   .form-group {

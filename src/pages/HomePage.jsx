@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { OrdersGrowthBySupplierChart } from '../cmps/OrdersGrowthBySupplierChart'
+import { SupplierOrdersSummary } from '../cmps/SupplierOrdersSummary'
 import { loadItems } from '../store/actions/item.actions'
 import { loadOrders } from '../store/actions/order.actions'
 import { barBookService } from '../services/barBook.service'
@@ -107,14 +108,6 @@ export function HomePage() {
             <h3>{stats.totalOrders}</h3>
             <p>{t('statTotalOrders')}</p>
           </div>
-          <div className="stat-card">
-            <h3>{stats.pendingOrders}</h3>
-            <p>{t('statPendingOrders')}</p>
-          </div>
-          <div className="stat-card">
-            <h3>₪{stats.todayRevenue.toFixed(2)}</h3>
-            <p>{t('statTodayRevenue')}</p>
-          </div>
         </div>
       </div>
 
@@ -131,6 +124,9 @@ export function HomePage() {
 
       {/* Chart */}
       <OrdersGrowthBySupplierChart orders={orders} items={items} />
+
+      {/* Supplier × Product orders summary */}
+      <SupplierOrdersSummary orders={orders} items={items} />
 
       {/* Bottom split: orders + alerts */}
       <div className="home-bottom-grid">

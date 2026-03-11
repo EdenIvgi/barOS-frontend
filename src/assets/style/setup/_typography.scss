@@ -2,8 +2,8 @@
 // BAROS TYPOGRAPHY — Inter + Gisha
 // ============================================
 
-// Google Fonts — Inter for English text
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+// Google Fonts — Inter for English, Heebo for Hebrew, Orbitron for logo
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 // Icon font
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
@@ -33,7 +33,7 @@
 }
 
 // Font family variables
-$font-heading: 'Inter', 'Gisha', 'Arial', sans-serif;
-$font-body: 'Inter', 'Gisha', 'Arial', sans-serif;
-$font-hebrew: 'Gisha', 'Arial', sans-serif;
-$font-logo: libre, sans-serif;
+$font-heading: 'Inter', 'Heebo', 'Arial', sans-serif;
+$font-body: 'Inter', 'Heebo', 'Arial', sans-serif;
+$font-hebrew: 'Heebo', 'Arial', sans-serif;
+$font-logo: 'Orbitron', sans-serif;

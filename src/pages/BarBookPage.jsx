@@ -884,8 +884,8 @@ export function BarBookPage() {
           </nav>
 
           <div className="sidebar-add-page">
-            <button type="button" className="btn-add-page" onClick={() => setShowAddModal(true)}>
-              + {t('addPage')}
+            <button type="button" className="btn-add-page" onClick={() => setShowAddModal(true)} title={t('addPage')}>
+              +
             </button>
           </div>
         </aside>

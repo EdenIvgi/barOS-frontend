@@ -1457,115 +1457,180 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   }
 
   @media (max-width: 768px) {
+    height: auto;
+    min-height: calc(100vh - #{$header-height});
+    overflow: visible;
+
     .bar-book-layout {
       flex-direction: column;
+      height: auto;
+      min-height: calc(100vh - #{$header-height});
+      overflow: visible;
     }
 
+    // ── Sidebar → horizontal tab bar ──
     .bar-book-sidebar {
       width: 100%;
       min-width: 0;
+      height: auto;
       flex-direction: row;
+      align-items: center;
       padding-top: 0;
       border-inline-end: none;
       border-bottom: 1px solid $book-line-strong;
+      overflow: visible;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-      .sidebar-nav {
-        flex-direction: row;
-        flex: 1;
-        gap: 0;
-        padding: 0;
-        overflow-x: auto;
+    .sidebar-nav {
+      flex-direction: row;
+      flex: 1;
+      gap: 0;
+      padding: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
 
-        &::-webkit-scrollbar {
-          display: none;
-        }
+      &::-webkit-scrollbar { display: none; }
+    }
 
-        .sidebar-nav-item {
-          padding: 0.7rem 1rem;
-          border-radius: 0;
-          border-bottom: 2px solid transparent;
-          white-space: nowrap;
-          flex-shrink: 0;
+    .sidebar-page-item {
+      border-radius: 0;
+      flex-shrink: 0;
+      border-bottom: 2px solid transparent;
 
-          &.active {
-            background: rgba($book-accent, 0.06);
-            border-bottom-color: $book-accent;
-          }
-
-          .nav-symbol {
-            display: none;
-          }
-        }
+      &.active {
+        background: rgba($book-accent, 0.06);
+        border-bottom-color: $book-accent;
       }
+    }
+
+    .sidebar-nav-item-btn {
+      padding: 0.65rem 0.85rem;
+      white-space: nowrap;
+      font-size: 0.82rem;
+
+      .nav-symbol { display: none; }
+    }
+
+    .sidebar-page-actions { display: none; }
+
+    .sidebar-add-page {
+      margin-top: 0;
+      padding: 0.4rem 0.5rem;
+      border-top: none;
+      border-inline-start: 1px solid $book-line-strong;
+
+      .btn-add-page {
+        white-space: nowrap;
+        font-size: 0.75rem;
+        padding: 0.4rem 0.65rem;
+        border-radius: 4px;
+      }
+    }
+
+    // ── Main content ──
+    .bar-book-main {
+      flex: none;
+      min-height: 0;
+      overflow: visible;
     }
 
     .content-topbar {
-      padding: 0.75rem 1.25rem;
+      padding: 0.6rem 1rem;
     }
 
-    .bar-book-checklists,
-    .bar-book-full-pages {
-      padding: 1.25rem 1rem;
-    }
-
-    .daily-tasks-section,
-    .stock-section {
+    .page-content-area {
+      flex: none;
+      overflow: visible;
       padding: 1rem;
+      min-height: 60vh;
+
+      .checklists-page-view,
+      .bar-book-recipes {
+        margin: -1rem;
+        height: auto;
+      }
+    }
+
+    // ── Checklist & Daily ──
+    .checklist-page-view,
+    .daily-page-view,
+    .stock-page-view {
+      max-width: 100%;
     }
 
     .daily-tasks-table.daily-tasks-vertical {
-      .daily-task-details-cell {
-        min-width: 0;
-      }
-
-      .daily-task-day-cell {
-        white-space: normal;
-      }
+      .daily-task-details-cell { min-width: 0; }
+      .daily-task-day-cell { white-space: normal; }
     }
 
     .stock-table {
       font-size: 0.8rem;
-
-      th, td {
-        padding: 0.4rem 0.5rem;
-      }
+      th, td { padding: 0.4rem 0.5rem; }
     }
 
-    .checklists-grid {
-      grid-template-columns: 1fr;
+    // ── Checklists master/detail ──
+    .checklists-page-view {
+      flex-direction: column;
+      height: auto;
+      overflow: visible;
     }
 
+    .checklists-layout {
+      flex-direction: column;
+      overflow: visible;
+    }
+
+    .checklists-list-panel {
+      width: 100%;
+      min-width: 0;
+      max-height: 180px;
+      border-inline-end: none;
+      border-bottom: 1px solid $book-line-strong;
+      overflow-y: auto;
+    }
+
+    .checklists-detail-panel {
+      padding: 1rem;
+      overflow: visible;
+      min-height: 200px;
+    }
+
+    // ── Recipes master/detail ──
     .recipes-layout {
       flex-direction: column;
       min-height: 0;
-
-      .recipes-list-panel {
-        width: 100%;
-        min-width: 0;
-        max-height: 210px;
-        border-inline-end: none;
-        border-bottom: 1px solid $book-line-strong;
-      }
-
-      .recipes-detail-panel {
-        padding: 1.25rem 1rem;
-
-        .recipe-detail-body {
-          grid-template-columns: 1fr;
-          gap: 1.5rem;
-        }
-
-        .recipe-detail-header .recipe-detail-title {
-          font-size: 1.35rem;
-        }
-      }
+      height: auto;
+      overflow: visible;
     }
-  }
 
-  @media (max-width: 480px) {
-    .bar-book-checklists,
-    .bar-book-full-pages {
-      padding: 1rem 0.75rem;
+    .recipes-list-panel {
+      width: 100%;
+      min-width: 0;
+      max-height: 180px;
+      border-inline-end: none;
+      border-bottom: 1px solid $book-line-strong;
+      overflow-y: auto;
+    }
+
+    .recipes-detail-panel {
+      flex: none;
+      overflow: visible;
+      padding: 1rem;
+      min-height: 200px;
+
+      .recipe-detail-body {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+
+      .recipe-detail-header {
+        margin-bottom: 1.25rem;
+
+        .recipe-detail-title { font-size: 1.25rem; }
+      }
     }
   }
 }

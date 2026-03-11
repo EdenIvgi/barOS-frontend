@@ -1,7 +1,8 @@
 .switch-user-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  inset-inline-end: 0;
+  position: fixed;
+  top: calc(64px + 8px);
+  inset-inline-end: 8px;
+  inset-inline-start: auto;
   z-index: 500;
 
   width: 200px;
@@ -44,19 +45,20 @@
     input {
       width: 100%;
       padding: 0.45rem 0.65rem;
-      background: #f0f0f0;
-      border: none;
+      background: #1e1e1e;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       font-size: 0.8rem;
-      color: #111;
+      color: #f0f0f0;
       outline: none;
-      transition: box-shadow 0.2s;
+      transition: box-shadow 0.2s, border-color 0.2s;
 
       &::placeholder {
-        color: #aaa;
+        color: rgba(255, 255, 255, 0.3);
       }
 
       &:focus {
-        box-shadow: 0 0 0 2px rgba(200, 50, 50, 0.5);
+        border-color: rgba(200, 50, 50, 0.5);
+        box-shadow: 0 0 0 2px rgba(200, 50, 50, 0.2);
       }
     }
   }

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Provider } from 'react-redux'
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom'
 import './assets/style/main.scss'
 
 import { AppFooter } from './cmps/AppFooter'
@@ -21,6 +21,14 @@ import { ProtectedRoute } from './cmps/ProtectedRoute'
 import { store } from './store/store'
 import { loadCartFromStorage } from './store/actions/order.actions'
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
+
 function AppLayout() {
   useEffect(() => {
     loadCartFromStorage()
@@ -28,6 +36,7 @@ function AppLayout() {
 
   return (
     <section className="main-layout app">
+      <ScrollToTop />
       <AnimatedBackground />
       <AppHeader />
       <div className="main-content">

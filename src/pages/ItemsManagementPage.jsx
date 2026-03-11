@@ -46,7 +46,8 @@ export function ItemsManagementPage() {
     supplier: '',
     stockStatus: ''
   })
-  const [editingToOrder, setEditingToOrder] = useState({}) // Track which items are being edited
+  const [editingToOrder, setEditingToOrder] = useState({})
+  const [editingStock, setEditingStock] = useState({})
   const [createOrderModal, setCreateOrderModal] = useState({
     isOpen: false,
     bySupplier: null,
@@ -227,6 +228,17 @@ export function ItemsManagementPage() {
       showSuccessMsg(t('optimalUpdated'))
     } catch (error) {
       showErrorMsg(t('optimalUpdateError'))
+    }
+  }
+
+  async function handleStockChange(item, newStockValue) {
+    try {
+      const newStock = Math.max(0, Number(newStockValue) || 0)
+      const updatedItem = { ...item, stockQuantity: newStock }
+      await saveItem(updatedItem)
+      showSuccessMsg(t('stockUpdated'))
+    } catch (error) {
+      showErrorMsg(t('stockUpdateError'))
     }
   }
 
@@ -656,6 +668,88 @@ export function ItemsManagementPage() {
             onApply={handleApplyImport}
             onClose={closeImportModal}
           />
+
+          {/* Mobile card list */}
+          <div className="mobile-items-list">
+            <div className="mobile-list-header">
+              <span className="mobile-col-name">{t('nameColumn')}</span>
+              <span className="mobile-col-stock">{t('stock')}</span>
+              <span className="mobile-col-order">{t('orderQuantity')}</span>
+            </div>
+            {filteredItems.length === 0 ? (
+              <p className="empty-table-message">{t('noProductsMatchFilters')}</p>
+            ) : (
+              filteredItems.map((item) => {
+                const toOrder = getToOrderQuantity(item)
+                const itemId = item._id
+                const isEditingOrder = editingToOrder[itemId]
+                const isEditingStk = editingStock[itemId]
+                return (
+                  <div key={itemId} className="mobile-item-card">
+                    <div className="mobile-col-name" onClick={() => handleEdit(item)}>
+                      {item.name}
+                    </div>
+                    <div className="mobile-col-stock" onClick={(e) => { e.stopPropagation(); setEditingStock(prev => ({ ...prev, [itemId]: true })) }}>
+                      {isEditingStk ? (
+                        <input
+                          type="number"
+                          min="0"
+                          step="any"
+                          defaultValue={item.stockQuantity ?? 0}
+                          onBlur={(e) => {
+                            handleStockChange(item, e.target.value)
+                            setEditingStock(prev => { const s = { ...prev }; delete s[itemId]; return s })
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') e.target.blur()
+                            else if (e.key === 'Escape') {
+                              setEditingStock(prev => { const s = { ...prev }; delete s[itemId]; return s })
+                              e.target.blur()
+                            }
+                          }}
+                          autoFocus
+                          className="mobile-inline-input"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      ) : (
+                        <span className={`stock-badge ${item.stockQuantity <= (item.minStockLevel || 0) ? 'low' : 'ok'}`}>
+                          {item.stockQuantity ?? 0}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mobile-col-order" onClick={(e) => { e.stopPropagation(); setEditingToOrder(prev => ({ ...prev, [itemId]: true })) }}>
+                      {isEditingOrder ? (
+                        <input
+                          type="number"
+                          min="0"
+                          step="any"
+                          defaultValue={toOrder}
+                          onBlur={(e) => {
+                            handleToOrderChange(item, e.target.value)
+                            setEditingToOrder(prev => { const s = { ...prev }; delete s[itemId]; return s })
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') e.target.blur()
+                            else if (e.key === 'Escape') {
+                              setEditingToOrder(prev => { const s = { ...prev }; delete s[itemId]; return s })
+                              e.target.blur()
+                            }
+                          }}
+                          autoFocus
+                          className="mobile-inline-input"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      ) : (
+                        <span className={`order-badge ${toOrder > 0 ? 'needs-order' : 'ok'}`}>
+                          {toOrder}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
 
           <div className="table-container">
             <table className="items-table">

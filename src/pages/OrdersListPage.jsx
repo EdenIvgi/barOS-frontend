@@ -91,6 +91,8 @@ export function OrdersListPage() {
   const [editingQuantities, setEditingQuantities] = useState({})
   const [deletedItemIndices, setDeletedItemIndices] = useState({}) // orderId -> number[]
   const [expandedOrderId, setExpandedOrderId] = useState(null)
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
 
   const uniqueDates = useMemo(() => {
     const keys = new Set()
@@ -230,6 +232,25 @@ export function OrdersListPage() {
     return `${d}/${m}/${y}`
   }
 
+  // Flat list of orders sorted by date desc for mobile
+  const ordersFlat = useMemo(() => {
+    return [...(orders || [])]
+      .filter(Boolean)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  }, [orders])
+
+  // Filter by date range (mobile)
+  const ordersFlatFiltered = useMemo(() => {
+    if (!dateFrom && !dateTo) return ordersFlat
+    return ordersFlat.filter((order) => {
+      const key = toDateKey(order.createdAt)
+      if (!key) return false
+      if (dateFrom && key < dateFrom) return false
+      if (dateTo && key > dateTo) return false
+      return true
+    })
+  }, [ordersFlat, dateFrom, dateTo])
+
   if (isLoading) return <Loader />
 
   return (
@@ -237,6 +258,132 @@ export function OrdersListPage() {
       {uniqueDates.length === 0 || uniqueSuppliers.length === 0 ? (
         <p className="empty-message">{t('noOrders')}</p>
       ) : (
+        <>
+        {/* Mobile date filter */}
+        <div className="mobile-date-filter">
+          <div className="mobile-date-filter-row">
+            <label>
+              <span className="mobile-date-label">{t('dateFrom')}</span>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="mobile-date-input"
+              />
+            </label>
+            <label>
+              <span className="mobile-date-label">{t('dateTo')}</span>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="mobile-date-input"
+              />
+            </label>
+          </div>
+          <div className="mobile-date-filter-actions">
+            <button
+              type="button"
+              className="btn-clear-date"
+              onClick={() => { setDateFrom(''); setDateTo('') }}
+            >
+              {t('clearDateFilter')}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile flat list */}
+        <div className="mobile-orders-list">
+          {ordersFlatFiltered.length === 0 && (dateFrom || dateTo) ? (
+            <p className="empty-message mobile-filter-empty">{t('noOrdersInDateRange')}</p>
+          ) : null}
+          {ordersFlatFiltered.map((order) => {
+            const dateKey = toDateKey(order.createdAt)
+            const supplier = getOrderSupplier(order, items)
+            const isExpanded = expandedOrderId === order._id
+            const isEditing = editingOrder === order._id
+            const count = order.items?.length || 0
+            return (
+              <div key={order._id} className={`mobile-order-card ${isExpanded ? 'expanded' : ''}`}>
+                <div className="mobile-order-head" onClick={() => setExpandedOrderId((id) => id === order._id ? null : order._id)}>
+                  <div className="mobile-order-meta">
+                    <span className="mobile-order-date">{formatDate(dateKey)}</span>
+                    <span className="mobile-order-supplier">{supplier === NO_SUPPLIER_KEY ? t('noSupplier') : supplier === COMBINED_ORDER_KEY ? t('combinedOrderLabel') : supplier}</span>
+                  </div>
+                  <div className="mobile-order-right">
+                    <span className="mobile-order-count">{count} {t('itemsCount')}</span>
+                    <div className="mobile-order-actions" onClick={(e) => e.stopPropagation()}>
+                      <button type="button" className="btn-download-pdf btn-icon" onClick={() => handleDownloadPdf(order)} title={t('downloadPdf')}><IconDownload /></button>
+                      {isEditing ? (
+                        <>
+                          <button type="button" className="btn-save btn-icon" onClick={() => handleSaveEdit(order)} title={t('saveChanges')}><IconSave /></button>
+                          <button type="button" className="btn-cancel btn-icon" onClick={handleCancelEdit} title={t('cancel')}><IconCancel /></button>
+                        </>
+                      ) : (
+                        <>
+                          <button type="button" className="btn-edit btn-icon" onClick={() => handleEdit(order)} title={t('edit')}><IconEdit /></button>
+                          <button type="button" className="btn-delete btn-icon" onClick={() => handleDelete(order._id)} title={t('deleteOrder')}><IconDelete /></button>
+                        </>
+                      )}
+                    </div>
+                    <span className="mobile-order-toggle">{isExpanded ? '▲' : '▼'}</span>
+                  </div>
+                </div>
+                {isExpanded && (
+                  <div className="mobile-order-detail" onClick={(e) => e.stopPropagation()}>
+                    {order.items?.length ? (
+                      <table className="order-items-table">
+                        <thead>
+                          <tr>
+                            <th>{t('itemColumn')}</th>
+                            <th>{t('quantityColumn')}</th>
+                            {isEditing && <th className="th-actions" title={t('delete')}><IconDelete /></th>}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {order.items.map((item, idx) => {
+                            const isDeleted = (deletedItemIndices[order._id] || []).includes(idx)
+                            if (isDeleted) {
+                              return (
+                                <tr key={idx} className="row-deleted">
+                                  <td colSpan={isEditing ? 3 : 2}>
+                                    <span className="item-removed">{item.name || t('itemNumber', { n: idx + 1 })} {t('itemRemoved')}</span>
+                                    <button type="button" className="btn-undo-item btn-icon" onClick={() => handleUndoDeleteItem(order._id, idx)} title={t('undo')}><IconUndo /></button>
+                                  </td>
+                                </tr>
+                              )
+                            }
+                            return (
+                              <tr key={idx}>
+                                <td>{item.name || t('itemNumber', { n: idx + 1 })}</td>
+                                <td>
+                                  {isEditing ? (
+                                    <input type="number" min="0" value={editingQuantities[idx] ?? 0} onChange={(e) => handleQuantityChange(idx, e.target.value)} />
+                                  ) : (
+                                    item.quantity ?? 0
+                                  )}
+                                </td>
+                                {isEditing && (
+                                  <td className="td-actions">
+                                    <button type="button" className="btn-delete-item btn-icon" onClick={() => handleDeleteItem(order._id, idx)} title={t('removeItemFromOrder')}><IconDelete /></button>
+                                  </td>
+                                )}
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p className="empty-message">{t('noItems')}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Desktop grid table */}
         <div className="orders-grid-wrapper">
           <table className="orders-grid-table">
             <thead>
@@ -397,6 +544,7 @@ export function OrdersListPage() {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   )

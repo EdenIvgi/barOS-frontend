@@ -336,6 +336,189 @@
     }
   }
 
+  // === Supplier Orders Summary ===
+  .supplier-orders-summary {
+    --sos-border: rgba(255, 255, 255, 0.04);
+    margin-bottom: 2rem;
+    background: $bg-deepest;
+    border: 1px solid var(--sos-border);
+
+    .sos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--sos-border);
+
+      .sos-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: $text-primary;
+      }
+
+      .sos-total {
+        font-size: 0.75rem;
+        color: $text-muted;
+        font-weight: 500;
+      }
+    }
+
+    .sos-suppliers {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sos-supplier-row {
+      border-bottom: 1px solid var(--sos-border);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &.open .sos-supplier-btn {
+        background: $bg-surface;
+      }
+    }
+
+    .sos-supplier-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: $text-primary;
+      text-align: start;
+      transition: background 0.15s ease;
+
+      &:hover {
+        background: $bg-surface;
+      }
+    }
+
+    .sos-supplier-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    .sos-supplier-stats {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .sos-supplier-total {
+      font-size: 1rem;
+      font-weight: 300;
+      color: $accent-text;
+      font-family: $font-heading;
+    }
+
+    .sos-supplier-pct {
+      font-size: 0.72rem;
+      color: $text-muted;
+      min-width: 32px;
+      text-align: end;
+    }
+
+    .sos-chevron {
+      font-size: 0.6rem;
+      color: $text-muted;
+    }
+
+    .sos-track {
+      height: 2px;
+      background: var(--sos-border);
+      margin: 0 1.25rem;
+      overflow: hidden;
+    }
+
+    .sos-fill {
+      height: 100%;
+      background: $accent-primary;
+      transition: width 0.4s ease;
+    }
+
+    .sos-products {
+      background: $bg-surface;
+      border-top: 1px solid var(--sos-border);
+      max-height: 220px;
+      overflow-y: auto;
+      animation: sos-slide-down 0.22s ease forwards;
+      transform-origin: top;
+
+      &::-webkit-scrollbar {
+        width: 3px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    @keyframes sos-slide-down {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .sos-products-header {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: $text-muted;
+      border-bottom: 1px solid var(--sos-border);
+    }
+
+    .sos-product-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.55rem 1.5rem;
+      border-bottom: 1px solid var(--sos-border);
+      transition: background 0.15s;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: $bg-elevated;
+      }
+    }
+
+    .sos-product-name {
+      font-size: 0.85rem;
+      color: $text-primary;
+      flex: 1;
+    }
+
+    .sos-product-qty {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $text-secondary;
+      min-width: 40px;
+      text-align: end;
+    }
+  }
+
   // === MOBILE ===
   @media (max-width: 768px) {
     padding: 1rem;
