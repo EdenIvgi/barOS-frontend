@@ -3,7 +3,6 @@
 
 .about-page {
   padding: 0rem 7rem;
-  max-width: 1000px;
   margin: 0 auto;
   @include cinematic-enter;
 
@@ -73,7 +72,7 @@
     color: inherit;
     transition: background 0.2s ease;
 
-    &:hover {
+    @include hover {
       background: $bg-surface;
 
       .feature-icon {

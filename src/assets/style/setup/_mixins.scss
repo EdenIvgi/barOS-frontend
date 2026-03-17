@@ -2,6 +2,16 @@
 // BAROS MIXINS — Glass, Animation, Layout
 // ============================================
 
+// --- Hover (pointer devices only) ---
+
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
 // --- Glass Surfaces ---
 
 @mixin glass-surface($blur: $glass-blur) {

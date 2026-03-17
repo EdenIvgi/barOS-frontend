@@ -147,7 +147,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
 
-      &:hover {
+      @include hover {
         background: $bg-surface;
         color: $text-primary;
       }
@@ -175,7 +175,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
 
-    &:hover {
+    @include hover {
       border-color: $color-error;
       color: $color-error;
       background: rgba($color-error, 0.06);

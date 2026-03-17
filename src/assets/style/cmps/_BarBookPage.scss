@@ -83,7 +83,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       transition: opacity 0.15s ease;
     }
 
-    &:hover {
+    @include hover {
       background: rgba(255, 255, 255, 0.04);
       color: rgba(255, 255, 255, 0.75);
 
@@ -149,7 +149,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       letter-spacing: 0.02em;
       transition: all 0.2s ease;
 
-      &:hover {
+      @include hover {
         border-color: rgba(255, 255, 255, 0.25);
         color: rgba(255, 255, 255, 0.7);
       }
@@ -223,7 +223,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       font-size: 0.9rem;
       transition: background 0.2s ease;
 
-      &:hover {
+      @include hover {
         background: $accent-hover;
       }
     }
@@ -347,7 +347,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       &.editable {
         cursor: pointer;
 
-        &:hover {
+        @include hover {
           background: rgba(255, 255, 255, 0.06);
         }
       }
@@ -363,7 +363,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       flex-shrink: 0;
       opacity: 0.3;
 
-      &:hover {
+      @include hover {
         opacity: 1;
       }
     }
@@ -403,7 +403,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     padding: 2px 4px;
     border-radius: 3px;
 
-    &:hover {
+    @include hover {
       background: rgba(255, 255, 255, 0.06);
     }
   }
@@ -466,7 +466,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     font-family: $font-body;
     transition: all 0.2s ease;
 
-    &:hover {
+    @include hover {
       border-color: rgba($book-accent, 0.5);
       color: rgba(255, 255, 255, 0.7);
     }
@@ -482,7 +482,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     border-radius: 3px;
     transition: all 0.15s ease;
 
-    &:hover {
+    @include hover {
       color: $color-error;
       background: rgba($color-error, 0.08);
     }
@@ -510,7 +510,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     font-family: $font-body;
     transition: all 0.2s ease;
 
-    &:hover {
+    @include hover {
       color: $color-error;
       border-color: rgba($color-error, 0.4);
     }
@@ -626,7 +626,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
         &.editable {
           cursor: pointer;
 
-          &:hover {
+          @include hover {
             background: rgba(255, 255, 255, 0.04);
           }
         }
@@ -668,7 +668,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       min-height: 1.4em;
       min-width: 2em;
 
-      &:hover {
+      @include hover {
         background: rgba(255, 255, 255, 0.05);
       }
     }
@@ -739,7 +739,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
         white-space: nowrap;
         transition: all 0.2s ease;
 
-        &:hover {
+        @include hover {
           border-color: rgba($book-accent, 0.5);
           color: rgba(255, 255, 255, 0.7);
         }
@@ -773,7 +773,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       text-align: start;
       transition: background 0.12s ease, border-color 0.12s ease;
 
-      &:hover {
+      @include hover {
         background: rgba(255, 255, 255, 0.025);
       }
 
@@ -1031,7 +1031,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       font-size: 0.875rem;
       transition: background 0.2s ease;
 
-      &:hover {
+      @include hover {
         background: $accent-hover;
       }
     }
@@ -1048,7 +1048,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       font-size: 0.875rem;
       transition: all 0.2s ease;
 
-      &:hover {
+      @include hover {
         color: rgba(255, 255, 255, 0.75);
         border-color: rgba(255, 255, 255, 0.25);
       }
@@ -1113,7 +1113,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       padding: 0.15rem 0.3rem;
       opacity: 0.5;
 
-      &:hover {
+      @include hover {
         opacity: 1;
       }
     }
@@ -1150,7 +1150,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     cursor: pointer;
     transition: all 0.2s ease;
 
-    &:hover {
+    @include hover {
       border-color: rgba($book-accent, 0.5);
       color: rgba(255, 255, 255, 0.7);
     }
@@ -1222,7 +1222,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       text-align: start;
       transition: background 0.12s, border-color 0.12s;
 
-      &:hover { background: rgba(255, 255, 255, 0.025); }
+      @include hover { background: rgba(255, 255, 255, 0.025); }
 
       &.active {
         background: rgba($book-accent, 0.06);
@@ -1252,7 +1252,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
         .btn-icon {
           font-size: 0.85rem;
           opacity: 0.5;
-          &:hover { opacity: 1; }
+          @include hover { opacity: 1; }
         }
       }
 
@@ -1274,7 +1274,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       cursor: pointer;
       text-align: center;
       transition: all 0.2s;
-      &:hover {
+      @include hover {
         border-color: rgba($book-accent, 0.5);
         color: rgba(255, 255, 255, 0.7);
       }
@@ -1319,7 +1319,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     padding: 0.1rem 0.4rem;
     transition: all 0.15s ease;
 
-    &:hover {
+    @include hover {
       border-color: rgba($book-accent, 0.5);
       color: rgba(255, 255, 255, 0.7);
     }
@@ -1400,7 +1400,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       font-family: $font-body;
     }
 
-    &:hover {
+    @include hover {
       background: rgba(255, 255, 255, 0.07);
       border-color: rgba(255, 255, 255, 0.15);
     }
@@ -1435,7 +1435,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       background: rgba(255, 255, 255, 0.07);
       color: rgba(255, 255, 255, 0.5);
 
-      &:hover { background: rgba(255, 255, 255, 0.11); }
+      @include hover { background: rgba(255, 255, 255, 0.11); }
     }
 
     .btn-save {

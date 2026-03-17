@@ -14,7 +14,7 @@
   flex-direction: column;
   height: 100%;
 
-  &:hover {
+  @include hover {
     @include accent-glow-hover;
 
     .btn-add-to-cart {
@@ -124,7 +124,7 @@
       height: 14px;
     }
 
-    &:hover {
+    @include hover {
       background: $accent-hover;
     }
   }

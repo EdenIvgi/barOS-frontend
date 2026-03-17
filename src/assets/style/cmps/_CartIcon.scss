@@ -21,7 +21,7 @@
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 
-  &:hover {
+  @include hover {
     color: $accent-text;
     background: none;
     border-color: transparent;
@@ -145,7 +145,7 @@
       background: $bg-elevated;
       color: $text-secondary;
 
-      &:hover {
+      @include hover {
         background: $bg-card;
         color: $text-primary;
       }
@@ -156,7 +156,7 @@
       color: $text-primary;
       margin: 0;
 
-      &:hover {
+      @include hover {
         background: $accent-hover;
       }
     }

@@ -41,7 +41,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    &:hover {
+    @include hover {
       background: $accent-hover;
     }
   }
@@ -68,7 +68,7 @@
     position: relative;
     transition: all 0.3s;
 
-    &:hover {
+    @include hover {
       @include glass-surface-hover;
     }
 
@@ -111,13 +111,13 @@
     .btn-edit-recipe {
       @include glass-surface;
       color: $text-primary;
-      &:hover { @include glass-surface-hover; }
+      @include hover { @include glass-surface-hover; }
     }
 
     .btn-delete-recipe {
       background: rgba($color-error, 0.15);
       color: $color-error;
-      &:hover { background: rgba($color-error, 0.25); }
+      @include hover { background: rgba($color-error, 0.25); }
     }
 
     .recipe-section {
@@ -240,7 +240,7 @@
         cursor: pointer;
         transition: all 0.2s;
 
-        &:hover { background: $accent-hover; }
+        @include hover { background: $accent-hover; }
       }
 
       .btn-cancel {
@@ -252,7 +252,7 @@
         cursor: pointer;
         transition: all 0.2s;
 
-        &:hover { @include glass-surface-hover; }
+        @include hover { @include glass-surface-hover; }
       }
     }
   }

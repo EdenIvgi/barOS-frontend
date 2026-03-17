@@ -78,7 +78,7 @@
       text-align: center;
       transition: border-color 0.3s ease;
 
-      &:hover {
+      @include hover {
         border-color: $accent-primary;
       }
 
@@ -198,7 +198,7 @@
       color: inherit;
       transition: background 0.2s ease;
 
-      &:hover {
+      @include hover {
         background: $bg-surface;
       }
 
@@ -227,7 +227,7 @@
       transition: all 0.2s ease;
       margin-top: 1rem;
 
-      &:hover {
+      @include hover {
         background: $accent-primary;
         color: $text-primary;
       }
@@ -261,7 +261,7 @@
         font-weight: 500;
         transition: color 0.2s;
 
-        &:hover {
+        @include hover {
           color: $accent-text;
         }
       }
@@ -282,7 +282,7 @@
       color: inherit;
       transition: background 0.2s ease;
 
-      &:hover {
+      @include hover {
         background: $bg-surface;
       }
 
@@ -395,7 +395,7 @@
       text-align: start;
       transition: background 0.15s ease;
 
-      &:hover {
+      @include hover {
         background: $bg-surface;
       }
     }
@@ -499,7 +499,7 @@
         border-bottom: none;
       }
 
-      &:hover {
+      @include hover {
         background: $bg-elevated;
       }
     }

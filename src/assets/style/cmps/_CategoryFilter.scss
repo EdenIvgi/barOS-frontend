@@ -23,7 +23,7 @@
       text-transform: uppercase;
       letter-spacing: 0.3px;
 
-      &:hover {
+      @include hover {
         @include glass-surface-hover;
         color: $text-primary;
       }

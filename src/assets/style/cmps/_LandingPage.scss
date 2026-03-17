@@ -34,7 +34,7 @@
   transition: color 0.2s;
   z-index: 10;
 
-  &:hover {
+  @include hover {
     background: transparent;
     border-color: transparent;
     color: $text-primary;
@@ -227,7 +227,7 @@
   transition: color 0.2s;
   font-family: $font-body;
 
-  &:hover {
+  @include hover {
     background: transparent;
     border-color: transparent;
     color: $accent-text;

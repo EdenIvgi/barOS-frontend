@@ -15,7 +15,7 @@ button {
   -webkit-backdrop-filter: blur($glass-blur);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  &:hover {
+  @include hover {
     background: $glass-bg-hover;
     border-color: $accent-primary;
   }

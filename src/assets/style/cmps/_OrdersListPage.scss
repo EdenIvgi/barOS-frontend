@@ -158,25 +158,25 @@
             &.btn-edit {
               @include glass-surface;
               color: $text-primary;
-              &:hover { @include glass-surface-hover; }
+              @include hover { @include glass-surface-hover; }
             }
 
             &.btn-delete {
               background: rgba($color-error, 0.15);
               color: $color-error;
-              &:hover { background: rgba($color-error, 0.25); }
+              @include hover { background: rgba($color-error, 0.25); }
             }
 
             &.btn-save {
               background: $accent-primary;
               color: $text-primary;
-              &:hover { background: $accent-hover; }
+              @include hover { background: $accent-hover; }
             }
 
             &.btn-cancel {
               @include glass-surface;
               color: $text-secondary;
-              &:hover { @include glass-surface-hover; }
+              @include hover { @include glass-surface-hover; }
             }
           }
         }
@@ -242,7 +242,7 @@
                 @include glass-surface;
                 color: $text-primary;
 
-                &:hover { @include glass-surface-hover; }
+                @include hover { @include glass-surface-hover; }
               }
             }
 
@@ -278,7 +278,7 @@
                 background: rgba($color-error, 0.15);
                 color: $color-error;
 
-                &:hover { background: rgba($color-error, 0.25); }
+                @include hover { background: rgba($color-error, 0.25); }
               }
             }
           }
@@ -363,7 +363,7 @@
       cursor: pointer;
       transition: all 0.2s;
 
-      &:hover {
+      @include hover {
         border-color: $accent-primary;
         color: $accent-text;
       }
@@ -409,7 +409,7 @@
     transition: background 0.15s;
     gap: 0.5rem;
 
-    &:hover {
+    @include hover {
       background: $glass-bg-hover;
     }
   }
@@ -472,25 +472,25 @@
       &.btn-edit {
         @include glass-surface;
         color: $text-primary;
-        &:hover { @include glass-surface-hover; }
+        @include hover { @include glass-surface-hover; }
       }
 
       &.btn-delete {
         background: rgba($color-error, 0.15);
         color: $color-error;
-        &:hover { background: rgba($color-error, 0.25); }
+        @include hover { background: rgba($color-error, 0.25); }
       }
 
       &.btn-save {
         background: $accent-primary;
         color: $text-primary;
-        &:hover { background: $accent-hover; }
+        @include hover { background: $accent-hover; }
       }
 
       &.btn-cancel {
         @include glass-surface;
         color: $text-secondary;
-        &:hover { @include glass-surface-hover; }
+        @include hover { @include glass-surface-hover; }
       }
     }
   }
@@ -582,7 +582,7 @@
           justify-content: center;
           background: rgba($color-error, 0.15);
           color: $color-error;
-          &:hover { background: rgba($color-error, 0.25); }
+          @include hover { background: rgba($color-error, 0.25); }
         }
       }
     }

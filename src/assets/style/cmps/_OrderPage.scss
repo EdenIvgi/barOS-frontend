@@ -32,7 +32,7 @@
       gap: 1rem;
       transition: all 0.3s;
 
-      &:hover {
+      @include hover {
         @include glass-card-hover;
       }
 
@@ -80,7 +80,7 @@
         font-weight: 600;
         transition: all 0.3s;
 
-        &:hover {
+        @include hover {
           background: rgba($color-error, 0.25);
         }
       }
