@@ -9,9 +9,11 @@ const resources = {
       products: 'מוצרים',
       profile: 'פרופיל',
       about: 'אודות',
+      more: 'עוד',
       barBook: 'ספר בר',
       orders: 'הזמנות',
       itemsManagement: 'ניהול מוצרים',
+      navItemsMgmt: 'מלאי',
       cart: 'עגלת קניות',
       recipes: 'מתכונים',
       // Landing page
@@ -325,9 +327,11 @@ const resources = {
       products: 'Products',
       profile: 'Profile',
       about: 'About',
+      more: 'More',
       barBook: 'Bar Book',
       orders: 'Orders',
       itemsManagement: 'Items Management',
+      navItemsMgmt: 'Stock',
       cart: 'Cart',
       // Landing page
       landingTagline: 'Smart Bar Management — Inventory, Orders & Bar Book In One Place',

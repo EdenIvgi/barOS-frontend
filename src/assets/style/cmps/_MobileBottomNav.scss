@@ -1,0 +1,134 @@
+@import '../setup/vars';
+@import '../setup/mixins';
+
+.mobile-bottom-nav {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: $bottom-nav-height;
+    background: $bg-surface;
+    border-top: 1px solid $glass-border;
+    backdrop-filter: blur($glass-blur-heavy);
+    -webkit-backdrop-filter: blur($glass-blur-heavy);
+    z-index: 1001;
+
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: $text-muted;
+      text-decoration: none;
+      font-size: 0.6rem;
+      font-family: $font-logo;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: color 0.2s ease;
+      padding: 6px 0;
+
+      svg {
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      span {
+        line-height: 1;
+      }
+
+      @include hover {
+        color: $text-secondary;
+      }
+
+      &.active {
+        color: $accent-text;
+
+        svg {
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    .bottom-nav-more {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+  }
+}
+
+// More menu popup
+.more-menu {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: $bottom-nav-height;
+    inset-inline-end: 0;
+    width: 200px;
+    background: $bg-elevated;
+    border: 1px solid $glass-border;
+    border-bottom: none;
+    z-index: 1002;
+    animation: fadeSlideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+    .more-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.85rem 1.25rem;
+      background: none;
+      border: none;
+      border-bottom: 1px solid $glass-border;
+      color: $text-secondary;
+      font-size: 0.82rem;
+      font-family: $font-logo;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      text-align: start;
+      transition: background 0.15s ease, color 0.15s ease;
+
+      svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        opacity: 0.7;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      @include hover {
+        background: $glass-bg-hover;
+        color: $text-primary;
+
+        svg {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+.more-menu-overlay {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+  }
+}

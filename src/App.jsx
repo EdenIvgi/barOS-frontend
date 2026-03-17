@@ -5,6 +5,7 @@ import './assets/style/main.scss'
 
 import { AppFooter } from './cmps/AppFooter'
 import { AppHeader } from './cmps/AppHeader'
+import { MobileBottomNav } from './cmps/MobileBottomNav'
 import { AnimatedBackground } from './cmps/AnimatedBackground'
 import { UserMsg } from './cmps/UserMsg'
 import { About } from './pages/About'
@@ -55,6 +56,7 @@ function AppLayout() {
         </main>
         <AppFooter />
       </div>
+      <MobileBottomNav />
     </section>
   )
 }

@@ -22,6 +22,12 @@
   }
 }
 
+@media (max-width: 768px) {
+  .main-content {
+    padding-bottom: $bottom-nav-height;
+  }
+}
+
 .container {
   max-width: 800px;
   padding: 1rem;
