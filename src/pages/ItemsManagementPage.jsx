@@ -507,7 +507,8 @@ export function ItemsManagementPage() {
         name: row.name,
         quantity: row.quantity,
         price: row.price,
-        subtotal: row.subtotal
+        subtotal: row.subtotal,
+        supplier: key
       })
     }
 

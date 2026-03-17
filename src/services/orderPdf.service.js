@@ -7,8 +7,11 @@ const A4_H_MM = 297
 const MARGIN_MM = 8
 const CONTENT_H_MM = A4_H_MM - MARGIN_MM * 2
 
+const COMBINED_ORDER_LABELS = ['הזמנה משולבת', 'Combined order', 'Combined Order']
+
 /**
  * מייצר PDF להזמנה – תמיד בעמוד אחד. הלייאאוט משתנה אוטומטית לפי כמות הפריטים.
+ * בהזמנה משולבת – מקבץ את הפריטים לפי ספק.
  */
 export async function downloadOrderPdf(order, fileName, supplierName) {
   if (!order) return
@@ -23,6 +26,7 @@ export async function downloadOrderPdf(order, fileName, supplierName) {
         ? String(order.supplier).trim()
         : i18n.t('noSupplier')
   const items = order.items || []
+  const isCombined = COMBINED_ORDER_LABELS.includes(supplierStr)
   const itemCount = items.length
 
   const layout = getLayout(itemCount)
@@ -37,30 +41,20 @@ export async function downloadOrderPdf(order, fileName, supplierName) {
     `line-height: ${layout.lineHeight};`
   ].join(' ')
 
+  let bodyHtml
+  if (isCombined && items.some(item => item.supplier)) {
+    bodyHtml = buildCombinedBody(items, layout)
+  } else {
+    bodyHtml = buildSimpleBody(items, layout)
+  }
+
   div.innerHTML = [
     `<h1 style="margin:0 0 ${layout.headerGap}px; font-size:${layout.titleSize}px; border-bottom:2px solid #333; padding-bottom:4px;">הזמנה</h1>`,
     `<p style="margin:0 0 2px; font-size:${layout.fontSize}px;"><strong>תאריך:</strong> ` + escapeHtml(dateStr) + '</p>',
-    `<p style="margin:0 0 ${layout.headerGap}px; font-size:${layout.fontSize}px;"><strong>ספק:</strong> ` + escapeHtml(supplierStr) + '</p>',
-    items.length
-      ? '<table style="width:100%; border-collapse:collapse;">' +
-      '<thead><tr style="border-bottom:2px solid #333;">' +
-      `<th style="text-align:right; padding:${layout.cellPad}px;">שם מוצר</th>` +
-      `<th style="text-align:center; padding:${layout.cellPad}px; width:${layout.qtyColWidth}px;">כמות</th></tr></thead>` +
-      '<tbody>' +
-      items
-        .map(
-          (item) =>
-            '<tr style="border-bottom:1px solid #ddd">' +
-            `<td style="text-align:right; padding:${layout.cellPad}px;">` +
-            escapeHtml(String(item.name || '').trim() || '—') +
-            '</td>' +
-            `<td style="text-align:center; padding:${layout.cellPad}px;">` +
-            (item.quantity ?? 0) +
-            '</td></tr>'
-        )
-        .join('') +
-      '</tbody></table>'
-      : '<p>אין פריטים</p>'
+    isCombined
+      ? `<p style="margin:0 0 ${layout.headerGap}px; font-size:${layout.fontSize}px;"><strong>${escapeHtml(supplierStr)}</strong></p>`
+      : `<p style="margin:0 0 ${layout.headerGap}px; font-size:${layout.fontSize}px;"><strong>ספק:</strong> ` + escapeHtml(supplierStr) + '</p>',
+    bodyHtml
   ].join('')
 
   document.body.appendChild(div)
@@ -95,6 +89,48 @@ export async function downloadOrderPdf(order, fileName, supplierName) {
     if (div.parentNode) document.body.removeChild(div)
     throw e
   }
+}
+
+function buildSimpleBody(items, layout) {
+  if (!items.length) return '<p>אין פריטים</p>'
+  return '<table style="width:100%; border-collapse:collapse;">' +
+    '<thead><tr style="border-bottom:2px solid #333;">' +
+    `<th style="text-align:right; padding:${layout.cellPad}px;">שם מוצר</th>` +
+    `<th style="text-align:center; padding:${layout.cellPad}px; width:${layout.qtyColWidth}px;">כמות</th></tr></thead>` +
+    '<tbody>' +
+    items.map(item =>
+      '<tr style="border-bottom:1px solid #ddd">' +
+      `<td style="text-align:right; padding:${layout.cellPad}px;">` + escapeHtml(String(item.name || '').trim() || '—') + '</td>' +
+      `<td style="text-align:center; padding:${layout.cellPad}px;">` + (item.quantity ?? 0) + '</td></tr>'
+    ).join('') +
+    '</tbody></table>'
+}
+
+function buildCombinedBody(items, layout) {
+  const groups = {}
+  for (const item of items) {
+    const key = item.supplier || i18n.t('noSupplier')
+    if (!groups[key]) groups[key] = []
+    groups[key].push(item)
+  }
+
+  const sections = Object.entries(groups).map(([supplier, groupItems]) =>
+    `<h2 style="margin:${layout.headerGap}px 0 ${Math.max(layout.headerGap / 2, 2)}px; font-size:${Math.round(layout.titleSize * 0.8)}px; font-weight:700; color:#1a1a1a; border-bottom:2px solid #333; padding-bottom:2px;">` +
+    escapeHtml(supplier) + '</h2>' +
+    '<table style="width:100%; border-collapse:collapse;">' +
+    '<thead><tr style="border-bottom:2px solid #333;">' +
+    `<th style="text-align:right; padding:${layout.cellPad}px;">שם מוצר</th>` +
+    `<th style="text-align:center; padding:${layout.cellPad}px; width:${layout.qtyColWidth}px;">כמות</th></tr></thead>` +
+    '<tbody>' +
+    groupItems.map(item =>
+      '<tr style="border-bottom:1px solid #ddd">' +
+      `<td style="text-align:right; padding:${layout.cellPad}px;">` + escapeHtml(String(item.name || '').trim() || '—') + '</td>' +
+      `<td style="text-align:center; padding:${layout.cellPad}px;">` + (item.quantity ?? 0) + '</td></tr>'
+    ).join('') +
+    '</tbody></table>'
+  )
+
+  return sections.join('')
 }
 
 function getLayout(itemCount) {
