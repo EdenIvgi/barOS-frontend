@@ -773,9 +773,12 @@ export function BarBookPage() {
   const [activePageId, setActivePageId] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
+  const [hasConflict, setHasConflict] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingPageTitle, setEditingPageTitle] = useState(null)
   const skipSaveRef = useRef(true)
+  // Version of the document this client is working from, for conflict detection.
+  const baseUpdatedAtRef = useRef(undefined)
 
   const activePage = pages.find(p => p._id === activePageId) || null
 
@@ -784,22 +787,42 @@ export function BarBookPage() {
     barBookService.getContent()
       .then(async data => {
         const loaded = Array.isArray(data?.pages) ? data.pages : []
+        baseUpdatedAtRef.current = data?.updatedAt
         if (loaded.length > 0) setActivePageId(loaded[0]._id)
         const { pages: migrated, changed } = await migrateAllContent(loaded)
         setPages(migrated)
         if (changed) {
-          barBookService.saveContent({ pages: migrated }).catch(err => console.error('migration save failed', err))
+          save(migrated).catch(err => console.error('migration save failed', err))
         }
       })
       .catch(err => setLoadError(err?.message || t('errorLoadBarBook')))
       .finally(() => setIsLoading(false))
   }, [])
 
+  async function save(nextPages) {
+    const saved = await barBookService.saveContent({
+      pages: nextPages,
+      baseUpdatedAt: baseUpdatedAtRef.current,
+    })
+    baseUpdatedAtRef.current = saved?.updatedAt
+    return saved
+  }
+
   // Auto-save
   useEffect(() => {
     if (skipSaveRef.current) return
     const timer = setTimeout(() => {
-      barBookService.saveContent({ pages }).catch(err => console.error('save failed', err))
+      save(pages).catch(err => {
+        if (err?.response?.status === 409) {
+          // Someone else saved while we were editing — stop overwriting them and
+          // tell the user to reload rather than losing one side's work silently.
+          // Flag it rather than translating here, so `t` stays out of this effect's
+          // deps and a language switch cannot trigger a redundant save.
+          setHasConflict(true)
+        } else {
+          console.error('save failed', err)
+        }
+      })
     }, 600)
     return () => clearTimeout(timer)
   }, [pages])
@@ -838,9 +861,11 @@ export function BarBookPage() {
   }
 
   function pageDisplayTitle(page) {
-    if (page.customTitle) return getLangText(page.customTitle, lang)
+    // `title` is the legacy field — pages created before customTitle existed still carry it.
+    const custom = page.customTitle ?? page.title
+    if (custom) return getLangText(custom, lang)
     const pt = PAGE_TYPES.find(p => p.type === page.type)
-    return pt ? t(pt.labelKey) : page.title
+    return pt ? t(pt.labelKey) : ''
   }
 
   return (
@@ -894,6 +919,7 @@ export function BarBookPage() {
         <main className="bar-book-main">
           {isLoading && <p className="bar-book-loading">{t('loadingBarBook')}</p>}
           {!isLoading && loadError && <p className="bar-book-error">{loadError}</p>}
+          {hasConflict && <p className="bar-book-error">{t('barBookConflict')}</p>}
 
           {!isLoading && !loadError && pages.length === 0 && (
             <div className="empty-state">

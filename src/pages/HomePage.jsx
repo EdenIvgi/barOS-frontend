@@ -38,16 +38,20 @@ export function HomePage() {
       .catch(() => setBarBookDailyTasks([]))
   }, [user])
 
+  // An item needs reordering when it is at or below its alert threshold — including
+  // when it has run out entirely, which is the most urgent case of all.
+  const lowStockItems = items?.filter(item => {
+    const stock = item.stockQuantity || 0
+    const minLevel = item.minStockLevel || 0
+    return stock <= minLevel
+  }) || []
+
   // Calculate statistics
   const stats = {
     totalItems: items?.length || 0,
     availableItems: items?.filter(item => item.isAvailable).length || 0,
     unavailableItems: items?.filter(item => !item.isAvailable).length || 0,
-    lowStockItems: items?.filter(item => {
-      const stock = item.stockQuantity || 0
-      const minLevel = item.minStockLevel || 0
-      return stock <= minLevel && stock > 0
-    }).length || 0,
+    lowStockItems: lowStockItems.length,
     outOfStockItems: items?.filter(item => (item.stockQuantity || 0) <= 0).length || 0,
     totalOrders: orders?.length || 0,
     pendingOrders: orders?.filter(order => order.status === 'pending').length || 0,
@@ -64,12 +68,6 @@ export function HomePage() {
       return orderDate.toDateString() === today.toDateString()
     }).reduce((sum, order) => sum + (order.totalAmount || 0), 0) || 0
   }
-
-  const lowStockItems = items?.filter(item => {
-    const stock = item.stockQuantity || 0
-    const minLevel = item.minStockLevel || 0
-    return stock <= minLevel && stock > 0
-  }) || []
 
   // Daily task
   const dayIndex = new Date().getDay()

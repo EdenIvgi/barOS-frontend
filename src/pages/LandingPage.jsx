@@ -25,7 +25,7 @@ export function LandingPage() {
 
   const [isSignup, setIsSignup] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [credentials, setCredentials] = useState({ username: '', password: '', fullname: '', companyName: '' })
+  const [credentials, setCredentials] = useState({ username: '', password: '', fullname: '', companyName: '', inviteCode: '' })
   const [companyError, setCompanyError] = useState(false)
 
   useEffect(() => {
@@ -54,8 +54,10 @@ export function LandingPage() {
         showSuccessMsg(t('welcomeMsg'))
       }
       navigate('/home')
-    } catch {
-      showErrorMsg(t('loginError'))
+    } catch (err) {
+      // Surface the server's own message (e.g. "Username already exists") when there
+      // is one — the generic fallback hides the actual reason from the user.
+      showErrorMsg(err?.response?.data?.error || t('loginError'))
     } finally {
       setIsLoading(false)
     }
@@ -159,6 +161,21 @@ export function LandingPage() {
               </div>
             )}
 
+            {isSignup && (
+              <div className="form-field">
+                <input
+                  id="l-invite"
+                  type="text"
+                  name="inviteCode"
+                  value={credentials.inviteCode}
+                  onChange={handleChange}
+                  placeholder={t('inviteCodePlaceholder')}
+                  autoComplete="off"
+                />
+                <span className="field-hint">{t('inviteCodeHelp')}</span>
+              </div>
+            )}
+
             <button type="submit" className="landing-submit-btn" disabled={isLoading}>
               {isLoading ? t('loading') : isSignup ? t('landingSignupBtn') : t('landingLoginBtn')}
             </button>
@@ -169,7 +186,7 @@ export function LandingPage() {
             className="landing-toggle-btn"
             onClick={() => {
               setIsSignup(p => !p)
-              setCredentials({ username: '', password: '', fullname: '', companyName: '' })
+              setCredentials({ username: '', password: '', fullname: '', companyName: '', inviteCode: '' })
               setCompanyError(false)
             }}
           >

@@ -7,6 +7,8 @@ export const userService = {
   getUsers,
   getLoggedInUser,
   getEmptyCredentials,
+  getInviteCode,
+  regenerateInviteCode,
 }
 
 const BASE_URL = 'auth/'
@@ -34,6 +36,16 @@ async function logout() {
 
 async function getUsers() {
   return await httpService.get('user')
+}
+
+async function getInviteCode() {
+  const res = await httpService.get(BASE_URL + 'invite-code')
+  return res.inviteCode
+}
+
+async function regenerateInviteCode() {
+  const res = await httpService.post(BASE_URL + 'invite-code/regenerate')
+  return res.inviteCode
 }
 
 function getLoggedInUser() {

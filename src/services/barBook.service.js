@@ -7,10 +7,12 @@ export function getEmptyContent() {
 }
 
 export function createPage(type, title) {
+  // The sidebar renders `customTitle`, so a page created with a name must set it here —
+  // otherwise the name is stored but never displayed.
   return {
     _id: crypto.randomUUID(),
     type,
-    title,
+    customTitle: title,
     ...defaultPageData(type),
   }
 }
@@ -39,6 +41,8 @@ async function getContent() {
 }
 
 async function saveContent(content) {
+  // baseUpdatedAt lets the server reject a save built on a stale copy (409)
+  // instead of overwriting edits made by someone else in the meantime.
   return httpService.put(BASE_URL, content)
 }
 

@@ -3,7 +3,7 @@ import Axios from 'axios'
 // console.log(process.env.NODE_ENV);
 
 const BASE_URL =
-  process.env.NODE_ENV === 'production' ? '/api/' : (import.meta.env.VITE_API_BASE_URL || '/api/')
+  import.meta.env.PROD ? '/api/' : (import.meta.env.VITE_API_BASE_URL || '/api/')
 
 const axios = Axios.create({
   withCredentials: true,
@@ -34,11 +34,10 @@ async function ajax(endpoint, method = 'GET', data = null) {
     })
     return res.data
   } catch (err) {
-    console.log(
-      `Had Issues ${method}ing to the backend, endpoint: ${endpoint}, with data: `,
-      data
+    // Never log the request body — it can contain passwords and other credentials.
+    console.error(
+      `Request failed: ${method} ${endpoint} → ${err.response?.status ?? 'network error'}`
     )
-    console.dir(err)
     if (err.response && err.response.status === 401) {
       sessionStorage.clear()
     }

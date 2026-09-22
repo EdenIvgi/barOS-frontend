@@ -1,14 +1,18 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { logout } from '../store/actions/user.actions'
+import { userService } from '../services/user.service'
 
 export function UserDetails() {
   const { t, i18n } = useTranslation()
   const user = useSelector(storeState => storeState.userModule.loggedInUser)
   const navigate = useNavigate()
+  const [inviteCode, setInviteCode] = useState(null)
+
+  const isAdmin = user?.role === 'admin'
 
   useEffect(() => {
     if (!user) {
@@ -16,6 +20,33 @@ export function UserDetails() {
       showErrorMsg(t('loginRequired'))
     }
   }, [user])
+
+  useEffect(() => {
+    if (!isAdmin) return
+    userService.getInviteCode()
+      .then(setInviteCode)
+      .catch(() => showErrorMsg(t('inviteCodeError')))
+  }, [isAdmin, t])
+
+  async function onRegenerateCode() {
+    if (!window.confirm(t('inviteCodeConfirmRegenerate'))) return
+    try {
+      const code = await userService.regenerateInviteCode()
+      setInviteCode(code)
+      showSuccessMsg(t('inviteCodeRegenerated'))
+    } catch {
+      showErrorMsg(t('inviteCodeError'))
+    }
+  }
+
+  async function onCopyCode() {
+    try {
+      await navigator.clipboard.writeText(inviteCode)
+      showSuccessMsg(t('inviteCodeCopied'))
+    } catch {
+      // Clipboard access can be denied — the code is on screen either way.
+    }
+  }
 
   if (!user) return null
 
@@ -98,6 +129,23 @@ export function UserDetails() {
           )}
         </div>
       </div>
+
+      {/* ── Invite code card (admins only) ── */}
+      {isAdmin && inviteCode && (
+        <div className="profile-settings invite-code-card">
+          <h2 className="settings-title">{t('inviteCodeTitle')}</h2>
+          <p className="invite-code-desc">{t('inviteCodeDesc')}</p>
+          <div className="invite-code-row">
+            <code className="invite-code-value">{inviteCode}</code>
+            <button type="button" className="btn-invite-copy" onClick={onCopyCode}>
+              {t('inviteCodeCopy')}
+            </button>
+          </div>
+          <button type="button" className="btn-invite-regenerate" onClick={onRegenerateCode}>
+            {t('inviteCodeRegenerate')}
+          </button>
+        </div>
+      )}
 
       {/* ── Settings card ── */}
       <div className="profile-settings">

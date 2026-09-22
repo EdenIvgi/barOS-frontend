@@ -37,7 +37,12 @@ function getOrderSupplier(order, inventoryItems = []) {
 
 function toDateKey(timestamp) {
   if (!timestamp) return ''
-  return new Date(timestamp).toISOString().slice(0, 10)
+  // Use the LOCAL calendar date, not UTC: toISOString() would push an order placed
+  // after midnight (a normal bar shift) back onto the previous day.
+  const d = new Date(timestamp)
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${month}-${day}`
 }
 
 const iconSize = 16
