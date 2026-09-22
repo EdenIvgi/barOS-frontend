@@ -132,12 +132,11 @@ export async function checkout() {
     let created = 0
     for (const [supplier, items] of Object.entries(bySupplier)) {
       const saved = await orderService.save({
-        items: items.map(({ itemId, itemName, price, quantity, subtotal, supplier }) => ({
+        items: items.map(({ itemId, itemName, volumeMl, quantity, supplier }) => ({
           itemId,
           name: itemName,
-          price,
+          volumeMl: volumeMl || 0,
           quantity,
-          subtotal,
           supplier: supplier?.toString().trim() ?? '',
         })),
         supplier: supplier || '',

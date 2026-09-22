@@ -1,76 +1,91 @@
 // ============================================
-// BAROS DESIGN SYSTEM — Dark Mode + Glassmorphism
+// BAROS DESIGN SYSTEM
+// Palette: deep teal-charcoal, operational tool.
+// Contrast of every text token verified against its surface (WCAG AA).
 // ============================================
 
-// === DARK MODE PALETTE ===
-$bg-deepest: #0a0a0a;
-$bg-deep: #0f0f0f;
-$bg-surface: #141414;
-$bg-elevated: #1a1a1a;
-$bg-card: #1e1e1e;
+// === SURFACES ===
+$bg-deepest: #101817;   // app ground
+$bg-deep: #101817;
+$bg-surface: #16211F;   // panels, rail, topbar
+$bg-elevated: #1A2724;  // selected row, hover
+$bg-card: #16211F;
+$bg-sunken: #0C1413;    // gauge tracks, inputs
 
-// === GLASS SURFACES ===
+// === LINES ===
+$line: #24332F;
+$line-strong: #2E403B;
+
+// === TEXT ===
+$text-primary: #E4EDEA;   // 13.8:1 on surface
+$text-secondary: #A9BDB6;
+$text-muted: #7C918B;     // 4.9:1 on surface — passes AA
+$text-inverse: #07201B;
+
+// === ACCENT — teal ===
+$accent-primary: #1F9C82;
+$accent-hover: #27B897;
+$accent-deep: #175E4F;
+$accent-subtle: rgba(31, 156, 130, 0.13);
+$accent-glow: rgba(31, 156, 130, 0.25);
+$accent-text: #3FBEA0;
+
+// === SEMANTIC — status only, never a series colour ===
+$color-success: #1F9C82;
+$color-warning: #BE8129;
+$color-error: #D9604F;
+$color-info: #4FA3D1;
+
+// === SHADOWS ===
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55);
+$shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.65);
+$shadow-glow-accent: 0 0 0 3px rgba(31, 156, 130, 0.14);
+$shadow-glow-white: 0 0 15px rgba(255, 255, 255, 0.04);
+
+// === GLASS (kept for components not yet migrated) ===
 $glass-bg: rgba(255, 255, 255, 0.04);
-$glass-bg-hover: rgba(255, 255, 255, 0.08);
-$glass-bg-active: rgba(255, 255, 255, 0.12);
-$glass-border: rgba(255, 255, 255, 0.08);
-$glass-border-hover: rgba(255, 255, 255, 0.15);
-$glass-border-focus: rgba(192, 57, 43, 0.4);
+$glass-bg-hover: rgba(255, 255, 255, 0.07);
+$glass-bg-active: rgba(255, 255, 255, 0.11);
+$glass-border: $line;
+$glass-border-hover: $line-strong;
+$glass-border-focus: rgba(31, 156, 130, 0.45);
 $glass-blur: 16px;
 $glass-blur-heavy: 24px;
 
-// === TEXT COLORS ===
-$text-primary: #f0f0f0;
-$text-secondary: #a0a0a0;
-$text-muted: #666666;
-$text-inverse: #0a0a0a;
-
-// === ACCENT — Deep Red/Burgundy ===
-$accent-primary: #c0392b;
-$accent-hover: #e74c3c;
-$accent-subtle: rgba(192, 57, 43, 0.15);
-$accent-glow: rgba(192, 57, 43, 0.3);
-$accent-text: #e74c3c;
-
-// === SEMANTIC COLORS ===
-$color-success: #27ae60;
-$color-warning: #f39c12;
-$color-error: #e74c3c;
-$color-info: #3498db;
-
-// === SHADOWS — dark-mode optimized ===
-$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
-$shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
-$shadow-glow-accent: 0 0 20px rgba(192, 57, 43, 0.25);
-$shadow-glow-white: 0 0 15px rgba(255, 255, 255, 0.05);
-
-// === BORDERS ===
-$border-color: $glass-border;
-$border-radius: 0;
+// === RADIUS — the split layout uses soft corners on panels, square on rows ===
+$border-color: $line;
+$radius-sm: 6px;
+$radius: 9px;
+$radius-lg: 12px;
+$radius-pill: 20px;
+$border-radius: 0;      // legacy alias, still referenced by old components
 $border-radius-lg: 0;
 
 // === LAYOUT ===
 $layoutPadding: 1.6rem;
+$rail-width: 60px;
+$topbar-height: 52px;
 $header-height: 64px;
 $bottom-nav-height: 60px;
+$list-pane-width: 380px;
 
-// === LEGACY ALIASES (prevent compile errors during migration) ===
+// === LEGACY ALIASES (old components still reference these) ===
 $black: #000000;
-$black-dark: #1a1a1a;
-$black-light: #2a2a2a;
+$black-dark: $bg-surface;
+$black-light: $bg-elevated;
 $white: #ffffff;
 $white-off: $bg-surface;
 
 $gray-50: rgba(255, 255, 255, 0.03);
 $gray-100: rgba(255, 255, 255, 0.05);
-$gray-200: rgba(255, 255, 255, 0.08);
-$gray-300: rgba(255, 255, 255, 0.12);
+$gray-200: $line;
+$gray-300: $line-strong;
 $gray-400: rgba(255, 255, 255, 0.2);
 $gray-500: $text-muted;
 $gray-600: $text-secondary;
-$gray-700: #b0b0b0;
+$gray-700: $text-secondary;
 $gray-800: $text-primary;
 $gray-900: $text-primary;
 
@@ -80,6 +95,6 @@ $clr1bg: $bg-surface;
 $clr1bg-light: $bg-deep;
 $clr2bg: $bg-elevated;
 $clr2bg-light: $bg-card;
-$gray1: $glass-border;
+$gray1: $line;
 $gray2: $text-muted;
 $gray3: $text-primary;

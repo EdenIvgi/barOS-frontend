@@ -21,14 +21,12 @@ const orderSlice = createSlice({
       const existing = state.cart.find((c) => c.itemId === item._id)
       if (existing) {
         existing.quantity += quantity
-        existing.subtotal = existing.price * existing.quantity
       } else {
         state.cart.push({
           itemId: item._id,
           itemName: item.name,
-          price: item.price,
+          volumeMl: item.volumeMl || 0,
           quantity,
-          subtotal: item.price * quantity,
           supplier: item.supplier || '',
         })
       }
@@ -39,9 +37,7 @@ const orderSlice = createSlice({
     updateCartItem(state, action) {
       const { itemId, quantity } = action.payload
       state.cart = state.cart.map((item) =>
-        item.itemId === itemId
-          ? { ...item, quantity, subtotal: item.price * quantity }
-          : item
+        item.itemId === itemId ? { ...item, quantity } : item
       )
     },
     clearCart(state) {

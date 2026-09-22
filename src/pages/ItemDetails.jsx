@@ -50,7 +50,7 @@ export function ItemDetails() {
           {item.description && (
             <p className="item-detail-description">{item.description}</p>
           )}
-          <div className="item-detail-price">₪{item.price}</div>
+          <div className="item-detail-price">{item.volumeMl ? `${item.volumeMl} ${t('ml')}` : ''}</div>
           <div
             className={`item-detail-availability ${
               item.isAvailable ? 'available' : 'unavailable'

@@ -9,7 +9,7 @@ export function CartIcon() {
   const navigate = useNavigate()
   const cart = useSelector((storeState) => storeState.orderModule.cart)
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
-  const totalAmount = cart.reduce((sum, item) => sum + item.subtotal, 0)
+  const totalUnits = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef(null)
 
@@ -64,13 +64,13 @@ export function CartIcon() {
                   <li key={item.itemId} className="cart-dropdown-item">
                     <span className="cart-item-name">{item.itemName}</span>
                     <span className="cart-item-qty">x{item.quantity}</span>
-                    <span className="cart-item-price">₪{item.subtotal}</span>
+                    <span className="cart-item-price">{item.quantity}</span>
                   </li>
                 ))}
               </ul>
               <div className="cart-dropdown-total">
                 <span>{t('totalLabel')}</span>
-                <span>₪{totalAmount.toFixed(2)}</span>
+                <span>{totalUnits}</span>
               </div>
               <div className="cart-dropdown-actions">
                 <Link

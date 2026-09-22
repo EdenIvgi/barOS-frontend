@@ -191,8 +191,7 @@ export function OrdersListPage() {
         const qty = editingQuantities[origIdx] ?? 0
         return {
           ...item,
-          quantity: qty,
-          subtotal: (item.price || 0) * qty
+          quantity: qty
         }
       })
       const updatedOrder = {

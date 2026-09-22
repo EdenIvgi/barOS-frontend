@@ -1,0 +1,487 @@
+// ============================================
+// App shell — icon rail + topbar + content
+// and the shared list/detail split.
+// ============================================
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: $rail-width minmax(0, 1fr);
+  min-height: 100vh;
+  background: $bg-deepest;
+  color: $text-primary;
+}
+
+// ── Rail ──────────────────────────────────────────
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 0;
+  background: $bg-surface;
+  border-inline-start: 1px solid $line;
+
+  .rail-mark {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 12px;
+    border-radius: $radius;
+    background: $accent-deep;
+    color: #DFF3EC;
+    font-weight: 800;
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .rail-spacer { flex: 1; }
+
+  .rail-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: $accent-deep;
+    color: #DFF3EC;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    margin-bottom: 4px;
+  }
+}
+
+.rail-item {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: $radius;
+  color: $text-muted;
+  position: relative;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+
+  svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &:hover { color: $text-primary; background: $bg-elevated; }
+
+  &:focus-visible {
+    outline: 2px solid $accent-primary;
+    outline-offset: 2px;
+  }
+
+  &.is-active {
+    background: $bg-elevated;
+    color: $accent-primary;
+
+    // marker on the rail's inner edge
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline-end: -12px;
+      top: 11px;
+      width: 3px;
+      height: 18px;
+      background: $accent-primary;
+      border-radius: 3px;
+    }
+  }
+}
+
+// ── Main column ───────────────────────────────────
+.shell-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 18px;
+  background: $bg-surface;
+  border-bottom: 1px solid $line;
+  min-height: $topbar-height;
+
+  .topbar-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .topbar-sub { font-size: 12px; color: $text-muted; }
+  .topbar-spacer { flex: 1; }
+}
+
+.shell-content {
+  flex: 1;
+  padding: 16px 18px;
+  min-width: 0;
+
+  &.is-flush { padding: 0; }
+}
+
+// ── Split view ────────────────────────────────────
+.split-view {
+  display: grid;
+  grid-template-columns: minmax(300px, $list-pane-width) minmax(0, 1fr);
+  min-height: calc(100vh - #{$topbar-height});
+
+  &.has-wide-list { grid-template-columns: minmax(340px, 440px) minmax(0, 1fr); }
+  &.is-narrow { display: block; min-height: 0; }
+}
+
+.split-list {
+  border-inline-start: 1px solid $line;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.split-detail {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: $bg-deepest;
+}
+
+.pane-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: $bg-surface;
+  border-bottom: 1px solid $line;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  .pane-title { font-size: 12.5px; font-weight: 600; margin: 0; }
+  .pane-count { font-size: 11px; color: $text-muted; font-variant-numeric: tabular-nums; }
+  .pane-actions { margin-inline-start: auto; display: flex; gap: 6px; }
+}
+
+.empty-detail {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 40px 20px;
+  color: $text-muted;
+  font-size: 13.5px;
+  text-align: center;
+}
+
+// ── Filters row ───────────────────────────────────
+.filter-row {
+  display: flex;
+  gap: 6px;
+  padding: 9px 14px;
+  border-bottom: 1px solid $line;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-size: 11.5px;
+  padding: 4px 10px;
+  border-radius: $radius-pill;
+  border: 1px solid $line-strong;
+  background: transparent;
+  color: $text-muted;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover { color: $text-primary; }
+  &:focus-visible { outline: 2px solid $accent-primary; outline-offset: 2px; }
+  &.is-on { background: $accent-deep; border-color: $accent-deep; color: #CFEDE4; }
+}
+
+// ── List rows ─────────────────────────────────────
+.pane-rows {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.pane-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 9px 14px;
+  border: 0;
+  border-bottom: 1px solid $line;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  position: relative;
+
+  &:hover { background: rgba(255, 255, 255, 0.025); }
+  &:focus-visible { outline: 2px solid $accent-primary; outline-offset: -2px; }
+
+  &.is-selected {
+    background: $bg-elevated;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline-end: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: $accent-primary;
+    }
+  }
+
+  .row-name { font-weight: 500; font-size: 13px; }
+  .row-sub { font-size: 11px; color: $text-muted; margin-top: 1px; }
+}
+
+// ── Status tags ───────────────────────────────────
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: $radius-pill;
+  white-space: nowrap;
+
+  &.is-critical { color: $color-error; background: rgba(217, 96, 79, 0.14); }
+  &.is-warning { color: $color-warning; background: rgba(190, 129, 41, 0.15); }
+  &.is-ok { color: $accent-primary; background: $accent-subtle; }
+}
+
+// ── Detail pane pieces ────────────────────────────
+.detail-hero {
+  padding: 18px;
+  border-bottom: 1px solid $line;
+
+  .detail-title { font-size: 20px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.015em; }
+  .detail-sub { font-size: 12.5px; color: $text-muted; margin: 0; }
+}
+
+.detail-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 1px;
+  background: $line;
+
+  .stat {
+    background: $bg-surface;
+    padding: 14px;
+
+    .stat-value {
+      font-size: 21px;
+      font-weight: 700;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+
+      &.is-critical { color: $color-error; }
+    }
+    .stat-label {
+      font-size: 9.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: $text-muted;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+  }
+}
+
+.detail-section {
+  padding: 16px 18px;
+  border-bottom: 1px solid $line;
+
+  &:last-child { border-bottom: 0; }
+
+  h4 {
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $text-muted;
+    margin: 0 0 10px;
+    font-weight: 700;
+  }
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px solid $line;
+
+  &:last-child { border-bottom: 0; }
+  > :first-child { color: $text-muted; }
+  > :last-child { font-variant-numeric: tabular-nums; }
+}
+
+.gauge {
+  height: 6px;
+  border-radius: 3px;
+  background: $bg-sunken;
+  overflow: hidden;
+  margin-top: 8px;
+
+  .gauge-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: $accent-primary;
+
+    &.is-critical { background: $color-error; }
+    &.is-warning { background: $color-warning; }
+  }
+}
+
+// ── Buttons ───────────────────────────────────────
+.btn-shell {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 13px;
+  border-radius: $radius;
+  border: 1px solid $line-strong;
+  background: transparent;
+  color: $text-primary;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) { border-color: $accent-primary; color: $accent-text; }
+  &:focus-visible { outline: 2px solid $accent-primary; outline-offset: 2px; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &.is-primary {
+    background: $accent-primary;
+    border-color: $accent-primary;
+    color: $text-inverse;
+
+    &:hover:not(:disabled) { background: $accent-hover; border-color: $accent-hover; color: $text-inverse; }
+  }
+}
+
+// ── Bottom sheet (narrow) ─────────────────────────
+.sheet-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 40;
+}
+
+.sheet {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 41;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: $bg-surface;
+  border-top: 1px solid $line-strong;
+  border-radius: $radius-lg $radius-lg 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+
+  .sheet-grab {
+    width: 34px;
+    height: 4px;
+    border: 0;
+    padding: 0;
+    border-radius: 2px;
+    background: $line-strong;
+    margin: 10px auto;
+    cursor: pointer;
+    flex: none;
+
+    &:focus-visible { outline: 2px solid $accent-primary; outline-offset: 3px; }
+  }
+
+  .sheet-body { overflow-y: auto; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sheet { animation: sheet-up 0.22s ease-out; }
+  @keyframes sheet-up {
+    from { transform: translateY(12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+}
+
+// ── Narrow layout ─────────────────────────────────
+@media (max-width: 860px) {
+  .app-shell {
+    grid-template-columns: minmax(0, 1fr);
+    padding-bottom: $bottom-nav-height;
+  }
+  .rail { display: none; }
+  .split-view { min-height: 0; }
+  .split-list { border-inline-start: 0; }
+  .shell-content { padding: 12px; }
+}
+
+// ── Inline edit rows in the detail pane ───────────
+.inline-edit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+
+  label { color: $text-muted; }
+
+  input {
+    background: $bg-sunken;
+    border: 1px solid $line;
+    border-radius: $radius-sm;
+    color: $text-primary;
+    padding: 7px 10px;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    text-align: start;
+    width: 100%;
+
+    &:focus {
+      outline: none;
+      border-color: $accent-primary;
+      box-shadow: $shadow-glow-accent;
+    }
+  }
+}
+
+.detail-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.row-qty {
+  font-size: 12px;
+  color: $text-muted;
+  font-variant-numeric: tabular-nums;
+}

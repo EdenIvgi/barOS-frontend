@@ -61,12 +61,12 @@ export function HomePage() {
       const orderDate = new Date(order.createdAt)
       return orderDate.toDateString() === today.toDateString()
     }).length || 0,
-    todayRevenue: orders?.filter(order => {
+    todayUnits: orders?.filter(order => {
       if (!order.createdAt) return false
       const today = new Date()
       const orderDate = new Date(order.createdAt)
       return orderDate.toDateString() === today.toDateString()
-    }).reduce((sum, order) => sum + (order.totalAmount || 0), 0) || 0
+    }).reduce((sum, order) => sum + (order.totalUnits || 0), 0) || 0
   }
 
   // Daily task

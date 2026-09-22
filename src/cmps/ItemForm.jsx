@@ -88,8 +88,16 @@ export function ItemForm({
 
           <div className="form-row">
             <div className="form-group">
-              <label>{t('price')}:</label>
-              <input type="number" name="price" value={editingItem?.price || 0} onChange={onChange} min="0" step="0.01" required />
+              <label>{t('volumeMlLabel')}:</label>
+              <input
+                type="number"
+                name="volumeMl"
+                value={editingItem?.volumeMl || 0}
+                onChange={onChange}
+                min="0"
+                step="1"
+                placeholder={t('volumeMlPlaceholder')}
+              />
             </div>
             <div className="form-group">
               <label>{t('stockQuantity')}:</label>

@@ -60,7 +60,7 @@ function getEmptyItem() {
     description: '',
     categoryId: '',
     supplier: '',
-    price: 0,
+    volumeMl: 0,
     imageUrl: '',
     isAvailable: true,
     stockQuantity: 0,

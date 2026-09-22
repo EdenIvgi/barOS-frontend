@@ -12,9 +12,19 @@ import { ItemFilters } from '../cmps/ItemFilters'
 import { ImportStockModal } from '../cmps/ImportStockModal'
 import { CreateOrderModal } from '../cmps/CreateOrderModal'
 import { ItemForm } from '../cmps/ItemForm'
+import { AppShell } from '../cmps/AppShell'
+import { SplitView, EmptyDetail } from '../cmps/SplitView'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import * as XLSX from 'xlsx'
 import { NO_SUPPLIER_KEY } from '../services/constants'
+
+/** Fill percentage of the stock gauge, clamped so a full bar never overflows. */
+function gaugeWidth(item) {
+  const optimal = Number(item.optimalStockLevel) || 0
+  if (!optimal) return '0%'
+  const pct = ((Number(item.stockQuantity) || 0) / optimal) * 100
+  return `${Math.min(100, Math.max(2, pct))}%`
+}
 
 function getCategoryNameFromItem(item) {
   if (item?.category?.name) return item.category.name
@@ -37,6 +47,7 @@ export function ItemsManagementPage() {
   const isLoading = useSelector((storeState) => storeState.itemModule.flag.isLoading)
   const navigate = useNavigate()
 
+  const [selectedId, setSelectedId] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
   const [editingItem, setEditingItem] = useState(null)
   const [showForm, setShowForm] = useState(false)
@@ -46,8 +57,6 @@ export function ItemsManagementPage() {
     supplier: '',
     stockStatus: ''
   })
-  const [editingToOrder, setEditingToOrder] = useState({})
-  const [editingStock, setEditingStock] = useState({})
   const [createOrderModal, setCreateOrderModal] = useState({
     isOpen: false,
     bySupplier: null,
@@ -486,8 +495,7 @@ export function ItemsManagementPage() {
           itemId: item._id,
           name: item.name,
           quantity: toOrder,
-          price: item.price || 0,
-          subtotal: (item.price || 0) * toOrder,
+          volumeMl: item.volumeMl || 0,
           supplier
         }
       })
@@ -506,8 +514,7 @@ export function ItemsManagementPage() {
         itemId: row.itemId,
         name: row.name,
         quantity: row.quantity,
-        price: row.price,
-        subtotal: row.subtotal,
+        volumeMl: row.volumeMl,
         supplier: key
       })
     }
@@ -591,8 +598,206 @@ export function ItemsManagementPage() {
     return sum + (toOrder > 0 ? 1 : 0)
   }, 0)
 
+  const selectedItem = filteredItems.find(i => i._id === selectedId) || null
+
+  function stockStatus(item) {
+    const stock = Number(item.stockQuantity) || 0
+    const min = Number(item.minStockLevel) || 0
+    if (stock <= 0) return 'critical'
+    if (stock <= min) return 'warning'
+    return 'ok'
+  }
+
+  function statusTag(item) {
+    const status = stockStatus(item)
+    if (status === 'critical') return <span className="tag is-critical">● {t('outOfStock')}</span>
+    if (status === 'warning') {
+      return <span className="tag is-warning">▲ {item.stockQuantity ?? 0} / {item.minStockLevel || 0}</span>
+    }
+    return <span className="row-qty">{item.stockQuantity ?? 0}</span>
+  }
+
+  const topbarActions = (
+    <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".xlsx,.xls,.csv"
+        style={{ display: 'none' }}
+        onChange={handleImportFile}
+      />
+      {totalItemsToOrder > 0 && (
+        <button type="button" className="btn-shell" onClick={openCreateOrderModal}>
+          {t('createOrder', { n: totalItemsToOrder })}
+        </button>
+      )}
+      <button type="button" className="btn-shell" onClick={() => fileInputRef.current?.click()}>
+        {t('importStockExcel')}
+      </button>
+      <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
+        {t('addProduct')}
+      </button>
+    </>
+  )
+
+  const listPane = (
+    <>
+      <ItemFilters
+        filters={filters}
+        uniqueCategories={uniqueCategories}
+        uniqueSuppliers={uniqueSuppliers}
+        filteredCount={filteredItems.length}
+        totalCount={items?.length || 0}
+        onFilterChange={handleFilterChange}
+        onClearFilters={handleClearFilters}
+      />
+      <div className="pane-rows">
+        {filteredItems.length === 0 ? (
+          <p className="empty-detail">{t('noProductsMatchFilters')}</p>
+        ) : (
+          filteredItems.map(item => (
+            <button
+              type="button"
+              key={item._id}
+              className={'pane-row' + (item._id === selectedId ? ' is-selected' : '')}
+              onClick={() => setSelectedId(item._id)}
+            >
+              <span>
+                <span className="row-name">{item.name}</span>
+                <span className="row-sub">
+                  {getCategoryNameFromItem(item) ?? t('noCategory')}
+                  {item.supplier ? ' · ' + item.supplier : ''}
+                </span>
+              </span>
+              {statusTag(item)}
+            </button>
+          ))
+        )}
+      </div>
+    </>
+  )
+
+  const detailPane = !selectedItem ? (
+    <EmptyDetail message={t('selectItemPrompt')} />
+  ) : (
+    <>
+      <div className="detail-hero">
+        <h2 className="detail-title">{selectedItem.name}</h2>
+        <p className="detail-sub">
+          {getCategoryNameFromItem(selectedItem) ?? t('noCategory')}
+          {selectedItem.supplier ? ' · ' + selectedItem.supplier : ''}
+        </p>
+      </div>
+
+      <div className="detail-stats">
+        <div className="stat">
+          <div className={'stat-value' + (stockStatus(selectedItem) === 'critical' ? ' is-critical' : '')}>
+            {selectedItem.stockQuantity ?? 0}
+          </div>
+          <div className="stat-label">{t('stock')}</div>
+        </div>
+        <div className="stat">
+          <div className="stat-value">{selectedItem.minStockLevel || 0}</div>
+          <div className="stat-label">{t('alertThresholdLabel')}</div>
+        </div>
+        <div className="stat">
+          <div className="stat-value">{selectedItem.optimalStockLevel || 0}</div>
+          <div className="stat-label">{t('optimalStock')}</div>
+        </div>
+        <div className="stat">
+          <div className="stat-value">{selectedItem.volumeMl || 0}</div>
+          <div className="stat-label">{t('volumeMlLabel')}</div>
+        </div>
+      </div>
+
+      <div className="detail-section">
+        <h4>{t('stockLevel')}</h4>
+        <div className="kv">
+          <span>{selectedItem.stockQuantity ?? 0} / {selectedItem.optimalStockLevel || 0}</span>
+          {statusTag(selectedItem)}
+        </div>
+        <div className="gauge">
+          <div
+            className={'gauge-fill' + (stockStatus(selectedItem) === 'critical'
+              ? ' is-critical'
+              : stockStatus(selectedItem) === 'warning' ? ' is-warning' : '')}
+            style={{ width: gaugeWidth(selectedItem) }}
+          />
+        </div>
+        {selectedItem.volumeMl > 0 && (
+          <div className="kv" style={{ marginTop: '8px' }}>
+            <span>{t('totalVolume')}</span>
+            <span>
+              {((Number(selectedItem.stockQuantity) || 0) * selectedItem.volumeMl).toLocaleString()} {t('ml')}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="detail-section">
+        <h4>{t('updateStock')}</h4>
+        <div className="inline-edit">
+          <label htmlFor="detail-stock">{t('stock')}</label>
+          <input
+            id="detail-stock"
+            type="number"
+            min="0"
+            step="any"
+            defaultValue={selectedItem.stockQuantity ?? 0}
+            key={`stock-${selectedItem._id}-${selectedItem.stockQuantity}`}
+            onBlur={e => handleStockChange(selectedItem, e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') e.target.blur() }}
+          />
+        </div>
+        <div className="inline-edit">
+          <label htmlFor="detail-toorder">{t('orderQuantity')}</label>
+          <input
+            id="detail-toorder"
+            type="number"
+            min="0"
+            step="any"
+            defaultValue={getToOrderQuantity(selectedItem)}
+            key={`toorder-${selectedItem._id}-${getToOrderQuantity(selectedItem)}`}
+            onBlur={e => handleToOrderChange(selectedItem, e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') e.target.blur() }}
+          />
+        </div>
+      </div>
+
+      <div className="detail-section">
+        <h4>{t('suggestedOrder')}</h4>
+        <div className="kv">
+          <span>{t('quantityToOrder')}</span>
+          <span>{getToOrderQuantity(selectedItem)}</span>
+        </div>
+        <div className="kv">
+          <span>{t('supplier')}</span>
+          <span>{selectedItem.supplier || t('noSupplier')}</span>
+        </div>
+        <div className="detail-actions">
+          <button type="button" className="btn-shell is-primary" onClick={() => handleEdit(selectedItem)}>
+            {t('edit')}
+          </button>
+          <button
+            type="button"
+            className="btn-shell"
+            onClick={() => handleDelete(selectedItem._id)}
+            disabled={isSaving}
+          >
+            {t('delete')}
+          </button>
+        </div>
+      </div>
+    </>
+  )
+
   return (
-    <div className="items-management-page">
+    <AppShell
+      title={t('itemsManagementTitle')}
+      subtitle={t('showingProducts', { count: filteredItems.length, total: items?.length || 0 })}
+      actions={topbarActions}
+      flush
+    >
       <ItemForm
         isOpen={showForm}
         isEditing={isEditing}
@@ -606,251 +811,39 @@ export function ItemsManagementPage() {
         onCancel={handleCancel}
       />
 
+      <CreateOrderModal
+        isOpen={createOrderModal.isOpen}
+        bySupplier={createOrderModal.bySupplier}
+        selectedSuppliers={createOrderModal.selectedSuppliers}
+        createCombined={createOrderModal.createCombined}
+        onToggleSupplier={toggleCreateOrderSupplier}
+        onSetCombined={setCreateCombined}
+        onConfirm={confirmCreateSelectedOrders}
+        onClose={closeCreateOrderModal}
+      />
+
+      <ImportStockModal
+        importState={importState}
+        onApply={handleApplyImport}
+        onClose={closeImportModal}
+      />
+
       {!items || items.length === 0 ? (
-        <div className="empty-state">
-          <p className="empty-message">{t('noProductsInSystem')}</p>
-          <button className="btn-add" onClick={handleAdd}>
-            + {t('addFirstProduct')}
+        <div className="empty-detail">
+          <p>{t('noProductsInSystem')}</p>
+          <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
+            {t('addFirstProduct')}
           </button>
         </div>
       ) : (
-        <>
-          <ItemFilters
-            filters={filters}
-            uniqueCategories={uniqueCategories}
-            uniqueSuppliers={uniqueSuppliers}
-            filteredCount={filteredItems.length}
-            totalCount={items.length}
-            onFilterChange={handleFilterChange}
-            onClearFilters={handleClearFilters}
-          />
-
-          <div className="header-actions">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xls,.csv"
-              style={{ display: 'none' }}
-              onChange={handleImportFile}
-            />
-            {totalItemsToOrder > 0 && (
-              <button className="btn-create-order" onClick={openCreateOrderModal}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                {t('createOrder', { n: totalItemsToOrder })}
-              </button>
-            )}
-            <button
-              className="btn-import"
-              onClick={() => fileInputRef.current?.click()}
-              title={t('importStockExcel')}
-            >
-              {t('uploadDocument')}
-            </button>
-            <button className="btn-add" onClick={handleAdd}>
-              + {t('addProduct')}
-            </button>
-          </div>
-
-          <CreateOrderModal
-            isOpen={createOrderModal.isOpen}
-            bySupplier={createOrderModal.bySupplier}
-            selectedSuppliers={createOrderModal.selectedSuppliers}
-            createCombined={createOrderModal.createCombined}
-            onToggleSupplier={toggleCreateOrderSupplier}
-            onSetCombined={setCreateCombined}
-            onConfirm={confirmCreateSelectedOrders}
-            onClose={closeCreateOrderModal}
-          />
-
-          <ImportStockModal
-            importState={importState}
-            onApply={handleApplyImport}
-            onClose={closeImportModal}
-          />
-
-          {/* Mobile card list */}
-          <div className="mobile-items-list">
-            <div className="mobile-list-header">
-              <span className="mobile-col-name">{t('nameColumn')}</span>
-              <span className="mobile-col-stock">{t('stock')}</span>
-              <span className="mobile-col-order">{t('orderQuantity')}</span>
-            </div>
-            {filteredItems.length === 0 ? (
-              <p className="empty-table-message">{t('noProductsMatchFilters')}</p>
-            ) : (
-              filteredItems.map((item) => {
-                const toOrder = getToOrderQuantity(item)
-                const itemId = item._id
-                const isEditingOrder = editingToOrder[itemId]
-                const isEditingStk = editingStock[itemId]
-                return (
-                  <div key={itemId} className="mobile-item-card">
-                    <div className="mobile-col-name" onClick={() => handleEdit(item)}>
-                      {item.name}
-                    </div>
-                    <div className="mobile-col-stock" onClick={(e) => { e.stopPropagation(); setEditingStock(prev => ({ ...prev, [itemId]: true })) }}>
-                      {isEditingStk ? (
-                        <input
-                          type="number"
-                          min="0"
-                          step="any"
-                          defaultValue={item.stockQuantity ?? 0}
-                          onBlur={(e) => {
-                            handleStockChange(item, e.target.value)
-                            setEditingStock(prev => { const s = { ...prev }; delete s[itemId]; return s })
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') e.target.blur()
-                            else if (e.key === 'Escape') {
-                              setEditingStock(prev => { const s = { ...prev }; delete s[itemId]; return s })
-                              e.target.blur()
-                            }
-                          }}
-                          autoFocus
-                          className="mobile-inline-input"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      ) : (
-                        <span className={`stock-badge ${item.stockQuantity <= (item.minStockLevel || 0) ? 'low' : 'ok'}`}>
-                          {item.stockQuantity ?? 0}
-                        </span>
-                      )}
-                    </div>
-                    <div className="mobile-col-order" onClick={(e) => { e.stopPropagation(); setEditingToOrder(prev => ({ ...prev, [itemId]: true })) }}>
-                      {isEditingOrder ? (
-                        <input
-                          type="number"
-                          min="0"
-                          step="any"
-                          defaultValue={toOrder}
-                          onBlur={(e) => {
-                            handleToOrderChange(item, e.target.value)
-                            setEditingToOrder(prev => { const s = { ...prev }; delete s[itemId]; return s })
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') e.target.blur()
-                            else if (e.key === 'Escape') {
-                              setEditingToOrder(prev => { const s = { ...prev }; delete s[itemId]; return s })
-                              e.target.blur()
-                            }
-                          }}
-                          autoFocus
-                          className="mobile-inline-input"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      ) : (
-                        <span className={`order-badge ${toOrder > 0 ? 'needs-order' : 'ok'}`}>
-                          {toOrder}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )
-              })
-            )}
-          </div>
-
-          <div className="table-container">
-            <table className="items-table">
-            <thead>
-              <tr>
-                <th>{t('nameColumn')}</th>
-                <th>{t('category')}</th>
-                <th>{t('supplier')}</th>
-                <th>{t('price')}</th>
-                <th>{t('stock')}</th>
-                <th>{t('orderQuantity')}</th>
-                <th>{t('actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredItems.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="empty-table-message">
-                    {t('noProductsMatchFilters')}
-                  </td>
-                </tr>
-              ) : (
-                filteredItems.map((item) => {
-                  const toOrder = getToOrderQuantity(item)
-                  const itemId = item._id
-                  const isEditingOrder = editingToOrder[itemId]
-
-                  return (
-                    <tr key={itemId}>
-                      <td>
-                        <div className="item-name-cell">
-                          {item.imageUrl && <img src={item.imageUrl} alt={item.name} className="item-thumb" />}
-                          <div>
-                            <strong>{item.name}</strong>
-                            {item.description && <div className="item-description">{item.description}</div>}
-                          </div>
-                        </div>
-                      </td>
-                      <td>{getCategoryNameFromItem(item) ?? t('noCategory')}</td>
-                      <td>{item.supplier || '-'}</td>
-                      <td>₪{item.price}</td>
-                      <td>
-                        <span className={`stock-badge ${item.stockQuantity <= (item.minStockLevel || 0) ? 'low' : 'ok'}`}>
-                          {item.stockQuantity ?? 0}
-                        </span>
-                      </td>
-                      <td>
-                        {isEditingOrder ? (
-                          <input
-                            type="number"
-                            min="0"
-                            step="any"
-                            defaultValue={toOrder}
-                            onBlur={(e) => {
-                              handleToOrderChange(item, e.target.value)
-                              setEditingToOrder(prev => { const s = { ...prev }; delete s[itemId]; return s })
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') e.target.blur()
-                              else if (e.key === 'Escape') {
-                                setEditingToOrder(prev => { const s = { ...prev }; delete s[itemId]; return s })
-                                e.target.blur()
-                              }
-                            }}
-                            autoFocus
-                            className="order-quantity-input"
-                          />
-                        ) : (
-                          <span
-                            className={`order-badge ${toOrder > 0 ? 'needs-order' : 'ok'}`}
-                            onClick={() => setEditingToOrder(prev => ({ ...prev, [itemId]: true }))}
-                            title={t('clickToEdit')}
-                          >
-                            {toOrder}
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="btn-edit" onClick={() => handleEdit(item)} title={t('edit')}>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M11.333 2.00001C11.5084 1.82445 11.7163 1.68506 11.9447 1.59123C12.1731 1.4974 12.4173 1.45117 12.6637 1.45534C12.9101 1.45951 13.1523 1.51398 13.3763 1.61538C13.6003 1.71678 13.8012 1.8628 13.9667 2.04445C14.1321 2.2261 14.2585 2.43937 14.3384 2.67091C14.4182 2.90245 14.4497 3.14762 14.4307 3.39068C14.4117 3.63374 14.3426 3.86975 14.2277 4.08334L6.12001 13.3333L2.00001 14L2.66668 9.88001L10.7733 0.63001C10.8882 0.416421 11.0439 0.228215 11.2313 0.0764062C11.4187 -0.0754026 11.6339 -0.188281 11.8637 -0.25534C12.0935 -0.322399 12.3333 -0.342399 12.57 -0.31423C12.8067 -0.286061 13.0353 -0.21023 13.24 -0.09134L11.333 2.00001Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </button>
-                          <button className="btn-delete" onClick={() => handleDelete(itemId)} title={t('delete')} disabled={isSaving}>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M2 4H14M12.6667 4V13.3333C12.6667 13.687 12.5262 14.0261 12.2761 14.2761C12.0261 14.5262 11.687 14.6667 11.3333 14.6667H4.66667C4.31305 14.6667 3.97391 14.5262 3.72386 14.2761C3.47381 14.0261 3.33333 13.687 3.33333 13.3333V4M5.33333 4V2.66667C5.33333 2.31305 5.47381 1.97391 5.72386 1.72386C5.97391 1.47381 6.31305 1.33333 6.66667 1.33333H9.33333C9.68696 1.33333 10.0261 1.47381 10.2761 1.72386C10.5262 1.97391 10.6667 2.31305 10.6667 2.66667V4M6.66667 7.33333V11.3333M9.33333 7.33333V11.3333" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-        </>
+        <SplitView
+          list={listPane}
+          detail={detailPane}
+          hasSelection={!!selectedItem}
+          onCloseDetail={() => setSelectedId(null)}
+          wideList
+        />
       )}
-    </div>
+    </AppShell>
   )
 }

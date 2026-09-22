@@ -20,7 +20,7 @@ export function ItemPreview({ item }) {
         {item.description && (
           <p className="item-description">{item.description}</p>
         )}
-        <div className="item-price">₪{item.price}</div>
+        <div className="item-price">{item.volumeMl ? `${item.volumeMl} ${t('ml')}` : ''}</div>
         <div
           className={`item-availability ${item.isAvailable ? 'available' : 'unavailable'}`}
         >

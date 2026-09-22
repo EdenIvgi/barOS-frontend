@@ -8,7 +8,7 @@ export function OrderPage() {
   const cart = useSelector((storeState) => storeState.orderModule.cart)
   const isLoading = useSelector((storeState) => storeState.orderModule.flag.isLoading)
 
-  const totalAmount = cart.reduce((sum, item) => sum + item.subtotal, 0)
+  const totalUnits = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)
 
   function handleQuantityChange(itemId, newQuantity) {
     if (newQuantity <= 0) {
@@ -38,7 +38,7 @@ export function OrderPage() {
                 {item.supplier && (
                   <p className="cart-item-supplier">{t('supplierLabel')}: {item.supplier}</p>
                 )}
-                <p>{t('price')}: ₪{item.price}</p>
+                {item.volumeMl > 0 && <p>{item.volumeMl} {t('ml')}</p>}
                 <div>
                   <label>
                     {t('quantityLabel')}:
@@ -50,13 +50,12 @@ export function OrderPage() {
                     />
                   </label>
                 </div>
-                <p>{t('totalLabel')}: ₪{item.subtotal}</p>
                 <button onClick={() => removeFromCart(item.itemId)}>{t('remove')}</button>
               </div>
             ))}
           </div>
           <div className="cart-summary">
-            <h2>{t('totalLabel')}: ₪{totalAmount}</h2>
+            <h2>{t('totalUnitsLabel')}: {totalUnits}</h2>
             <button onClick={handleCheckout} disabled={isLoading}>
               {t('checkoutNow')}
             </button>
