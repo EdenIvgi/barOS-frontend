@@ -3,10 +3,7 @@ import { Provider } from 'react-redux'
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom'
 import './assets/style/main.scss'
 
-import { AppFooter } from './cmps/AppFooter'
-import { AppHeader } from './cmps/AppHeader'
 import { MobileBottomNav } from './cmps/MobileBottomNav'
-import { AnimatedBackground } from './cmps/AnimatedBackground'
 import { UserMsg } from './cmps/UserMsg'
 import { About } from './pages/About'
 import { HomePage } from './pages/HomePage'
@@ -30,34 +27,31 @@ function ScrollToTop() {
   return null
 }
 
+/**
+ * Pages render their own chrome through AppShell (rail + topbar), so this layer
+ * only carries what sits outside any single page: scroll reset and the phone nav.
+ */
 function AppLayout() {
   useEffect(() => {
     loadCartFromStorage()
   }, [])
 
   return (
-    <section className="main-layout app">
+    <>
       <ScrollToTop />
-      <AnimatedBackground />
-      <AppHeader />
-      <div className="main-content">
-        <main>
-          <Routes>
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/about" element={<About />} />
-            <Route element={<ProtectedRoute><UserDetails /></ProtectedRoute>} path="/user" />
-            <Route element={<MenuPage />} path="/products" />
-            <Route element={<ItemDetails />} path="/products/:itemId" />
-            <Route element={<ProtectedRoute><OrderPage /></ProtectedRoute>} path="/order" />
-            <Route element={<ProtectedRoute><OrdersListPage /></ProtectedRoute>} path="/orders" />
-            <Route element={<ProtectedRoute><ItemsManagementPage /></ProtectedRoute>} path="/items-management" />
-            <Route element={<ProtectedRoute><BarBookPage /></ProtectedRoute>} path="/bar-book" />
-          </Routes>
-        </main>
-        <AppFooter />
-      </div>
+      <Routes>
+        <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+        <Route path="/about" element={<About />} />
+        <Route path="/user" element={<ProtectedRoute><UserDetails /></ProtectedRoute>} />
+        <Route path="/products" element={<ProtectedRoute><MenuPage /></ProtectedRoute>} />
+        <Route path="/products/:itemId" element={<ProtectedRoute><ItemDetails /></ProtectedRoute>} />
+        <Route path="/order" element={<ProtectedRoute><OrderPage /></ProtectedRoute>} />
+        <Route path="/orders" element={<ProtectedRoute><OrdersListPage /></ProtectedRoute>} />
+        <Route path="/items-management" element={<ProtectedRoute><ItemsManagementPage /></ProtectedRoute>} />
+        <Route path="/bar-book" element={<ProtectedRoute><BarBookPage /></ProtectedRoute>} />
+      </Routes>
       <MobileBottomNav />
-    </section>
+    </>
   )
 }
 

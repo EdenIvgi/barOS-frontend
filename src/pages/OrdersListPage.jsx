@@ -6,15 +6,15 @@ import { loadItems } from '../store/actions/item.actions'
 import { Loader } from '../cmps/Loader'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { downloadOrderPdf } from '../services/orderPdf.service'
+import { AppShell } from '../cmps/AppShell'
+import { formatVolume } from '../services/util.service'
+import { SplitView, EmptyDetail } from '../cmps/SplitView'
 
 const NO_SUPPLIER_KEY = '__no_supplier__'
-const COMBINED_ORDER_KEY = '__combined_order__'
-const COMBINED_ORDER_LABELS = ['הזמנה משולבת', 'Combined order', 'Combined Order']
 
-function normalizeSupplier(supplier) {
-  if (!supplier || supplier === NO_SUPPLIER_KEY) return supplier
-  return COMBINED_ORDER_LABELS.includes(supplier) ? COMBINED_ORDER_KEY : supplier
-}
+// The old date x supplier grid grouped rows by matching translated labels, which
+// broke whenever the wording changed. The list/detail layout groups by nothing, so
+// that coupling is gone along with it.
 
 function getOrderSupplier(order, inventoryItems = []) {
   if (!order) return NO_SUPPLIER_KEY
@@ -45,90 +45,19 @@ function toDateKey(timestamp) {
   return `${d.getFullYear()}-${month}-${day}`
 }
 
-const iconSize = 16
-const iconProps = { width: iconSize, height: iconSize, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' }
-
-const IconDownload = () => (
-  <svg {...iconProps} aria-hidden>
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-const IconEdit = () => (
-  <svg {...iconProps} aria-hidden>
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-const IconDelete = () => (
-  <svg {...iconProps} aria-hidden>
-    <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <line x1="10" y1="11" x2="10" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <line x1="14" y1="11" x2="14" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-const IconSave = () => (
-  <svg {...iconProps} aria-hidden>
-    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <polyline points="7 3 7 8 15 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-const IconCancel = () => (
-  <svg {...iconProps} aria-hidden>
-    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-const IconUndo = () => (
-  <svg {...iconProps} aria-hidden>
-    <path d="M3 7v6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
 
 export function OrdersListPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const orders = useSelector((storeState) => storeState.orderModule.orders)
   const items = useSelector((storeState) => storeState.itemModule.items)
   const isLoading = useSelector((storeState) => storeState.orderModule.flag.isLoading)
   const [editingOrder, setEditingOrder] = useState(null)
   const [editingQuantities, setEditingQuantities] = useState({})
   const [deletedItemIndices, setDeletedItemIndices] = useState({}) // orderId -> number[]
-  const [expandedOrderId, setExpandedOrderId] = useState(null)
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
-
-  const uniqueDates = useMemo(() => {
-    const keys = new Set()
-    ;(orders || []).forEach((o) => {
-      const key = toDateKey(o.createdAt)
-      if (key) keys.add(key)
-    })
-    return Array.from(keys).sort((a, b) => b.localeCompare(a))
-  }, [orders])
-
-  const uniqueSuppliers = useMemo(() => {
-    const set = new Set()
-    ;(orders || []).forEach((o) => {
-      const s = normalizeSupplier(getOrderSupplier(o, items))
-      if (s) set.add(s)
-    })
-    return Array.from(set).sort((a, b) => (a === NO_SUPPLIER_KEY ? 1 : b === NO_SUPPLIER_KEY ? -1 : a === COMBINED_ORDER_KEY ? -1 : b === COMBINED_ORDER_KEY ? 1 : a.localeCompare(b)))
-  }, [orders, items])
-
-  const ordersByDateAndSupplier = useMemo(() => {
-    const map = {}
-    ;(orders || []).filter(Boolean).forEach((order) => {
-      const dateKey = toDateKey(order.createdAt)
-      const supplier = normalizeSupplier(getOrderSupplier(order, items))
-      if (!dateKey) return
-      if (!map[dateKey]) map[dateKey] = {}
-      if (!map[dateKey][supplier]) map[dateKey][supplier] = []
-      map[dateKey][supplier].push(order)
-    })
-    return map
-  }, [orders, items])
+  const [selectedId, setSelectedId] = useState(null)
+  const [statusFilter, setStatusFilter] = useState('')
 
   useEffect(() => {
     loadItems()
@@ -230,12 +159,6 @@ export function OrdersListPage() {
     }
   }
 
-  function formatDate(dateKey) {
-    if (!dateKey) return ''
-    const [y, m, d] = dateKey.split('-')
-    return `${d}/${m}/${y}`
-  }
-
   // Flat list of orders sorted by date desc for mobile
   const ordersFlat = useMemo(() => {
     return [...(orders || [])]
@@ -257,299 +180,230 @@ export function OrdersListPage() {
 
   if (isLoading) return <Loader />
 
-  return (
-    <div className="orders-list-page orders-grid-page">
-      {uniqueDates.length === 0 || uniqueSuppliers.length === 0 ? (
-        <p className="empty-message">{t('noOrders')}</p>
-      ) : (
-        <>
-        {/* Mobile date filter */}
-        <div className="mobile-date-filter">
-          <div className="mobile-date-filter-row">
-            <label>
-              <span className="mobile-date-label">{t('dateFrom')}</span>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="mobile-date-input"
-              />
-            </label>
-            <label>
-              <span className="mobile-date-label">{t('dateTo')}</span>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="mobile-date-input"
-              />
-            </label>
-          </div>
-          <div className="mobile-date-filter-actions">
+
+  const selectedOrder = ordersFlatFiltered.find(o => o._id === selectedId) || null
+  const isEditingSelected = selectedOrder && editingOrder === selectedOrder._id
+  const deletedInSelected = selectedOrder ? (deletedItemIndices[selectedOrder._id] || []) : []
+
+  const statusCounts = ordersFlatFiltered.reduce((acc, o) => {
+    const s = o.status || 'pending'
+    acc[s] = (acc[s] || 0) + 1
+    return acc
+  }, {})
+
+  const visibleOrders = statusFilter
+    ? ordersFlatFiltered.filter(o => (o.status || 'pending') === statusFilter)
+    : ordersFlatFiltered
+
+  function orderDateLabel(order) {
+    if (!order.createdAt) return ''
+    return new Date(order.createdAt).toLocaleDateString(
+      i18n.language === 'he' ? 'he-IL' : 'en-GB',
+      { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }
+    )
+  }
+
+  const listPane = (
+    <>
+      <div className="filter-row">
+        <button
+          type="button"
+          className={'chip' + (statusFilter === '' ? ' is-on' : '')}
+          onClick={() => setStatusFilter('')}
+        >
+          {t('all')} · {ordersFlatFiltered.length}
+        </button>
+        <button
+          type="button"
+          className={'chip' + (statusFilter === 'pending' ? ' is-on' : '')}
+          onClick={() => setStatusFilter('pending')}
+        >
+          {t('status_pending')} · {statusCounts.pending || 0}
+        </button>
+        <button
+          type="button"
+          className={'chip' + (statusFilter === 'delivered' ? ' is-on' : '')}
+          onClick={() => setStatusFilter('delivered')}
+        >
+          {t('status_delivered')} · {statusCounts.delivered || 0}
+        </button>
+      </div>
+
+      <div className="filter-row date-filter">
+        <label>
+          {t('dateFrom')}
+          <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+        </label>
+        <label>
+          {t('dateTo')}
+          <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} />
+        </label>
+        {(dateFrom || dateTo) && (
+          <button type="button" className="chip" onClick={() => { setDateFrom(''); setDateTo('') }}>
+            {t('clearDateFilter')}
+          </button>
+        )}
+      </div>
+
+      <div className="pane-rows">
+        {visibleOrders.length === 0 ? (
+          <p className="empty-detail">{t('noOrdersInDateRange')}</p>
+        ) : (
+          visibleOrders.map(order => (
             <button
               type="button"
-              className="btn-clear-date"
-              onClick={() => { setDateFrom(''); setDateTo('') }}
+              key={order._id}
+              className={'pane-row' + (order._id === selectedId ? ' is-selected' : '')}
+              onClick={() => setSelectedId(order._id)}
             >
-              {t('clearDateFilter')}
+              <span>
+                <span className="row-name">{getOrderSupplier(order, items) === NO_SUPPLIER_KEY
+                  ? t('noSupplier')
+                  : getOrderSupplier(order, items)}</span>
+                <span className="row-sub">
+                  {orderDateLabel(order)} · {order.items?.length || 0} {t('itemsCount')}
+                </span>
+              </span>
+              <span className={'tag ' + (order.status === 'pending' ? 'is-warning' : 'is-ok')}>
+                {t('status_' + (order.status || 'pending'))}
+              </span>
             </button>
-          </div>
-        </div>
+          ))
+        )}
+      </div>
+    </>
+  )
 
-        {/* Mobile flat list */}
-        <div className="mobile-orders-list">
-          {ordersFlatFiltered.length === 0 && (dateFrom || dateTo) ? (
-            <p className="empty-message mobile-filter-empty">{t('noOrdersInDateRange')}</p>
-          ) : null}
-          {ordersFlatFiltered.map((order) => {
-            const dateKey = toDateKey(order.createdAt)
-            const supplier = getOrderSupplier(order, items)
-            const isExpanded = expandedOrderId === order._id
-            const isEditing = editingOrder === order._id
-            const count = order.items?.length || 0
+  const detailPane = !selectedOrder ? (
+    <EmptyDetail message={t('selectOrderPrompt')} />
+  ) : (
+    <>
+      <div className="detail-hero">
+        <div className="detail-hero-row">
+          <div>
+            <h2 className="detail-title">
+              {getOrderSupplier(selectedOrder, items) === NO_SUPPLIER_KEY
+                ? t('noSupplier')
+                : getOrderSupplier(selectedOrder, items)}
+            </h2>
+            <p className="detail-sub">
+              {orderDateLabel(selectedOrder)} · {t('orderId')} #{(selectedOrder._id || '').slice(-6)}
+            </p>
+          </div>
+          <span className={'tag ' + (selectedOrder.status === 'pending' ? 'is-warning' : 'is-ok')}>
+            {t('status_' + (selectedOrder.status || 'pending'))}
+          </span>
+        </div>
+      </div>
+
+      <div className="detail-section">
+        <h4>{t('itemColumn')}</h4>
+        {(selectedOrder.items || []).length === 0 ? (
+          <p className="dash-empty">{t('noItems')}</p>
+        ) : (
+          (selectedOrder.items || []).map((item, idx) => {
+            const isDeleted = deletedInSelected.includes(idx)
             return (
-              <div key={order._id} className={`mobile-order-card ${isExpanded ? 'expanded' : ''}`}>
-                <div className="mobile-order-head" onClick={() => setExpandedOrderId((id) => id === order._id ? null : order._id)}>
-                  <div className="mobile-order-meta">
-                    <span className="mobile-order-date">{formatDate(dateKey)}</span>
-                    <span className="mobile-order-supplier">{supplier === NO_SUPPLIER_KEY ? t('noSupplier') : supplier === COMBINED_ORDER_KEY ? t('combinedOrderLabel') : supplier}</span>
-                  </div>
-                  <div className="mobile-order-right">
-                    <span className="mobile-order-count">{count} {t('itemsCount')}</span>
-                    <div className="mobile-order-actions" onClick={(e) => e.stopPropagation()}>
-                      <button type="button" className="btn-download-pdf btn-icon" onClick={() => handleDownloadPdf(order)} title={t('downloadPdf')}><IconDownload /></button>
-                      {isEditing ? (
-                        <>
-                          <button type="button" className="btn-save btn-icon" onClick={() => handleSaveEdit(order)} title={t('saveChanges')}><IconSave /></button>
-                          <button type="button" className="btn-cancel btn-icon" onClick={handleCancelEdit} title={t('cancel')}><IconCancel /></button>
-                        </>
-                      ) : (
-                        <>
-                          <button type="button" className="btn-edit btn-icon" onClick={() => handleEdit(order)} title={t('edit')}><IconEdit /></button>
-                          <button type="button" className="btn-delete btn-icon" onClick={() => handleDelete(order._id)} title={t('deleteOrder')}><IconDelete /></button>
-                        </>
-                      )}
-                    </div>
-                    <span className="mobile-order-toggle">{isExpanded ? '▲' : '▼'}</span>
-                  </div>
-                </div>
-                {isExpanded && (
-                  <div className="mobile-order-detail" onClick={(e) => e.stopPropagation()}>
-                    {order.items?.length ? (
-                      <table className="order-items-table">
-                        <thead>
-                          <tr>
-                            <th>{t('itemColumn')}</th>
-                            <th>{t('quantityColumn')}</th>
-                            {isEditing && <th className="th-actions" title={t('delete')}><IconDelete /></th>}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {order.items.map((item, idx) => {
-                            const isDeleted = (deletedItemIndices[order._id] || []).includes(idx)
-                            if (isDeleted) {
-                              return (
-                                <tr key={idx} className="row-deleted">
-                                  <td colSpan={isEditing ? 3 : 2}>
-                                    <span className="item-removed">{item.name || t('itemNumber', { n: idx + 1 })} {t('itemRemoved')}</span>
-                                    <button type="button" className="btn-undo-item btn-icon" onClick={() => handleUndoDeleteItem(order._id, idx)} title={t('undo')}><IconUndo /></button>
-                                  </td>
-                                </tr>
-                              )
-                            }
-                            return (
-                              <tr key={idx}>
-                                <td>{item.name || t('itemNumber', { n: idx + 1 })}</td>
-                                <td>
-                                  {isEditing ? (
-                                    <input type="number" min="0" value={editingQuantities[idx] ?? 0} onChange={(e) => handleQuantityChange(idx, e.target.value)} />
-                                  ) : (
-                                    item.quantity ?? 0
-                                  )}
-                                </td>
-                                {isEditing && (
-                                  <td className="td-actions">
-                                    <button type="button" className="btn-delete-item btn-icon" onClick={() => handleDeleteItem(order._id, idx)} title={t('removeItemFromOrder')}><IconDelete /></button>
-                                  </td>
-                                )}
-                              </tr>
-                            )
-                          })}
-                        </tbody>
-                      </table>
+              <div className={'kv' + (isDeleted ? ' is-removed' : '')} key={idx}>
+                <span>
+                  {item.name || t('itemNumber', { n: idx + 1 })}
+                  {item.volumeMl ? ` · ${formatVolume(item.volumeMl, t)}` : ''}
+                </span>
+                {isEditingSelected ? (
+                  <span className="row-edit">
+                    <input
+                      type="number"
+                      min="0"
+                      value={editingQuantities[idx] ?? item.quantity ?? 0}
+                      onChange={e => handleQuantityChange(idx, e.target.value)}
+                      disabled={isDeleted}
+                      aria-label={t('quantityColumn')}
+                    />
+                    {isDeleted ? (
+                      <button
+                        type="button"
+                        className="btn-shell"
+                        onClick={() => handleUndoDeleteItem(selectedOrder._id, idx)}
+                      >
+                        {t('undo')}
+                      </button>
                     ) : (
-                      <p className="empty-message">{t('noItems')}</p>
+                      <button
+                        type="button"
+                        className="btn-shell"
+                        onClick={() => handleDeleteItem(selectedOrder._id, idx)}
+                        title={t('removeItemFromOrder')}
+                      >
+                        ×
+                      </button>
                     )}
-                  </div>
+                  </span>
+                ) : (
+                  <span>{item.quantity ?? 0}</span>
                 )}
               </div>
             )
-          })}
+          })
+        )}
+      </div>
+
+      <div className="detail-section">
+        <h4>{t('summary')}</h4>
+        <div className="kv">
+          <span>{t('totalUnitsLabel')}</span>
+          <span>
+            {(selectedOrder.items || []).reduce((sum, i) => sum + (Number(i.quantity) || 0), 0)}
+          </span>
+        </div>
+        <div className="kv">
+          <span>{t('itemsCount')}</span>
+          <span>{selectedOrder.items?.length || 0}</span>
         </div>
 
-        {/* Desktop grid table */}
-        <div className="orders-grid-wrapper">
-          <table className="orders-grid-table">
-            <thead>
-              <tr>
-                <th className="col-date">{t('dateColumn')}</th>
-                {uniqueSuppliers.map((supplier) => (
-                  <th key={supplier} className="col-supplier">
-                    {supplier === NO_SUPPLIER_KEY
-                      ? t('noSupplier')
-                      : supplier === COMBINED_ORDER_KEY
-                      ? t('combinedOrderLabel')
-                      : supplier}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {uniqueDates.map((dateKey) => (
-                <tr key={dateKey}>
-                  <td className="cell-date">{formatDate(dateKey)}</td>
-                  {uniqueSuppliers.map((supplier) => {
-                    const cellOrders = ordersByDateAndSupplier[dateKey]?.[supplier] || []
-                    return (
-                      <td key={supplier} className="cell-orders">
-                        {cellOrders.length === 0 ? (
-                          <span className="cell-empty">—</span>
-                        ) : (
-                          <div className="cell-order-list">
-                            {cellOrders.map((order) => {
-                              const isExpanded = expandedOrderId === order._id
-                              const count = order.items?.length || 0
-                              return (
-                                <div
-                                  key={order._id}
-                                  className={`cell-order-card ${isExpanded ? 'expanded' : ''}`}
-                                >
-                                  <div className="cell-order-head">
-                                    <span
-                                      className="cell-order-summary"
-                                      onClick={() => setExpandedOrderId((id) => (id === order._id ? null : order._id))}
-                                    >
-                                      {count} {t('itemsCount')}
-                                    </span>
-                                    <div className="cell-order-actions" onClick={(e) => e.stopPropagation()}>
-                                      <button
-                                        type="button"
-                                        className="btn-download-pdf btn-icon"
-                                        onClick={() => handleDownloadPdf(order)}
-                                        title={t('downloadPdf')}
-                                      >
-                                        <IconDownload />
-                                      </button>
-                                      {editingOrder === order._id ? (
-                                        <>
-                                          <button type="button" className="btn-save btn-icon" onClick={() => handleSaveEdit(order)} title={t('saveChanges')}>
-                                            <IconSave />
-                                          </button>
-                                          <button type="button" className="btn-cancel btn-icon" onClick={handleCancelEdit} title={t('cancel')}>
-                                            <IconCancel />
-                                          </button>
-                                        </>
-                                      ) : (
-                                        <>
-                                          <button type="button" className="btn-edit btn-icon" onClick={() => handleEdit(order)} title={t('edit')}>
-                                            <IconEdit />
-                                          </button>
-                                          <button type="button" className="btn-delete btn-icon" onClick={() => handleDelete(order._id)} title={t('deleteOrder')}>
-                                            <IconDelete />
-                                          </button>
-                                        </>
-                                      )}
-                                    </div>
-                                    <span
-                                      className="cell-order-toggle"
-                                      onClick={() => setExpandedOrderId((id) => (id === order._id ? null : order._id))}
-                                    >
-                                      {isExpanded ? '▲' : '▼'}
-                                    </span>
-                                  </div>
-                                  {isExpanded && (
-                                    <div className="cell-order-detail" onClick={(e) => e.stopPropagation()}>
-                                      {order.items?.length ? (
-                                        <table className="order-items-table">
-                                          <thead>
-                                            <tr>
-                                              <th>{t('itemColumn')}</th>
-                                              <th>{t('quantityColumn')}</th>
-                                              {editingOrder === order._id && <th className="th-actions" title={t('delete')}><IconDelete /></th>}
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {order.items.map((item, idx) => {
-                                              const isDeleted = (deletedItemIndices[order._id] || []).includes(idx)
-                                              if (isDeleted) {
-                                                return (
-                                                  <tr key={idx} className="row-deleted">
-                                                    <td colSpan={editingOrder === order._id ? 3 : 2}>
-                                                      <span className="item-removed">{item.name || t('itemNumber', { n: idx + 1 })} {t('itemRemoved')}</span>
-                                                      <button
-                                                        type="button"
-                                                        className="btn-undo-item btn-icon"
-                                                        onClick={() => handleUndoDeleteItem(order._id, idx)}
-                                                        title={t('undo')}
-                                                      >
-                                                        <IconUndo />
-                                                      </button>
-                                                    </td>
-                                                  </tr>
-                                                )
-                                              }
-                                              return (
-                                                <tr key={idx}>
-                                                  <td>{item.name || t('itemNumber', { n: idx + 1 })}</td>
-                                                  <td>
-                                                    {editingOrder === order._id ? (
-                                                      <input
-                                                        type="number"
-                                                        min="0"
-                                                        value={editingQuantities[idx] ?? 0}
-                                                        onChange={(e) => handleQuantityChange(idx, e.target.value)}
-                                                      />
-                                                    ) : (
-                                                      item.quantity ?? 0
-                                                    )}
-                                                  </td>
-                                                  {editingOrder === order._id && (
-                                                    <td className="td-actions">
-                                                      <button
-                                                        type="button"
-                                                        className="btn-delete-item btn-icon"
-                                                        onClick={() => handleDeleteItem(order._id, idx)}
-                                                        title={t('removeItemFromOrder')}
-                                                      >
-                                                        <IconDelete />
-                                                      </button>
-                                                    </td>
-                                                  )}
-                                                </tr>
-                                              )
-                                            })}
-                                          </tbody>
-                                        </table>
-                                      ) : (
-                                        <p className="empty-message">{t('noItems')}</p>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              )
-                            })}
-                          </div>
-                        )}
-                      </td>
-                    )
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="detail-actions">
+          {isEditingSelected ? (
+            <>
+              <button type="button" className="btn-shell is-primary" onClick={() => handleSaveEdit(selectedOrder)}>
+                {t('saveChanges')}
+              </button>
+              <button type="button" className="btn-shell" onClick={handleCancelEdit}>
+                {t('cancel')}
+              </button>
+            </>
+          ) : (
+            <>
+              <button type="button" className="btn-shell is-primary" onClick={() => handleEdit(selectedOrder)}>
+                {t('edit')}
+              </button>
+              <button type="button" className="btn-shell" onClick={() => handleDownloadPdf(selectedOrder)}>
+                {t('downloadPdf')}
+              </button>
+              <button type="button" className="btn-shell" onClick={() => handleDelete(selectedOrder._id)}>
+                {t('deleteOrder')}
+              </button>
+            </>
+          )}
         </div>
-        </>
+      </div>
+    </>
+  )
+
+  return (
+    <AppShell
+      title={t('ordersListTitle')}
+      subtitle={`${visibleOrders.length} ${t('itemsCount')}`}
+      flush
+    >
+      {!orders || orders.length === 0 ? (
+        <div className="empty-detail"><p>{t('noOrders')}</p></div>
+      ) : (
+        <SplitView
+          list={listPane}
+          detail={detailPane}
+          hasSelection={!!selectedOrder}
+          onCloseDetail={() => setSelectedId(null)}
+        />
       )}
-    </div>
+    </AppShell>
   )
 }

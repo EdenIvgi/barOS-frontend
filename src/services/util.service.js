@@ -113,3 +113,18 @@ function getAssetSrc(name) {
   const mod = modules[path]
   return mod.default
 }
+
+/**
+ * Render a millilitre volume the way a bartender would say it: bottles stay in ml,
+ * kegs and other large containers read as litres.
+ */
+export function formatVolume(ml, t) {
+  const n = Number(ml) || 0
+  if (n <= 0) return ''
+  if (n >= 1000) {
+    const litres = n / 1000
+    const text = Number.isInteger(litres) ? String(litres) : litres.toFixed(1)
+    return `${text} ${t('litre')}`
+  }
+  return `${n} ${t('ml')}`
+}

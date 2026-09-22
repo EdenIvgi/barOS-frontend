@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { AppShell } from '../cmps/AppShell'
 import { Link } from 'react-router-dom'
 
 const FEATURES = [
@@ -65,7 +66,8 @@ export function About() {
   const { t } = useTranslation()
 
   return (
-    <section className="about-page">
+    <AppShell title={t('about')}>
+    <div className="about-page">
 
       {/* ── Hero ── */}
       <div className="about-hero">
@@ -101,6 +103,7 @@ export function About() {
         <span className="about-version">{t('aboutVersion')}</span>
       </div>
 
-    </section>
+    </div>
+    </AppShell>
   )
 }

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { formatVolume } from '../services/util.service'
+import { AppShell } from '../cmps/AppShell'
 import { itemService } from '../services/item.service'
 import { Loader } from '../cmps/Loader'
 import { showErrorMsg } from '../services/event-bus.service'
@@ -40,7 +42,8 @@ export function ItemDetails() {
   }
 
   return (
-    <section className="item-details">
+    <AppShell title={item?.name || t('products')}>
+    <div className="item-details">
       <div className="item-details-container">
         {item.imageUrl && (
           <img src={item.imageUrl} alt={item.name} className="item-detail-image" />
@@ -50,7 +53,7 @@ export function ItemDetails() {
           {item.description && (
             <p className="item-detail-description">{item.description}</p>
           )}
-          <div className="item-detail-price">{item.volumeMl ? `${item.volumeMl} ${t('ml')}` : ''}</div>
+          <div className="item-detail-price">{formatVolume(item.volumeMl, t)}</div>
           <div
             className={`item-detail-availability ${
               item.isAvailable ? 'available' : 'unavailable'
@@ -92,6 +95,7 @@ export function ItemDetails() {
           )}
         </div>
       </div>
-    </section>
+    </div>
+    </AppShell>
   )
 }

@@ -9,6 +9,7 @@ import {
   flexRender,
 } from '@tanstack/react-table'
 import { barBookService, createPage } from '../services/barBook.service.js'
+import { AppShell } from '../cmps/AppShell'
 import { translateField, translateArray, getLangText, migrateAllContent } from '../services/translate.service.js'
 
 // ─── helpers ────────────────────────────────────────────
@@ -869,6 +870,18 @@ export function BarBookPage() {
   }
 
   return (
+    <AppShell
+      title={t('barBookTitle')}
+      subtitle={activePage ? pageDisplayTitle(activePage) : ''}
+      actions={
+        isAdmin ? (
+          <button type="button" className="btn-shell is-primary" onClick={() => setShowAddModal(true)}>
+            {t('addPage')}
+          </button>
+        ) : null
+      }
+      flush
+    >
     <section className="bar-book-page">
       <div className="bar-book-layout">
 
@@ -962,5 +975,6 @@ export function BarBookPage() {
         <AddPageModal onAdd={addPage} onClose={() => setShowAddModal(false)} />
       )}
     </section>
+    </AppShell>
   )
 }

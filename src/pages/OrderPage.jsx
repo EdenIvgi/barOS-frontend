@@ -1,5 +1,7 @@
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { formatVolume } from '../services/util.service'
+import { AppShell } from '../cmps/AppShell'
 import { removeFromCart, updateCartItem, clearCart, checkout } from '../store/actions/order.actions'
 import { Loader } from '../cmps/Loader'
 
@@ -25,8 +27,8 @@ export function OrderPage() {
   if (isLoading) return <Loader />
 
   return (
+    <AppShell title={t('cartTitle')}>
     <div className="order-page">
-      <h1>{t('cartTitle')}</h1>
       {cart.length === 0 ? (
         <p>{t('cartEmpty')}</p>
       ) : (
@@ -38,7 +40,7 @@ export function OrderPage() {
                 {item.supplier && (
                   <p className="cart-item-supplier">{t('supplierLabel')}: {item.supplier}</p>
                 )}
-                {item.volumeMl > 0 && <p>{item.volumeMl} {t('ml')}</p>}
+                {item.volumeMl > 0 && <p>{formatVolume(item.volumeMl, t)}</p>}
                 <div>
                   <label>
                     {t('quantityLabel')}:
@@ -64,5 +66,6 @@ export function OrderPage() {
         </>
       )}
     </div>
+    </AppShell>
   )
 }

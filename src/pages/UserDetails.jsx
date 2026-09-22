@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { AppShell } from '../cmps/AppShell'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { logout } from '../store/actions/user.actions'
 import { userService } from '../services/user.service'
@@ -98,7 +99,8 @@ export function UserDetails() {
   const currentLang = i18n.resolvedLanguage || 'he'
 
   return (
-    <section className="user-details">
+    <AppShell title={t('profileNavLink')}>
+    <div className="user-details">
 
       {/* ── Profile card ── */}
       <div className="profile-card">
@@ -176,6 +178,7 @@ export function UserDetails() {
         </div>
       </div>
 
-    </section>
+    </div>
+    </AppShell>
   )
 }

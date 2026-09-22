@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { formatVolume } from '../services/util.service'
 import { addToCart } from '../store/actions/order.actions'
 
 export function ItemPreview({ item }) {
@@ -20,7 +21,7 @@ export function ItemPreview({ item }) {
         {item.description && (
           <p className="item-description">{item.description}</p>
         )}
-        <div className="item-price">{item.volumeMl ? `${item.volumeMl} ${t('ml')}` : ''}</div>
+        <div className="item-price">{formatVolume(item.volumeMl, t)}</div>
         <div
           className={`item-availability ${item.isAvailable ? 'available' : 'unavailable'}`}
         >

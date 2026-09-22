@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Loader } from '../cmps/Loader'
@@ -8,6 +8,7 @@ import { ItemList } from '../cmps/ItemList'
 import { PaginationButtons } from '../cmps/PaginationButtons'
 import { loadItems, setFilterBy } from '../store/actions/item.actions'
 import { showErrorMsg } from '../services/event-bus.service'
+import { AppShell } from '../cmps/AppShell'
 
 export function MenuPage() {
   const { t } = useTranslation()
@@ -42,8 +43,11 @@ export function MenuPage() {
   }
 
   return (
-    <section className="products-page">
-      <ItemSearch filterBy={filterBy} onSetFilter={onSetFilter} />
+    <AppShell
+      title={t('products')}
+      subtitle={`${items.length} ${t('itemsCount')}`}
+      actions={<ItemSearch filterBy={filterBy} onSetFilter={onSetFilter} />}
+    >
       <CategoryFilter
         filterBy={filterBy}
         onSetFilter={onSetFilter}
@@ -57,6 +61,6 @@ export function MenuPage() {
           onChangePageIdx={onChangePageIdx}
         />
       )}
-    </section>
+    </AppShell>
   )
 }

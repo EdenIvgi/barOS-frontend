@@ -13,6 +13,7 @@ import { ImportStockModal } from '../cmps/ImportStockModal'
 import { CreateOrderModal } from '../cmps/CreateOrderModal'
 import { ItemForm } from '../cmps/ItemForm'
 import { AppShell } from '../cmps/AppShell'
+import { formatVolume } from '../services/util.service'
 import { SplitView, EmptyDetail } from '../cmps/SplitView'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import * as XLSX from 'xlsx'
@@ -728,7 +729,7 @@ export function ItemsManagementPage() {
           <div className="kv" style={{ marginTop: '8px' }}>
             <span>{t('totalVolume')}</span>
             <span>
-              {((Number(selectedItem.stockQuantity) || 0) * selectedItem.volumeMl).toLocaleString()} {t('ml')}
+              {formatVolume((Number(selectedItem.stockQuantity) || 0) * selectedItem.volumeMl, t)}
             </span>
           </div>
         )}
