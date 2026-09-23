@@ -449,12 +449,17 @@ export function ItemsManagementPage() {
     }
   }
 
-  async function handleApplyImport() {
+  async function handleApplyImport(createMissing = false) {
     try {
       setImportState(prev => ({ ...prev, isLoading: true, error: null }))
-      await itemService.importStock(importState.rows, { dryRun: false, mode: 'set' })
+      const res = await itemService.importStock(importState.rows, {
+        dryRun: false,
+        mode: 'set',
+        createMissing,
+      })
       await loadItems()
-      showSuccessMsg(t('stockUpdatedSuccess'))
+      const created = res?.summary?.createdCount || 0
+      showSuccessMsg(created > 0 ? t('importCreatedProducts', { n: created }) : t('stockUpdatedSuccess'))
       closeImportModal()
     } catch (err) {
       setImportState(prev => ({ ...prev, isLoading: false, error: err?.message || t('stockUpdateError') }))

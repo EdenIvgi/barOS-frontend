@@ -1337,3 +1337,22 @@ $stock-cols: minmax(0, 1fr) 84px 68px 132px 92px 40px;
   .opd .opd-tick { font-size: 8px; }
   .reorder-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }
+
+// ── Import: opt in to creating unmatched rows ─────
+.import-create-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid $line-strong;
+  border-radius: $radius;
+  background: $bg-sunken;
+  cursor: pointer;
+
+  input { margin-top: 2px; accent-color: $accent-primary; flex: none; }
+
+  span { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  strong { font-size: 13px; font-weight: 600; }
+  em { font-style: normal; font-size: 11.5px; color: $text-muted; line-height: 1.45; }
+}

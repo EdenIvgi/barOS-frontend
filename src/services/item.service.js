@@ -37,8 +37,8 @@ async function updateStock(itemId, quantity) {
   return httpService.put(BASE_URL + `${itemId}/stock`, { quantity })
 }
 
-async function importStock(rows, { dryRun = true, mode = 'set' } = {}) {
-  return httpService.post(BASE_URL + 'stock/import', { rows, dryRun, mode })
+async function importStock(rows, { dryRun = true, mode = 'set', createMissing = false } = {}) {
+  return httpService.post(BASE_URL + 'stock/import', { rows, dryRun, mode, createMissing })
 }
 
 function getDefaultFilter() {

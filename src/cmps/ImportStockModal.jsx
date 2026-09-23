@@ -1,9 +1,15 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 export function ImportStockModal({ importState, onApply, onClose }) {
   const { t } = useTranslation()
+  // Creating products is opt-in: fuzzy matching can miss, and silently adding a
+  // near-duplicate of something already in stock is worse than reporting it.
+  const [createMissing, setCreateMissing] = useState(false)
 
   if (!importState.isOpen) return null
+
+  const creatable = importState.report?.summary?.creatableRows || 0
 
   return (
     <div className="form-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -43,12 +49,26 @@ export function ImportStockModal({ importState, onApply, onClose }) {
           </>
         )}
 
+        {creatable > 0 && (
+          <label className="import-create-row">
+            <input
+              type="checkbox"
+              checked={createMissing}
+              onChange={e => setCreateMissing(e.target.checked)}
+            />
+            <span>
+              <strong>{t('createMissingProducts', { n: creatable })}</strong>
+              <em>{t('createMissingHint')}</em>
+            </span>
+          </label>
+        )}
+
         <div className="form-actions" style={{ marginTop: '1rem' }}>
           <button
             type="button"
             className="btn-save"
             disabled={importState.isLoading || !importState.rows.length}
-            onClick={onApply}
+            onClick={() => onApply(createMissing)}
           >
             {t('applyStockUpdate')}
           </button>
