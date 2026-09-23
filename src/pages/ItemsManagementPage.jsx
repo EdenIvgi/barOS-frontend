@@ -607,28 +607,6 @@ export function ItemsManagementPage() {
     <AppShell
       title={t('itemsManagementTitle')}
       subtitle={t('showingProducts', { count: filteredItems.length, total: items?.length || 0 })}
-      actions={
-        <>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            style={{ display: 'none' }}
-            onChange={handleImportFile}
-          />
-          {totalItemsToOrder > 0 && (
-            <button type="button" className="btn-shell" onClick={openCreateOrderModal}>
-              {t('createOrder', { n: totalItemsToOrder })}
-            </button>
-          )}
-          <button type="button" className="btn-shell" onClick={() => fileInputRef.current?.click()}>
-            {t('importStockExcel')}
-          </button>
-          <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
-            {t('addProduct')}
-          </button>
-        </>
-      }
       flush
     >
       <ItemForm
@@ -677,7 +655,26 @@ export function ItemsManagementPage() {
             uniqueSuppliers={uniqueSuppliers}
             onFilterChange={handleFilterChange}
             onClearFilters={handleClearFilters}
-          />
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,.xls,.csv"
+              style={{ display: 'none' }}
+              onChange={handleImportFile}
+            />
+            {totalItemsToOrder > 0 && (
+              <button type="button" className="btn-shell" onClick={openCreateOrderModal}>
+                {t('createOrder', { n: totalItemsToOrder })}
+              </button>
+            )}
+            <button type="button" className="btn-shell" onClick={() => fileInputRef.current?.click()}>
+              {t('importStockExcel')}
+            </button>
+            <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
+              {t('addProduct')}
+            </button>
+          </ItemFilters>
 
           <div className="stocktake-head" aria-hidden="true">
             <span>{t('nameColumn')}</span>

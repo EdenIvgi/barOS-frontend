@@ -11,6 +11,7 @@ export function ItemFilters({
   uniqueSuppliers,
   onFilterChange,
   onClearFilters,
+  children,
 }) {
   const { t } = useTranslation()
   const hasFilters = !!(filters.category || filters.supplier || filters.stockStatus)
@@ -20,7 +21,7 @@ export function ItemFilters({
       <label className="pane-field">
         <span>{t('category')}</span>
         <select name="category" value={filters.category} onChange={onFilterChange}>
-          <option value="">{t('allCategories')}</option>
+          <option value="">{t('all')}</option>
           {uniqueCategories.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
@@ -30,7 +31,7 @@ export function ItemFilters({
       <label className="pane-field">
         <span>{t('supplier')}</span>
         <select name="supplier" value={filters.supplier} onChange={onFilterChange}>
-          <option value="">{t('allSuppliers')}</option>
+          <option value="">{t('all')}</option>
           {uniqueSuppliers.map((supplier) => (
             <option key={supplier} value={supplier}>{supplier}</option>
           ))}
@@ -52,6 +53,8 @@ export function ItemFilters({
           {t('clearFilters')}
         </button>
       )}
+
+      {children && <div className="list-filters-actions">{children}</div>}
     </div>
   )
 }
