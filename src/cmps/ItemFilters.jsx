@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 
 /**
- * Filter controls for the inventory list pane. The pane is narrow, so the
- * controls sit in a compact two-column grid rather than one wide row, and the
- * result count lives in the topbar instead of being repeated here.
+ * Filter controls above the stocktake list. Each control keeps a fixed width so
+ * they read as a compact group at any screen size; the result count lives in the
+ * topbar rather than being repeated here.
  */
 export function ItemFilters({
   filters,
@@ -16,7 +16,7 @@ export function ItemFilters({
   const hasFilters = !!(filters.category || filters.supplier || filters.stockStatus)
 
   return (
-    <div className="pane-filters">
+    <div className="list-filters">
       <label className="pane-field">
         <span>{t('category')}</span>
         <select name="category" value={filters.category} onChange={onFilterChange}>
