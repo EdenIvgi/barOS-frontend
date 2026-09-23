@@ -186,8 +186,12 @@
 .empty-detail {
   flex: 1;
   display: grid;
-  place-items: center;
-  padding: 40px 20px;
+  justify-items: center;
+  align-content: start;
+  gap: 12px;
+  // The pane is a full viewport tall, so centring vertically pushes this below
+  // the fold and the pane reads as empty. Keep it near the top instead.
+  padding: 72px 20px 40px;
   color: $text-muted;
   font-size: 13.5px;
   text-align: center;
@@ -256,8 +260,10 @@
     }
   }
 
-  .row-name { font-weight: 500; font-size: 13px; }
-  .row-sub { font-size: 11px; color: $text-muted; margin-top: 1px; }
+  // Both are spans inside one grid cell, so they need to be blocks or the
+  // name and its category/supplier line run together on a single line.
+  .row-name { display: block; font-weight: 500; font-size: 13px; }
+  .row-sub { display: block; font-size: 11px; color: $text-muted; margin-top: 2px; }
 }
 
 // ── Status tags ───────────────────────────────────
@@ -669,4 +675,54 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+}
+
+// ── Filters inside a list pane ────────────────────
+.pane-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid $line;
+  background: $bg-surface;
+}
+
+.pane-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+
+  > span {
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $text-muted;
+    font-weight: 600;
+  }
+
+  select {
+    width: 100%;
+    background: $bg-sunken;
+    border: 1px solid $line;
+    border-radius: $radius-sm;
+    color: $text-primary;
+    padding: 7px 9px;
+    font: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: $accent-primary;
+      box-shadow: $shadow-glow-accent;
+    }
+
+    option { background: $bg-surface; color: $text-primary; }
+  }
+}
+
+.pane-clear {
+  align-self: end;
+  justify-self: start;
 }

@@ -647,8 +647,6 @@ export function ItemsManagementPage() {
         filters={filters}
         uniqueCategories={uniqueCategories}
         uniqueSuppliers={uniqueSuppliers}
-        filteredCount={filteredItems.length}
-        totalCount={items?.length || 0}
         onFilterChange={handleFilterChange}
         onClearFilters={handleClearFilters}
       />
@@ -729,7 +727,10 @@ export function ItemsManagementPage() {
           <div className="kv" style={{ marginTop: '8px' }}>
             <span>{t('totalVolume')}</span>
             <span>
-              {formatVolume((Number(selectedItem.stockQuantity) || 0) * selectedItem.volumeMl, t)}
+              {/* formatVolume returns '' for zero, which would leave a labelled
+                  row with no value — say "0" explicitly instead. */}
+              {formatVolume((Number(selectedItem.stockQuantity) || 0) * selectedItem.volumeMl, t)
+                || `0 ${t('ml')}`}
             </span>
           </div>
         )}

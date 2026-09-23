@@ -16,8 +16,14 @@ const IconProducts = () => (
     <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
   </svg>
 )
+// A clipboard, not a bookmark: at 19px a bookmark is hard to tell apart from the
+// bar book's open-book glyph sitting right below it in the rail.
 const IconOrders = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3z" /></svg>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M9 4h6v2.5H9z" />
+    <path d="M15 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2" />
+    <path d="M9 11h6M9 15h4" />
+  </svg>
 )
 const IconBarBook = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
