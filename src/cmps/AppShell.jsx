@@ -3,41 +3,8 @@ import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { logout } from '../store/actions/user.actions'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
+import { NAV_ITEMS, IconLogout } from './icons'
 
-const IconHome = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z" /></svg>
-)
-const IconStock = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
-)
-const IconProducts = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
-    <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
-  </svg>
-)
-// A clipboard, not a bookmark: at 19px a bookmark is hard to tell apart from the
-// bar book's open-book glyph sitting right below it in the rail.
-const IconOrders = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M9 4h6v2.5H9z" />
-    <path d="M15 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2" />
-    <path d="M9 11h6M9 15h4" />
-  </svg>
-)
-const IconBarBook = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3z" /><path d="M5 4v16" />
-  </svg>
-)
-
-const NAV = [
-  { to: '/home', labelKey: 'home', Icon: IconHome },
-  { to: '/items-management', labelKey: 'navItemsMgmt', Icon: IconStock },
-  { to: '/products', labelKey: 'products', Icon: IconProducts },
-  { to: '/orders', labelKey: 'orders', Icon: IconOrders },
-  { to: '/bar-book', labelKey: 'barBook', Icon: IconBarBook },
-]
 
 function initials(name) {
   if (!name) return '?'
@@ -70,7 +37,7 @@ export function AppShell({ title, subtitle, actions, children, flush = false }) 
       <nav className="rail" aria-label={t('openSidebar')}>
         <NavLink to="/home" className="rail-mark" aria-label="BarOS">B</NavLink>
 
-        {NAV.map(({ to, labelKey, Icon }) => (
+        {NAV_ITEMS.map(({ to, labelKey, Icon }) => (
           <NavLink
             key={to}
             to={to}
@@ -88,9 +55,7 @@ export function AppShell({ title, subtitle, actions, children, flush = false }) 
           {initials(user?.fullname)}
         </NavLink>
         <button type="button" className="rail-item rail-logout" onClick={onLogout} title={t('logout')}>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h11" />
-          </svg>
+          <IconLogout />
           <span className="sr-only">{t('logout')}</span>
         </button>
       </nav>

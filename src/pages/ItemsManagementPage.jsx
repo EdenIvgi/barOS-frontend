@@ -13,19 +13,11 @@ import { ImportStockModal } from '../cmps/ImportStockModal'
 import { CreateOrderModal } from '../cmps/CreateOrderModal'
 import { ItemForm } from '../cmps/ItemForm'
 import { AppShell } from '../cmps/AppShell'
+import { IconMinus, IconPlus } from '../cmps/icons'
 import { formatVolume } from '../services/util.service'
-import { SplitView, EmptyDetail } from '../cmps/SplitView'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import * as XLSX from 'xlsx'
 import { NO_SUPPLIER_KEY } from '../services/constants'
-
-/** Fill percentage of the stock gauge, clamped so a full bar never overflows. */
-function gaugeWidth(item) {
-  const optimal = Number(item.optimalStockLevel) || 0
-  if (!optimal) return '0%'
-  const pct = ((Number(item.stockQuantity) || 0) / optimal) * 100
-  return `${Math.min(100, Math.max(2, pct))}%`
-}
 
 function getCategoryNameFromItem(item) {
   if (item?.category?.name) return item.category.name
@@ -48,7 +40,6 @@ export function ItemsManagementPage() {
   const isLoading = useSelector((storeState) => storeState.itemModule.flag.isLoading)
   const navigate = useNavigate()
 
-  const [selectedId, setSelectedId] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
   const [editingItem, setEditingItem] = useState(null)
   const [showForm, setShowForm] = useState(false)
@@ -170,6 +161,11 @@ export function ItemsManagementPage() {
     setEditingItem(itemService.getEmptyItem())
     setIsEditing(false)
     setShowForm(true)
+  }
+
+  async function onDeleteFromForm(itemId) {
+    await handleDelete(itemId)
+    handleCancel()
   }
 
   function handleCancel() {
@@ -599,8 +595,6 @@ export function ItemsManagementPage() {
     return sum + (toOrder > 0 ? 1 : 0)
   }, 0)
 
-  const selectedItem = filteredItems.find(i => i._id === selectedId) || null
-
   function stockStatus(item) {
     const stock = Number(item.stockQuantity) || 0
     const min = Number(item.minStockLevel) || 0
@@ -609,195 +603,32 @@ export function ItemsManagementPage() {
     return 'ok'
   }
 
-  function statusTag(item) {
-    const status = stockStatus(item)
-    if (status === 'critical') return <span className="tag is-critical">● {t('outOfStock')}</span>
-    if (status === 'warning') {
-      return <span className="tag is-warning">▲ {item.stockQuantity ?? 0} / {item.minStockLevel || 0}</span>
-    }
-    return <span className="row-qty">{item.stockQuantity ?? 0}</span>
-  }
-
-  const topbarActions = (
-    <>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".xlsx,.xls,.csv"
-        style={{ display: 'none' }}
-        onChange={handleImportFile}
-      />
-      {totalItemsToOrder > 0 && (
-        <button type="button" className="btn-shell" onClick={openCreateOrderModal}>
-          {t('createOrder', { n: totalItemsToOrder })}
-        </button>
-      )}
-      <button type="button" className="btn-shell" onClick={() => fileInputRef.current?.click()}>
-        {t('importStockExcel')}
-      </button>
-      <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
-        {t('addProduct')}
-      </button>
-    </>
-  )
-
-  const listPane = (
-    <>
-      <ItemFilters
-        filters={filters}
-        uniqueCategories={uniqueCategories}
-        uniqueSuppliers={uniqueSuppliers}
-        onFilterChange={handleFilterChange}
-        onClearFilters={handleClearFilters}
-      />
-      <div className="pane-rows">
-        {filteredItems.length === 0 ? (
-          <p className="empty-detail">{t('noProductsMatchFilters')}</p>
-        ) : (
-          filteredItems.map(item => (
-            <button
-              type="button"
-              key={item._id}
-              className={'pane-row' + (item._id === selectedId ? ' is-selected' : '')}
-              onClick={() => setSelectedId(item._id)}
-            >
-              <span>
-                <span className="row-name">{item.name}</span>
-                <span className="row-sub">
-                  {getCategoryNameFromItem(item) ?? t('noCategory')}
-                  {item.supplier ? ' · ' + item.supplier : ''}
-                </span>
-              </span>
-              {statusTag(item)}
-            </button>
-          ))
-        )}
-      </div>
-    </>
-  )
-
-  const detailPane = !selectedItem ? (
-    <EmptyDetail message={t('selectItemPrompt')} />
-  ) : (
-    <>
-      <div className="detail-hero">
-        <h2 className="detail-title">{selectedItem.name}</h2>
-        <p className="detail-sub">
-          {getCategoryNameFromItem(selectedItem) ?? t('noCategory')}
-          {selectedItem.supplier ? ' · ' + selectedItem.supplier : ''}
-        </p>
-      </div>
-
-      <div className="detail-stats">
-        <div className="stat">
-          <div className={'stat-value' + (stockStatus(selectedItem) === 'critical' ? ' is-critical' : '')}>
-            {selectedItem.stockQuantity ?? 0}
-          </div>
-          <div className="stat-label">{t('stock')}</div>
-        </div>
-        <div className="stat">
-          <div className="stat-value">{selectedItem.minStockLevel || 0}</div>
-          <div className="stat-label">{t('alertThresholdLabel')}</div>
-        </div>
-        <div className="stat">
-          <div className="stat-value">{selectedItem.optimalStockLevel || 0}</div>
-          <div className="stat-label">{t('optimalStock')}</div>
-        </div>
-        <div className="stat">
-          <div className="stat-value">{selectedItem.volumeMl || 0}</div>
-          <div className="stat-label">{t('volumeMlLabel')}</div>
-        </div>
-      </div>
-
-      <div className="detail-section">
-        <h4>{t('stockLevel')}</h4>
-        <div className="kv">
-          <span>{selectedItem.stockQuantity ?? 0} / {selectedItem.optimalStockLevel || 0}</span>
-          {statusTag(selectedItem)}
-        </div>
-        <div className="gauge">
-          <div
-            className={'gauge-fill' + (stockStatus(selectedItem) === 'critical'
-              ? ' is-critical'
-              : stockStatus(selectedItem) === 'warning' ? ' is-warning' : '')}
-            style={{ width: gaugeWidth(selectedItem) }}
-          />
-        </div>
-        {selectedItem.volumeMl > 0 && (
-          <div className="kv" style={{ marginTop: '8px' }}>
-            <span>{t('totalVolume')}</span>
-            <span>
-              {/* formatVolume returns '' for zero, which would leave a labelled
-                  row with no value — say "0" explicitly instead. */}
-              {formatVolume((Number(selectedItem.stockQuantity) || 0) * selectedItem.volumeMl, t)
-                || `0 ${t('ml')}`}
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className="detail-section">
-        <h4>{t('updateStock')}</h4>
-        <div className="inline-edit">
-          <label htmlFor="detail-stock">{t('stock')}</label>
-          <input
-            id="detail-stock"
-            type="number"
-            min="0"
-            step="any"
-            defaultValue={selectedItem.stockQuantity ?? 0}
-            key={`stock-${selectedItem._id}-${selectedItem.stockQuantity}`}
-            onBlur={e => handleStockChange(selectedItem, e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') e.target.blur() }}
-          />
-        </div>
-        <div className="inline-edit">
-          <label htmlFor="detail-toorder">{t('orderQuantity')}</label>
-          <input
-            id="detail-toorder"
-            type="number"
-            min="0"
-            step="any"
-            defaultValue={getToOrderQuantity(selectedItem)}
-            key={`toorder-${selectedItem._id}-${getToOrderQuantity(selectedItem)}`}
-            onBlur={e => handleToOrderChange(selectedItem, e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') e.target.blur() }}
-          />
-        </div>
-      </div>
-
-      <div className="detail-section">
-        <h4>{t('suggestedOrder')}</h4>
-        <div className="kv">
-          <span>{t('quantityToOrder')}</span>
-          <span>{getToOrderQuantity(selectedItem)}</span>
-        </div>
-        <div className="kv">
-          <span>{t('supplier')}</span>
-          <span>{selectedItem.supplier || t('noSupplier')}</span>
-        </div>
-        <div className="detail-actions">
-          <button type="button" className="btn-shell is-primary" onClick={() => handleEdit(selectedItem)}>
-            {t('edit')}
-          </button>
-          <button
-            type="button"
-            className="btn-shell"
-            onClick={() => handleDelete(selectedItem._id)}
-            disabled={isSaving}
-          >
-            {t('delete')}
-          </button>
-        </div>
-      </div>
-    </>
-  )
-
   return (
     <AppShell
       title={t('itemsManagementTitle')}
       subtitle={t('showingProducts', { count: filteredItems.length, total: items?.length || 0 })}
-      actions={topbarActions}
+      actions={
+        <>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls,.csv"
+            style={{ display: 'none' }}
+            onChange={handleImportFile}
+          />
+          {totalItemsToOrder > 0 && (
+            <button type="button" className="btn-shell" onClick={openCreateOrderModal}>
+              {t('createOrder', { n: totalItemsToOrder })}
+            </button>
+          )}
+          <button type="button" className="btn-shell" onClick={() => fileInputRef.current?.click()}>
+            {t('importStockExcel')}
+          </button>
+          <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
+            {t('addProduct')}
+          </button>
+        </>
+      }
       flush
     >
       <ItemForm
@@ -811,6 +642,7 @@ export function ItemsManagementPage() {
         onSubmit={handleSubmit}
         onChange={handleChange}
         onCancel={handleCancel}
+        onDelete={onDeleteFromForm}
       />
 
       <CreateOrderModal
@@ -838,14 +670,142 @@ export function ItemsManagementPage() {
           </button>
         </div>
       ) : (
-        <SplitView
-          list={listPane}
-          detail={detailPane}
-          hasSelection={!!selectedItem}
-          onCloseDetail={() => setSelectedId(null)}
-          wideList
-        />
+        <div className="stocktake">
+          <ItemFilters
+            filters={filters}
+            uniqueCategories={uniqueCategories}
+            uniqueSuppliers={uniqueSuppliers}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+          />
+
+          <div className="stocktake-head" aria-hidden="true">
+            <span>{t('nameColumn')}</span>
+            <span className="col-vol">{t('volumeMlLabel')}</span>
+            <span className="col-min">{t('alertThresholdLabel')}</span>
+            <span className="col-count">{t('stock')}</span>
+            <span className="col-order">{t('orderQuantity')}</span>
+            <span />
+          </div>
+
+          {filteredItems.length === 0 ? (
+            <p className="empty-detail">{t('noProductsMatchFilters')}</p>
+          ) : (
+            <ul className="stocktake-list">
+              {filteredItems.map(item => (
+                <StockRow
+                  key={item._id}
+                  item={item}
+                  status={stockStatus(item)}
+                  categoryName={getCategoryNameFromItem(item) ?? t('noCategory')}
+                  toOrder={getToOrderQuantity(item)}
+                  onStockChange={handleStockChange}
+                  onToOrderChange={handleToOrderChange}
+                  onEdit={handleEdit}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </AppShell>
+  )
+}
+
+/**
+ * One line of the stocktake. The count is the point of this screen, so it is
+ * editable in place — steppers for walking the bar with one thumb, and a field
+ * for typing a number straight in. Nothing here requires opening the item first.
+ */
+function StockRow({ item, status, categoryName, toOrder, onStockChange, onToOrderChange, onEdit }) {
+  const { t } = useTranslation()
+  const [draft, setDraft] = useState(String(item.stockQuantity ?? 0))
+  const [orderDraft, setOrderDraft] = useState(String(toOrder))
+
+  // The server is the source of truth; re-sync when it sends a different number
+  // (another device counted, or an Excel import landed).
+  useEffect(() => { setDraft(String(item.stockQuantity ?? 0)) }, [item.stockQuantity])
+  useEffect(() => { setOrderDraft(String(toOrder)) }, [toOrder])
+
+  function commitStock(value) {
+    const next = Math.max(0, Number(value) || 0)
+    setDraft(String(next))
+    if (next !== (Number(item.stockQuantity) || 0)) onStockChange(item, next)
+  }
+
+  function step(delta) {
+    commitStock((Number(draft) || 0) + delta)
+  }
+
+  function commitOrder(value) {
+    const next = Math.max(0, Number(value) || 0)
+    setOrderDraft(String(next))
+    if (next !== toOrder) onToOrderChange(item, next)
+  }
+
+  return (
+    <li className={`stock-row is-${status}`}>
+      <div className="stock-id">
+        <span className="stock-name">{item.name}</span>
+        <span className="stock-meta">
+          {categoryName}{item.supplier ? ` · ${item.supplier}` : ''}
+        </span>
+      </div>
+
+      <span className="col-vol stock-vol">{formatVolume(item.volumeMl, t)}</span>
+      <span className="col-min stock-min">{item.minStockLevel || 0}</span>
+
+      <div className="col-count stepper">
+        <button
+          type="button"
+          className="step-btn"
+          onClick={() => step(-1)}
+          disabled={(Number(draft) || 0) <= 0}
+          aria-label={t('decrease')}
+        >
+          <IconMinus />
+        </button>
+        <input
+          type="number"
+          inputMode="numeric"
+          min="0"
+          className="step-input"
+          value={draft}
+          onChange={e => setDraft(e.target.value)}
+          onBlur={e => commitStock(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') e.target.blur() }}
+          onFocus={e => e.target.select()}
+          aria-label={`${item.name} — ${t('stock')}`}
+        />
+        <button type="button" className="step-btn" onClick={() => step(1)} aria-label={t('increase')}>
+          <IconPlus />
+        </button>
+      </div>
+
+      <div className="col-order">
+        <input
+          type="number"
+          inputMode="numeric"
+          min="0"
+          className="order-input"
+          value={orderDraft}
+          onChange={e => setOrderDraft(e.target.value)}
+          onBlur={e => commitOrder(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') e.target.blur() }}
+          onFocus={e => e.target.select()}
+          aria-label={`${item.name} — ${t('orderQuantity')}`}
+        />
+      </div>
+
+      <button
+        type="button"
+        className="stock-edit"
+        onClick={() => onEdit(item)}
+        aria-label={`${t('edit')} ${item.name}`}
+        title={t('edit')}
+      >
+        ⋯
+      </button>
+    </li>
   )
 }

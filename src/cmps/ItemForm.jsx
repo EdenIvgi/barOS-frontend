@@ -12,6 +12,7 @@ export function ItemForm({
   onSubmit,
   onChange,
   onCancel,
+  onDelete,
 }) {
   const { t } = useTranslation()
   const overlayMouseDownRef = useRef(false)
@@ -132,6 +133,18 @@ export function ItemForm({
             <button type="button" className="btn-cancel" onClick={onCancel}>
               {t('cancel')}
             </button>
+            {/* Deleting lives here rather than on the stocktake row: counting is a
+                fast, repetitive action and a delete control does not belong beside it. */}
+            {isEditing && onDelete && (
+              <button
+                type="button"
+                className="btn-delete-item"
+                onClick={() => onDelete(editingItem?._id)}
+                disabled={isSaving}
+              >
+                {t('delete')}
+              </button>
+            )}
           </div>
         </form>
       </div>
