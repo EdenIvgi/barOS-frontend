@@ -47,6 +47,7 @@ export function MenuPage() {
       title={t('products')}
       subtitle={`${items.length} ${t('itemsCount')}`}
       actions={<ItemSearch filterBy={filterBy} onSetFilter={onSetFilter} />}
+      flush
     >
       <CategoryFilter
         filterBy={filterBy}

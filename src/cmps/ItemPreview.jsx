@@ -1,48 +1,87 @@
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { formatVolume } from '../services/util.service'
-import { addToCart } from '../store/actions/order.actions'
+import { addToCart, updateCartItem, removeFromCart } from '../store/actions/order.actions'
+import { IconMinus, IconPlus } from './icons'
 
+/**
+ * A catalogue card. The page exists to decide what to order, so the name leads,
+ * the stock level is the number that answers "do I need this?", and the volume
+ * and supplier are supporting detail — not the headline they used to be, where
+ * an identical "700 ml" shouted from almost every card.
+ */
 export function ItemPreview({ item }) {
   const { t } = useTranslation()
-  function handleAddToCart(ev) {
+  const cart = useSelector(state => state.orderModule.cart)
+  const inCart = cart.find(c => c.itemId === item._id)
+  const qty = inCart?.quantity ?? 0
+
+  const stock = Number(item.stockQuantity) || 0
+  const min = Number(item.minStockLevel) || 0
+  const isOut = stock <= 0
+  const isLow = !isOut && stock <= min
+
+  const categoryName = typeof item.category === 'string'
+    ? item.category
+    : item.category?.name || ''
+
+  const meta = [categoryName, item.supplier, formatVolume(item.volumeMl, t)]
+    .filter(Boolean)
+    .join(' · ')
+
+  function stopLink(ev) {
     ev.preventDefault()
     ev.stopPropagation()
+  }
+
+  function onAdd(ev) {
+    stopLink(ev)
     addToCart(item, 1)
   }
 
+  function onStep(ev, delta) {
+    stopLink(ev)
+    const next = qty + delta
+    if (next <= 0) removeFromCart(item._id)
+    else updateCartItem(item._id, next)
+  }
+
   return (
-    <Link to={`/products/${item._id}`}>
-      <article className="item-preview flex flex-column align-center">
-        {item.imageUrl && (
-          <img src={item.imageUrl} alt={item.name} className="item-image" />
-        )}
-        <h2 className="item-name">{item.name}</h2>
-        {item.description && (
-          <p className="item-description">{item.description}</p>
-        )}
-        <div className="item-price">{formatVolume(item.volumeMl, t)}</div>
-        <div
-          className={`item-availability ${item.isAvailable ? 'available' : 'unavailable'}`}
-        >
-          {item.isAvailable ? t('available') : t('unavailable')}
-        </div>
-        {item.stockQuantity > 0 && (
-          <div className="item-stock">{t('stockLabel')}: {item.stockQuantity}</div>
-        )}
-        {item.isAvailable && (
-          <button
-            onClick={handleAddToCart}
-            className="btn-add-to-cart"
-            title={t('addToCart')}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 17.9 19 19 19C20.1 19 21 18.1 21 17V13M9 19.5C9.8 19.5 10.5 20.2 10.5 21C10.5 21.8 9.8 22.5 9 22.5C8.2 22.5 7.5 21.8 7.5 21C7.5 20.2 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21C21.5 21.8 20.8 22.5 20 22.5C19.2 22.5 18.5 21.8 18.5 21C18.5 20.2 19.2 19.5 20 19.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+    <article className={'product-card' + (isOut ? ' is-out' : '')}>
+      <Link to={`/products/${item._id}`} className="product-main">
+        <h2 className="product-name">{item.name}</h2>
+        {meta && <p className="product-meta">{meta}</p>}
+      </Link>
+
+      <div className="product-foot">
+        <span className="product-stock">
+          <span className={'product-stock-n' + (isOut ? ' is-critical' : isLow ? ' is-warning' : '')}>
+            {stock}
+          </span>
+          <span className="product-stock-l">
+            {isOut ? t('outOfStock') : isLow ? t('lowStockFilter') : t('stockLabel')}
+          </span>
+        </span>
+
+        {isOut ? (
+          <span className="tag is-critical">● {t('unavailable')}</span>
+        ) : qty > 0 ? (
+          <span className="stepper product-stepper">
+            <button type="button" className="step-btn" onClick={e => onStep(e, -1)} aria-label={t('decrease')}>
+              <IconMinus />
+            </button>
+            <span className="step-value">{qty}</span>
+            <button type="button" className="step-btn" onClick={e => onStep(e, 1)} aria-label={t('increase')}>
+              <IconPlus />
+            </button>
+          </span>
+        ) : (
+          <button type="button" className="btn-shell product-add" onClick={onAdd}>
             {t('addToCart')}
           </button>
         )}
-      </article>
-    </Link>
+      </div>
+    </article>
   )
 }

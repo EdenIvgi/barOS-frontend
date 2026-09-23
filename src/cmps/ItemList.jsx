@@ -18,7 +18,7 @@ export function ItemList({ items, onAdd }) {
 
   return (
     <section className="item-list">
-      <div className="items-grid">
+      <div className="products-grid">
         {items.map((item) => (
           <ItemPreview key={item._id} item={item} />
         ))}

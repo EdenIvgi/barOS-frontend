@@ -51,10 +51,11 @@ export function CategoryFilter({ filterBy, onSetFilter, selectedCategoryId }) {
   }
 
   return (
-    <section className="category-filter" aria-label={t('categoriesFilterTitle')}>
-      <div className="category-buttons flex">
+    <nav className="category-filter" aria-label={t('categoriesFilterTitle')}>
+      <div className="category-buttons">
         <button
-          className={`category-btn ${!selectedCategoryId ? 'active' : ''}`}
+          type="button"
+          className={`chip ${!selectedCategoryId ? 'is-on' : ''}`}
           onClick={() => handleCategoryClick('')}
         >
           {t('allCategoriesFilter')}
@@ -69,17 +70,17 @@ export function CategoryFilter({ filterBy, onSetFilter, selectedCategoryId }) {
           return (
             <button
               key={catId}
-              className={`category-btn ${
-                selectedCategoryId === catId || selectedCategoryId === category.name ? 'active' : ''
+              type="button"
+              className={`chip ${
+                selectedCategoryId === catId || selectedCategoryId === category.name ? 'is-on' : ''
               }`}
               onClick={() => handleCategoryClick(category.name)}
             >
-              {category.icon && <span className="category-icon">{category.icon}</span>}
               {displayName}
             </button>
           )
         })}
       </div>
-    </section>
+    </nav>
   )
 }
