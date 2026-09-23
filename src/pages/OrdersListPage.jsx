@@ -7,7 +7,7 @@ import { Loader } from '../cmps/Loader'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { downloadOrderPdf } from '../services/orderPdf.service'
 import { AppShell } from '../cmps/AppShell'
-import { formatVolume } from '../services/util.service'
+import { formatVolume, formatQty } from '../services/util.service'
 import { SplitView, EmptyDetail } from '../cmps/SplitView'
 
 const NO_SUPPLIER_KEY = '__no_supplier__'
@@ -339,7 +339,7 @@ export function OrdersListPage() {
                     )}
                   </span>
                 ) : (
-                  <span>{item.quantity ?? 0}</span>
+                  <span>{formatQty(item.quantity ?? 0)}</span>
                 )}
               </div>
             )
@@ -352,7 +352,7 @@ export function OrdersListPage() {
         <div className="kv">
           <span>{t('totalUnitsLabel')}</span>
           <span>
-            {(selectedOrder.items || []).reduce((sum, i) => sum + (Number(i.quantity) || 0), 0)}
+            {formatQty((selectedOrder.items || []).reduce((sum, i) => sum + (Number(i.quantity) || 0), 0))}
           </span>
         </div>
         <div className="kv">

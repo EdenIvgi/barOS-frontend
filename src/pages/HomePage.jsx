@@ -8,6 +8,7 @@ import { loadItems } from '../store/actions/item.actions'
 import { loadOrders } from '../store/actions/order.actions'
 import { barBookService } from '../services/barBook.service'
 import { AppShell } from '../cmps/AppShell'
+import { formatQty } from '../services/util.service'
 
 export function HomePage() {
   const { t, i18n } = useTranslation()
@@ -135,7 +136,7 @@ export function HomePage() {
           <div className="k-label">{t('statTotalProducts')}</div>
         </div>
         <div className="k-card">
-          <div className="k-value">{totalUnits}</div>
+          <div className="k-value">{formatQty(totalUnits)}</div>
           <div className="k-label">{t('unitsInStock')}</div>
         </div>
       </div>
@@ -233,12 +234,12 @@ export function HomePage() {
                   <span className="bar-track">
                     <span className="bar-fill" style={{ width: `${row.pct}%` }} />
                   </span>
-                  <span className="bar-value">{row.units}</span>
+                  <span className="bar-value">{formatQty(row.units)}</span>
                 </div>
               ))}
               <p className="bar-legend">
                 <span className="bar-swatch" aria-hidden="true" />
-                {t('unitsInStock')} · {totalUnits}
+                {t('unitsInStock')} · {formatQty(totalUnits)}
               </p>
             </>
           )}

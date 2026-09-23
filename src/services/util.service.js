@@ -128,3 +128,18 @@ export function formatVolume(ml, t) {
   }
   return `${n} ${t('ml')}`
 }
+
+/**
+ * Format a quantity for display.
+ *
+ * Stock can legitimately be fractional — half a bottle is half a bottle — but
+ * summing floats produces artefacts like 688.0500000000001, which is both wrong
+ * looking and wide enough to break a layout. Round to two decimals and drop
+ * trailing zeros so whole numbers stay whole.
+ */
+export function formatQty(value) {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return '0'
+  const rounded = Math.round(n * 100) / 100
+  return Number.isInteger(rounded) ? String(rounded) : String(rounded)
+}

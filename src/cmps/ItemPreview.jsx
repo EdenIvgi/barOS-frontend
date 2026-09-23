@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { formatVolume } from '../services/util.service'
+import { formatVolume, formatQty } from '../services/util.service'
 import { addToCart, updateCartItem, removeFromCart } from '../store/actions/order.actions'
 import { IconMinus, IconPlus } from './icons'
 
@@ -57,7 +57,7 @@ export function ItemPreview({ item }) {
       <div className="product-foot">
         <span className="product-stock">
           <span className={'product-stock-n' + (isOut ? ' is-critical' : isLow ? ' is-warning' : '')}>
-            {stock}
+            {formatQty(stock)}
           </span>
           <span className="product-stock-l">
             {isOut ? t('outOfStock') : isLow ? t('lowStockFilter') : t('stockLabel')}

@@ -14,7 +14,7 @@ import { CreateOrderModal } from '../cmps/CreateOrderModal'
 import { ItemForm } from '../cmps/ItemForm'
 import { AppShell } from '../cmps/AppShell'
 import { IconMinus, IconPlus } from '../cmps/icons'
-import { formatVolume } from '../services/util.service'
+import { formatVolume, formatQty } from '../services/util.service'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import * as XLSX from 'xlsx'
 import { NO_SUPPLIER_KEY } from '../services/constants'
@@ -721,17 +721,17 @@ export function ItemsManagementPage() {
  */
 function StockRow({ item, status, categoryName, toOrder, onStockChange, onToOrderChange, onEdit }) {
   const { t } = useTranslation()
-  const [draft, setDraft] = useState(String(item.stockQuantity ?? 0))
-  const [orderDraft, setOrderDraft] = useState(String(toOrder))
+  const [draft, setDraft] = useState(formatQty(item.stockQuantity ?? 0))
+  const [orderDraft, setOrderDraft] = useState(formatQty(toOrder))
 
   // The server is the source of truth; re-sync when it sends a different number
   // (another device counted, or an Excel import landed).
-  useEffect(() => { setDraft(String(item.stockQuantity ?? 0)) }, [item.stockQuantity])
-  useEffect(() => { setOrderDraft(String(toOrder)) }, [toOrder])
+  useEffect(() => { setDraft(formatQty(item.stockQuantity ?? 0)) }, [item.stockQuantity])
+  useEffect(() => { setOrderDraft(formatQty(toOrder)) }, [toOrder])
 
   function commitStock(value) {
     const next = Math.max(0, Number(value) || 0)
-    setDraft(String(next))
+    setDraft(formatQty(next))
     if (next !== (Number(item.stockQuantity) || 0)) onStockChange(item, next)
   }
 
@@ -741,7 +741,7 @@ function StockRow({ item, status, categoryName, toOrder, onStockChange, onToOrde
 
   function commitOrder(value) {
     const next = Math.max(0, Number(value) || 0)
-    setOrderDraft(String(next))
+    setOrderDraft(formatQty(next))
     if (next !== toOrder) onToOrderChange(item, next)
   }
 
@@ -755,7 +755,7 @@ function StockRow({ item, status, categoryName, toOrder, onStockChange, onToOrde
       </div>
 
       <span className="col-vol stock-vol">{formatVolume(item.volumeMl, t)}</span>
-      <span className="col-min stock-min">{item.minStockLevel || 0}</span>
+      <span className="col-min stock-min">{formatQty(item.minStockLevel || 0)}</span>
 
       <div className="col-count stepper">
         <button

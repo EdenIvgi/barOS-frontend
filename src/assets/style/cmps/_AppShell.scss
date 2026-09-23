@@ -303,35 +303,6 @@
   .detail-sub { font-size: 12.5px; color: $text-muted; margin: 0; }
 }
 
-.detail-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 1px;
-  background: $line;
-
-  .stat {
-    background: $bg-surface;
-    padding: 14px;
-
-    .stat-value {
-      font-size: 21px;
-      font-weight: 700;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-
-      &.is-critical { color: $color-error; }
-    }
-    .stat-label {
-      font-size: 9.5px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: $text-muted;
-      margin-top: 6px;
-      font-weight: 600;
-    }
-  }
-}
-
 .detail-section {
   padding: 16px 18px;
   border-bottom: 1px solid $line;
@@ -359,23 +330,6 @@
   &:last-child { border-bottom: 0; }
   > :first-child { color: $text-muted; }
   > :last-child { font-variant-numeric: tabular-nums; }
-}
-
-.gauge {
-  height: 6px;
-  border-radius: 3px;
-  background: $bg-sunken;
-  overflow: hidden;
-  margin-top: 8px;
-
-  .gauge-fill {
-    height: 100%;
-    border-radius: 3px;
-    background: $accent-primary;
-
-    &.is-critical { background: $color-error; }
-    &.is-warning { background: $color-warning; }
-  }
 }
 
 // ── Buttons ───────────────────────────────────────
@@ -461,47 +415,11 @@
   .shell-content { padding: 12px; }
 }
 
-// ── Inline edit rows in the detail pane ───────────
-.inline-edit {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 110px;
-  gap: 10px;
-  align-items: center;
-  padding: 6px 0;
-  font-size: 13px;
-
-  label { color: $text-muted; }
-
-  input {
-    background: $bg-sunken;
-    border: 1px solid $line;
-    border-radius: $radius-sm;
-    color: $text-primary;
-    padding: 7px 10px;
-    font: inherit;
-    font-variant-numeric: tabular-nums;
-    text-align: start;
-    width: 100%;
-
-    &:focus {
-      outline: none;
-      border-color: $accent-primary;
-      box-shadow: $shadow-glow-accent;
-    }
-  }
-}
-
 .detail-actions {
   display: flex;
   gap: 8px;
   margin-top: 12px;
   flex-wrap: wrap;
-}
-
-.row-qty {
-  font-size: 12px;
-  color: $text-muted;
-  font-variant-numeric: tabular-nums;
 }
 
 // ============================================
