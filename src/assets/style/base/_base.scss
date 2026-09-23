@@ -5,11 +5,14 @@
   box-sizing: border-box;
 }
 
+// No overflow-x: hidden here. It turns html and body into scroll containers,
+// which silently breaks `position: sticky` for everything inside — the rail
+// scrolled away with the page instead of holding at the top. Individual wide
+// things (tables, chip rows) scroll inside their own containers instead.
 html {
   color: $text-primary;
   font-family: $font-body;
   background: $bg-deepest;
-  overflow-x: hidden;
 }
 
 body {
@@ -18,7 +21,6 @@ body {
   color: $text-primary;
   min-height: 100vh;
   line-height: 1.5;
-  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {

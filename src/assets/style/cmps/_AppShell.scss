@@ -15,6 +15,7 @@
 .app-shell {
   display: grid;
   grid-template-columns: $rail-width minmax(0, 1fr);
+  align-items: start;
   min-height: 100vh;
   background: $bg-deepest;
   color: $text-primary;
@@ -29,6 +30,17 @@
   padding: 12px 0;
   background: $bg-surface;
   border-inline-start: 1px solid $line;
+
+  // Stick to the viewport and own its full height. Without this the rail grows
+  // to the height of the page content, so it scrolls away and the spacer pushes
+  // the avatar to the bottom of the document rather than the bottom of the screen.
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
 
   .rail-mark {
     width: 34px;
@@ -742,6 +754,13 @@
   flex-wrap: wrap;
 }
 
+// At width the fields stay flat in the bar; `contents` means the wrapper adds no
+// box of its own, so each field is still a direct flex child.
+.list-filters-fields { display: contents; }
+
+// The toggle only exists for phones.
+.filters-toggle { display: none; }
+
 // ============================================
 // Stocktake — the inventory screen's real job.
 // Counting is the primary action, so the count is editable in the row and
@@ -888,10 +907,42 @@ $stock-cols: minmax(0, 1fr) 84px 68px 132px 92px 40px;
   .stocktake-head { display: none; }
 
   .list-filters { padding: 10px 14px; gap: 8px 10px; }
-  // Half-width each: two per row, and a wrapped third stays half width instead
-  // of stretching across the screen on its own.
-  .pane-field { flex: 0 1 calc(50% - 5px); }
   .list-filters-actions { margin-inline-start: 0; flex: 1 1 100%; }
+
+  .filters-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+
+    svg { width: 15px; height: 15px; }
+
+    &.has-active { border-color: $accent-primary; color: $accent-text; }
+  }
+
+  .filters-count {
+    display: grid;
+    place-items: center;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: $radius-pill;
+    background: $accent-primary;
+    color: $text-inverse;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  // Collapsed by default: the list is what this screen is for.
+  .list-filters-fields {
+    display: none;
+    flex: 1 1 100%;
+    gap: 8px 10px;
+
+    &.is-open { display: flex; flex-wrap: wrap; }
+  }
+
+  .pane-field { flex: 0 1 calc(50% - 5px); }
 
   .stock-row {
     grid-template-columns: minmax(0, 1fr) 128px 34px;
@@ -1073,4 +1124,216 @@ $stock-cols: minmax(0, 1fr) 84px 68px 132px 92px 40px;
     // one bottle among hundreds.
     .item-search { flex: 1 1 100%; order: -1; }
   }
+}
+
+// ============================================
+// Supplier orders summary
+// Styles used to live nested under .home-page, which the dashboard no longer
+// renders, so the component came through unstyled — numbers ran into names and
+// the bars had no track.
+// ============================================
+.supplier-orders-summary {
+  .sos-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .sos-title { font-size: 12.5px; font-weight: 600; }
+  .sos-total { font-size: 11px; color: $text-muted; font-variant-numeric: tabular-nums; }
+
+  .sos-suppliers { display: flex; flex-direction: column; gap: 10px; }
+
+  .sos-supplier-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+    text-align: start;
+
+    &:hover .sos-supplier-name { color: $accent-text; }
+    &:focus-visible { outline: 2px solid $accent-primary; outline-offset: 3px; border-radius: $radius-sm; }
+  }
+
+  .sos-supplier-name { min-width: 0; overflow-wrap: anywhere; }
+
+  // Each figure needs its own box, or "288", "45%" and the chevron run together.
+  .sos-supplier-stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .sos-supplier-total { font-weight: 600; }
+  .sos-supplier-pct { color: $text-muted; font-size: 11px; min-width: 32px; text-align: end; }
+  .sos-chevron { color: $text-muted; font-size: 9px; }
+
+  .sos-track {
+    height: 6px;
+    border-radius: 3px;
+    background: $bg-sunken;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .sos-fill { height: 100%; border-radius: 3px; background: $accent-primary; }
+
+  .sos-products {
+    margin-top: 8px;
+    padding-inline-start: 10px;
+    border-inline-start: 1px solid $line;
+  }
+  .sos-products-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $text-muted;
+    font-weight: 700;
+    padding-bottom: 5px;
+    border-bottom: 1px solid $line;
+  }
+  .sos-product-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 12px;
+    border-bottom: 1px solid $line;
+
+    &:last-child { border-bottom: 0; }
+  }
+  .sos-product-name { color: $text-secondary; min-width: 0; overflow-wrap: anywhere; }
+  .sos-product-qty { color: $text-muted; font-variant-numeric: tabular-nums; flex: none; }
+}
+
+// ── Reorder grid: the dashboard's call to action ──
+.dash-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-inline-start: 7px;
+  border-radius: $radius-pill;
+  background: rgba(217, 96, 79, 0.16);
+  color: $color-error;
+  font-size: 10.5px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.reorder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.reorder-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid $line;
+  border-radius: $radius;
+  background: $bg-deepest;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover { border-color: $line-strong; }
+
+  .reorder-name { font-size: 13px; font-weight: 500; overflow-wrap: anywhere; }
+  .reorder-sub { font-size: 10.5px; color: $text-muted; }
+  .reorder-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 5px;
+  }
+  .reorder-need {
+    font-size: 12px;
+    font-weight: 700;
+    color: $accent-text;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ── Units ordered per day ─────────────────────────
+// Columns in one hue: magnitude over time, so colour carries nothing the
+// heights do not already say.
+.opd {
+  .opd-total { font-size: 11px; color: $text-muted; font-variant-numeric: tabular-nums; }
+
+  .opd-plot {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 4px;
+    align-items: end;
+    height: 150px;
+    padding-top: 16px;
+  }
+
+  .opd-col {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 6px;
+    height: 100%;
+    min-width: 0;
+  }
+
+  .opd-bar-wrap {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .opd-bar {
+    width: 100%;
+    max-width: 22px;
+    min-height: 2px;
+    border-radius: 4px 4px 0 0;
+    background: $accent-primary;
+
+    &.is-empty { background: $line; min-height: 2px; }
+  }
+
+  // The figure sits above its own column, so no axis is needed to read it.
+  .opd-value {
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: $text-secondary;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .opd-tick {
+    font-size: 9px;
+    color: $text-muted;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 860px) {
+  .opd .opd-plot { height: 120px; }
+  .opd .opd-tick { font-size: 8px; }
+  .reorder-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }

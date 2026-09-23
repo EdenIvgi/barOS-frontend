@@ -80,6 +80,12 @@ export const IconLogout = () => (
   </svg>
 )
 
+export const IconFilter = () => (
+  <svg {...base}>
+    <path d="M4 5h16M7 12h10M10 19h4" />
+  </svg>
+)
+
 export const IconMinus = () => (
   <svg {...base} strokeWidth="2.2"><path d="M5 12h14" /></svg>
 )

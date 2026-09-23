@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { OrdersGrowthBySupplierChart } from '../cmps/OrdersGrowthBySupplierChart'
+import { OrdersPerDayChart } from '../cmps/OrdersPerDayChart'
 import { SupplierOrdersSummary } from '../cmps/SupplierOrdersSummary'
 import { loadItems } from '../store/actions/item.actions'
 import { loadOrders } from '../store/actions/order.actions'
@@ -103,13 +103,23 @@ export function HomePage() {
     return rows.map(r => ({ ...r, pct: max ? (r.units / max) * 100 : 0 }))
   })()
 
+  const recentOrders = [...(orders || [])]
+    .filter(Boolean)
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+    .slice(0, 5)
+
+  function orderDate(order) {
+    if (!order.createdAt) return ''
+    return new Date(order.createdAt).toLocaleDateString(
+      i18n.language === 'he' ? 'he-IL' : 'en-GB',
+      { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }
+    )
+  }
+
   return (
     <AppShell title={t('home')} subtitle={displayDayName}>
+      {/* What needs doing, before anything describing the past. */}
       <div className="dash-kpis">
-        <div className="k-card">
-          <div className="k-value">{stats.totalItems}</div>
-          <div className="k-label">{t('statTotalProducts')}</div>
-        </div>
         <div className="k-card">
           <div className={'k-value' + (stats.lowStockItems > 0 ? ' is-critical' : '')}>
             {stats.lowStockItems}
@@ -117,12 +127,16 @@ export function HomePage() {
           <div className="k-label">{t('statLowStock')}</div>
         </div>
         <div className="k-card">
-          <div className="k-value">{totalUnits}</div>
-          <div className="k-label">{t('unitsInStock')}</div>
+          <div className={'k-value' + (pendingOrders > 0 ? ' is-warning' : '')}>{pendingOrders}</div>
+          <div className="k-label">{t('statPendingOrders')}</div>
         </div>
         <div className="k-card">
-          <div className="k-value">{pendingOrders}</div>
-          <div className="k-label">{t('statPendingOrders')}</div>
+          <div className="k-value">{stats.totalItems}</div>
+          <div className="k-label">{t('statTotalProducts')}</div>
+        </div>
+        <div className="k-card">
+          <div className="k-value">{totalUnits}</div>
+          <div className="k-label">{t('unitsInStock')}</div>
         </div>
       </div>
 
@@ -135,6 +149,76 @@ export function HomePage() {
           <p className="daily-task-text">{todayTask}</p>
         </div>
       )}
+
+      {/* The one list worth acting on, given its own full-width block. */}
+      <div className="dash-card">
+        <div className="dash-card-head">
+          <h3 className="dash-card-title">
+            {t('lowStockAlerts')}
+            {stats.lowStockItems > 0 && <span className="dash-count">{stats.lowStockItems}</span>}
+          </h3>
+          {stats.lowStockItems > 0 && (
+            <Link to="/items-management" className="dash-link">{t('viewAll')} →</Link>
+          )}
+        </div>
+
+        {lowStockItems.length === 0 ? (
+          <p className="dash-empty">{t('allStockOk')}</p>
+        ) : (
+          <div className="reorder-grid">
+            {lowStockItems.slice(0, 8).map(item => {
+              const stock = item.stockQuantity || 0
+              const optimal = item.optimalStockLevel || 0
+              const need = Math.max(0, optimal - stock)
+              return (
+                <Link key={item._id} to="/items-management" className="reorder-card">
+                  <span className="reorder-name">{item.name}</span>
+                  <span className="reorder-sub">{item.supplier || t('noSupplier')}</span>
+                  <span className="reorder-foot">
+                    {stock <= 0 ? (
+                      <span className="tag is-critical">● {t('outOfStock')}</span>
+                    ) : (
+                      <span className="tag is-warning">▲ {stock} / {item.minStockLevel || 0}</span>
+                    )}
+                    {need > 0 && <span className="reorder-need">+{need}</span>}
+                  </span>
+                </Link>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="dash-split">
+        <div className="dash-card">
+          <OrdersPerDayChart orders={orders} />
+        </div>
+
+        <div className="dash-card">
+          <div className="dash-card-head">
+            <h3 className="dash-card-title">{t('recentOrders')}</h3>
+            <Link to="/orders" className="dash-link">{t('viewAll')} →</Link>
+          </div>
+          {recentOrders.length === 0 ? (
+            <p className="dash-empty">{t('noOrders')}</p>
+          ) : (
+            recentOrders.map(order => (
+              <Link key={order._id} to="/orders" className="dash-row">
+                <span>
+                  <span className="dash-row-main">{order.supplier || t('noSupplier')}</span>
+                  <span className="dash-row-sub">
+                    {orderDate(order)}
+                    {order.items?.length ? ` · ${order.items.length} ${t('itemsCount')}` : ''}
+                  </span>
+                </span>
+                <span className={'tag ' + (order.status === 'pending' ? 'is-warning' : 'is-ok')}>
+                  {t('status_' + (order.status || 'pending'))}
+                </span>
+              </Link>
+            ))
+          )}
+        </div>
+      </div>
 
       <div className="dash-split">
         <div className="dash-card">
@@ -161,68 +245,8 @@ export function HomePage() {
         </div>
 
         <div className="dash-card">
-          <div className="dash-card-head">
-            <h3 className="dash-card-title">{t('lowStockAlerts')}</h3>
-            {stats.lowStockItems > 0 && (
-              <Link to="/items-management" className="dash-link">{t('viewAll')} →</Link>
-            )}
-          </div>
-          {lowStockItems.length === 0 ? (
-            <p className="dash-empty">{t('allStockOk')}</p>
-          ) : (
-            lowStockItems.slice(0, 6).map(item => (
-              <Link key={item._id} to="/items-management" className="dash-row">
-                <span>{item.name}</span>
-                {(item.stockQuantity || 0) <= 0 ? (
-                  <span className="tag is-critical">● {t('outOfStock')}</span>
-                ) : (
-                  <span className="tag is-warning">
-                    ▲ {item.stockQuantity || 0} / {item.minStockLevel || 0}
-                  </span>
-                )}
-              </Link>
-            ))
-          )}
-        </div>
-      </div>
-
-      <div className="dash-split">
-        <div className="dash-card">
-          <div className="dash-card-head">
-            <h3 className="dash-card-title">{t('recentOrders')}</h3>
-            <Link to="/orders" className="dash-link">{t('viewAll')} →</Link>
-          </div>
-          {!orders || orders.length === 0 ? (
-            <p className="dash-empty">{t('noOrders')}</p>
-          ) : (
-            orders.slice(0, 5).map(order => (
-              <Link key={order._id} to="/orders" className="dash-row">
-                <span>
-                  <span className="dash-row-main">{order.supplier || t('noSupplier')}</span>
-                  <span className="dash-row-sub">
-                    {order.createdAt && new Date(order.createdAt).toLocaleDateString(
-                      i18n.language === 'he' ? 'he-IL' : 'en-GB',
-                      { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }
-                    )}
-                    {order.items?.length ? ` · ${order.items.length} ${t('itemsCount')}` : ''}
-                  </span>
-                </span>
-                <span className={'tag ' + (order.status === 'pending' ? 'is-warning' : 'is-ok')}>
-                  {t('status_' + (order.status || 'pending'))}
-                </span>
-              </Link>
-            ))
-          )}
-        </div>
-
-        <div className="dash-card">
-          <h3 className="dash-card-title">{t('supplierOrdersSummaryTitle')}</h3>
           <SupplierOrdersSummary orders={orders} items={items} />
         </div>
-      </div>
-
-      <div className="dash-card">
-        <OrdersGrowthBySupplierChart orders={orders} items={items} />
       </div>
     </AppShell>
   )
