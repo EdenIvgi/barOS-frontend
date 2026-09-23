@@ -1029,3 +1029,37 @@ $stock-cols: minmax(0, 1fr) 84px 68px 132px 92px 40px;
   .category-filter { padding: 10px 14px; }
   .product-card { padding: 12px; }
 }
+
+// ── Catalogue bar: category chips + search on one line ──
+.catalog-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 18px;
+  border-bottom: 1px solid $line;
+  background: $bg-surface;
+
+  // The chip row scrolls on its own so a long category list never squeezes
+  // the search field out of the bar.
+  .category-filter {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border-bottom: 0;
+    background: none;
+  }
+
+  .item-search { flex: none; }
+}
+
+@media (max-width: 860px) {
+  .catalog-bar {
+    flex-wrap: wrap;
+    gap: 9px;
+    padding: 9px 14px;
+
+    // Search first and full width: on a phone it is the faster way to find
+    // one bottle among hundreds.
+    .item-search { flex: 1 1 100%; order: -1; }
+  }
+}

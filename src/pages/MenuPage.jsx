@@ -46,14 +46,18 @@ export function MenuPage() {
     <AppShell
       title={t('products')}
       subtitle={`${items.length} ${t('itemsCount')}`}
-      actions={<ItemSearch filterBy={filterBy} onSetFilter={onSetFilter} />}
       flush
     >
-      <CategoryFilter
-        filterBy={filterBy}
-        onSetFilter={onSetFilter}
-        selectedCategoryId={filterBy.categoryId}
-      />
+      {/* Categories and search share one bar, so the header stays a single row
+          of controls instead of a tall search box above a separate chip row. */}
+      <div className="catalog-bar">
+        <CategoryFilter
+          filterBy={filterBy}
+          onSetFilter={onSetFilter}
+          selectedCategoryId={filterBy.categoryId}
+        />
+        <ItemSearch filterBy={filterBy} onSetFilter={onSetFilter} />
+      </div>
       {isLoading && <Loader />}
       {!isLoading && <ItemList items={items} />}
       {!!items.length && maxPage > 1 && (
