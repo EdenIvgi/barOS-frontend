@@ -1,79 +1,74 @@
 @import '../setup/vars';
 @import '../setup/mixins';
 
+// The search sits in the topbar beside the page title and action buttons, so it
+// is sized like a control in that row. It used to be a 600px-wide, 65px-tall box
+// that dwarfed the title and inflated the whole header.
 .item-search {
-  margin: 0 0 1.5rem 0;
+  margin: 0;
+  min-width: 0;
 
   .search-input-wrapper {
     position: relative;
-    max-width: 600px;
-    margin: 0 auto;
+    width: 240px;
+    max-width: 100%;
 
     .search-icon {
       position: absolute;
-      left: 1rem;
+      inset-inline-start: 9px;
       top: 50%;
       transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
       color: $text-muted;
       pointer-events: none;
-      z-index: 1;
     }
 
     .search-input {
       width: 100%;
-      padding: 1rem 3rem 1rem 3.25rem;
-      border: 1px solid $glass-border;
-      border-radius: $border-radius;
-      font-size: 1rem;
-      transition: all 0.3s;
-      background: $glass-bg;
+      padding-block: 7px;
+      padding-inline: 30px 30px;
+      border: 1px solid $line;
+      border-radius: $radius;
+      background: $bg-sunken;
       color: $text-primary;
-      box-shadow: $shadow-sm;
+      font: inherit;
+      font-size: 12.5px;
       font-weight: 500;
-      backdrop-filter: blur($glass-blur);
+
+      &::placeholder { color: $text-muted; font-weight: 400; }
 
       &:focus {
-        @include accent-focus;
-
-        + .search-icon {
-          color: $accent-text;
-        }
-      }
-
-      &::placeholder {
-        color: $text-muted;
-        font-weight: 400;
+        outline: none;
+        border-color: $accent-primary;
+        box-shadow: $shadow-glow-accent;
       }
     }
 
     .clear-search-btn {
       position: absolute;
-      right: 0.75rem;
+      inset-inline-end: 6px;
       top: 50%;
       transform: translateY(-50%);
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: 0;
+      border-radius: $radius-sm;
       background: none;
-      border: none;
-      cursor: pointer;
       color: $text-muted;
-      padding: 0.4rem;
-      border-radius: 4px;
-      transition: all 0.2s;
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
+      cursor: pointer;
 
-      svg {
-        width: 16px;
-        height: 16px;
-      }
+      svg { width: 13px; height: 13px; }
 
-      @include hover {
-        background: $glass-bg-hover;
-        color: $text-primary;
-      }
+      &:hover { background: $bg-elevated; color: $text-primary; }
+      &:focus-visible { outline: 2px solid $accent-primary; outline-offset: 1px; }
     }
   }
+}
+
+@media (max-width: 860px) {
+  .item-search .search-input-wrapper { width: 100%; }
 }
