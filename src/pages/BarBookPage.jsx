@@ -6,213 +6,25 @@ import { AppShell } from '../cmps/AppShell'
 import { translateField, getLangText, migrateAllContent } from '../services/translate.service.js'
 import { PAGE_TYPES } from '../cmps/barbook/pageTypes.js'
 import { AddPageModal } from '../cmps/barbook/AddPageModal.jsx'
+import { BarBookTabs } from '../cmps/barbook/BarBookTabs.jsx'
+import { ChecklistBoard } from '../cmps/barbook/ChecklistBoard.jsx'
 import { StockView } from '../cmps/barbook/StockView.jsx'
 import { SingleChecklistView } from '../cmps/barbook/SingleChecklistView.jsx'
 import { DailyView } from '../cmps/barbook/DailyView.jsx'
 import { RecipesView } from '../cmps/barbook/RecipesView.jsx'
+import { resetChecks, countChecks } from '../cmps/barbook/shiftReset.js'
 
-function ChecklistsPageView({ page, isAdmin, onPageChange }) {
-  const { t, i18n } = useTranslation()
-  const lang = i18n.resolvedLanguage || 'he'
-  const [selectedId, setSelectedId] = useState(null)
-  const [editItem, setEditItem] = useState({ listId: null, index: null, value: '' })
-  const [newItemText, setNewItemText] = useState('')
-  const [editListTitle, setEditListTitle] = useState({ id: null, value: '' })
-  const [newListTitle, setNewListTitle] = useState('')
-  const [showNewListInput, setShowNewListInput] = useState(false)
-  const newListRef = useRef(null)
-
-  const lists = page.lists || []
-  const selectedList = lists.find(l => l._id === selectedId) || lists[0] || null
-
-  useEffect(() => {
-    if (!selectedId && lists.length > 0) setSelectedId(lists[0]._id)
-  }, [lists.length])
-
-  useEffect(() => {
-    if (showNewListInput) newListRef.current?.focus()
-  }, [showNewListInput])
-
-  function updateList(updatedList) {
-    onPageChange({ ...page, lists: lists.map(l => l._id === updatedList._id ? updatedList : l) })
-  }
-
-  function toggleCheck(listId, index) {
-    const list = lists.find(l => l._id === listId)
-    if (!list) return
-    updateList({ ...list, items: list.items.map((it, i) => i === index ? { ...it, checked: !it.checked } : it) })
-  }
-
-  async function commitItem(listId, index) {
-    if (editItem.listId !== listId || editItem.index !== index) return
-    const list = lists.find(l => l._id === listId)
-    if (!list) return
-    const trimmed = editItem.value.trim()
-    const newItems = [...list.items]
-    if (trimmed) newItems[index] = { ...newItems[index], text: await translateField(trimmed, lang) }
-    else newItems.splice(index, 1)
-    updateList({ ...list, items: newItems })
-    setEditItem({ listId: null, index: null, value: '' })
-  }
-
-  async function addItem(listId, e) {
-    if (e) e.preventDefault()
-    const trimmed = newItemText.trim()
-    if (!trimmed) return
-    const list = lists.find(l => l._id === listId)
-    if (!list) return
-    const translated = await translateField(trimmed, lang)
-    updateList({ ...list, items: [...list.items, { text: translated, checked: false }] })
-    setNewItemText('')
-  }
-
-  function removeItem(listId, index) {
-    const list = lists.find(l => l._id === listId)
-    if (!list) return
-    updateList({ ...list, items: list.items.filter((_, i) => i !== index) })
-  }
-
-  async function commitListTitle(id) {
-    const v = editListTitle.value.trim()
-    if (v) {
-      const translated = await translateField(v, lang)
-      onPageChange({ ...page, lists: lists.map(l => l._id === id ? { ...l, title: translated } : l) })
-    }
-    setEditListTitle({ id: null, value: '' })
-  }
-
-  async function addList(e) {
-    if (e) e.preventDefault()
-    const trimmed = newListTitle.trim()
-    if (!trimmed) return
-    const translated = await translateField(trimmed, lang)
-    const newList = { _id: crypto.randomUUID(), title: translated, items: [] }
-    onPageChange({ ...page, lists: [...lists, newList] })
-    setSelectedId(newList._id)
-    setNewListTitle('')
-    setShowNewListInput(false)
-  }
-
-  function deleteList(id) {
-    if (!window.confirm(t('confirmDeletePage'))) return
-    const remaining = lists.filter(l => l._id !== id)
-    onPageChange({ ...page, lists: remaining })
-    setSelectedId(remaining[0]?._id || null)
-  }
-
-  return (
-    <div className="checklists-page-view">
-      <div className="checklists-layout">
-        {/* Left panel — list of checklist names */}
-        <div className="checklists-list-panel">
-          {lists.map(list => (
-            <button
-              key={list._id}
-              type="button"
-              className={`checklist-index-item ${selectedList?._id === list._id ? 'active' : ''}`}
-              onClick={() => setSelectedId(list._id)}
-            >
-              {editListTitle.id === list._id ? (
-                <input
-                  className="edit-input checklist-title-edit-input"
-                  value={editListTitle.value}
-                  autoFocus
-                  onClick={e => e.stopPropagation()}
-                  onChange={e => setEditListTitle(p => ({ ...p, value: e.target.value }))}
-                  onBlur={() => commitListTitle(list._id)}
-                  onKeyDown={e => { if (e.key === 'Enter') commitListTitle(list._id); if (e.key === 'Escape') setEditListTitle({ id: null, value: '' }) }}
-                />
-              ) : (
-                <>
-                  <span className="checklist-index-title">{getLangText(list.title, lang)}</span>
-                  <span className="checklist-index-meta">{list.items?.length || 0} {t('items')}</span>
-                </>
-              )}
-              {isAdmin && selectedList?._id === list._id && editListTitle.id !== list._id && (
-                <span className="checklist-index-actions">
-                  <button type="button" className="btn-icon" onClick={e => { e.stopPropagation(); setEditListTitle({ id: list._id, value: getLangText(list.title, lang) }) }}>✎</button>
-                  <button type="button" className="btn-icon" onClick={e => { e.stopPropagation(); deleteList(list._id) }}>×</button>
-                </span>
-              )}
-            </button>
-          ))}
-          {isAdmin && (
-            showNewListInput ? (
-              <form className="checklist-new-list-form" onSubmit={addList}>
-                <input
-                  ref={newListRef}
-                  type="text"
-                  className="checklist-add-input"
-                  placeholder={t('pageTitlePlaceholder')}
-                  value={newListTitle}
-                  onChange={e => setNewListTitle(e.target.value)}
-                  onBlur={() => { if (!newListTitle.trim()) setShowNewListInput(false) }}
-                  onKeyDown={e => e.key === 'Escape' && setShowNewListInput(false)}
-                />
-              </form>
-            ) : (
-              <button type="button" className="btn-add-checklist-list" onClick={() => setShowNewListInput(true)}>
-                + {t('addList')}
-              </button>
-            )
-          )}
-        </div>
-
-        {/* Right panel — selected checklist items */}
-        <div className="checklists-detail-panel">
-          {selectedList ? (
-            <div className="checklist-detail">
-              <ul className="checklist-list">
-                {selectedList.items.map((item, i) => (
-                  <li key={i} className="checklist-item">
-                    <input type="checkbox" checked={!!item.checked} onChange={() => toggleCheck(selectedList._id, i)} />
-                    {editItem.listId === selectedList._id && editItem.index === i ? (
-                      <input
-                        className="edit-input checklist-inline-input"
-                        value={editItem.value}
-                        autoFocus
-                        onChange={e => setEditItem(p => ({ ...p, value: e.target.value }))}
-                        onBlur={() => commitItem(selectedList._id, i)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') commitItem(selectedList._id, i)
-                          if (e.key === 'Escape') setEditItem({ listId: null, index: null, value: '' })
-                        }}
-                      />
-                    ) : (
-                      <span
-                        className={`checklist-item-text ${item.checked ? 'checked' : ''} ${isAdmin ? 'editable' : ''}`}
-                        onClick={() => isAdmin && setEditItem({ listId: selectedList._id, index: i, value: getLangText(item.text, lang) })}
-                      >
-                        {getLangText(item.text, lang)}
-                      </span>
-                    )}
-                    {isAdmin && (
-                      <button type="button" className="btn-icon btn-delete-item" onClick={() => removeItem(selectedList._id, i)}>×</button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              {isAdmin && (
-                <form className="checklist-add-row" onSubmit={e => addItem(selectedList._id, e)}>
-                  <input
-                    type="text"
-                    className="checklist-add-input"
-                    placeholder={`+ ${t('addTask')}…`}
-                    value={newItemText}
-                    onChange={e => setNewItemText(e.target.value)}
-                  />
-                </form>
-              )}
-            </div>
-          ) : (
-            <div className="checklist-detail-placeholder"><p>{t('selectChecklistPrompt')}</p></div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
+/**
+ * The Bar Book.
+ *
+ * This page owns the document and nothing else: loading it, migrating old plain
+ * strings, saving it, and choosing which page of it is on screen. Each view below
+ * gets one page and one callback and never learns that saving exists.
+ *
+ * Running a checklist is the default state of this screen; editing is a mode an
+ * admin turns on, because a checklist is run every shift and edited a few times
+ * a year.
+ */
 export function BarBookPage() {
   const { t, i18n } = useTranslation()
   const lang = i18n.resolvedLanguage || 'he'
@@ -226,6 +38,7 @@ export function BarBookPage() {
   const [hasConflict, setHasConflict] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingPageTitle, setEditingPageTitle] = useState(null)
+  const [isEditing, setIsEditing] = useState(false)
   const skipSaveRef = useRef(true)
   // Version of the document this client is working from, for conflict detection.
   const baseUpdatedAtRef = useRef(undefined)
@@ -306,6 +119,15 @@ export function BarBookPage() {
     setEditingPageTitle(null)
   }
 
+  // The one action in the book that discards work in bulk, so it says how much
+  // it is about to clear before doing it.
+  function startNewShift() {
+    const total = countChecks(pages)
+    if (total === 0) return
+    if (!window.confirm(t('confirmNewShift', { count: total }))) return
+    setPages(prev => resetChecks(prev))
+  }
+
   function typeSymbol(type) {
     return PAGE_TYPES.find(pt => pt.type === type)?.symbol || '▤'
   }
@@ -318,66 +140,53 @@ export function BarBookPage() {
     return pt ? t(pt.labelKey) : ''
   }
 
+  const checksToClear = countChecks(pages)
+  // With edit mode off the book is read-and-tick only, so the four table-style
+  // views get a false isAdmin rather than each one learning about edit mode.
+  const canEdit = isAdmin && isEditing
+
   return (
     <AppShell
       title={t('barBookTitle')}
       subtitle={activePage ? pageDisplayTitle(activePage) : ''}
       actions={
-        isAdmin ? (
-          <button type="button" className="btn-shell is-primary" onClick={() => setShowAddModal(true)}>
-            {t('addPage')}
-          </button>
-        ) : null
+        <>
+          {checksToClear > 0 && (
+            <button type="button" className="btn-shell" onClick={startNewShift}>
+              {t('newShift')}
+            </button>
+          )}
+          {isAdmin && (
+            <button
+              type="button"
+              className={'btn-shell' + (isEditing ? ' is-primary' : '')}
+              aria-pressed={isEditing}
+              onClick={() => { setIsEditing(v => !v); setEditingPageTitle(null) }}
+            >
+              {isEditing ? t('editModeOn') : t('editMode')}
+            </button>
+          )}
+        </>
       }
       flush
     >
-    <section className="bar-book-page">
-      <div className="bar-book-layout">
+      <section className="bar-book-page">
+        <BarBookTabs
+          pages={pages}
+          activePageId={activePageId}
+          editingTitle={editingPageTitle}
+          isAdmin={isAdmin}
+          isEditing={isEditing}
+          onSelect={setActivePageId}
+          onAdd={() => setShowAddModal(true)}
+          onDelete={deletePage}
+          onEditTitle={setEditingPageTitle}
+          onTitleChange={value => setEditingPageTitle(p => ({ ...p, value }))}
+          onCommitTitle={commitPageTitle}
+          symbolFor={typeSymbol}
+          titleFor={pageDisplayTitle}
+        />
 
-        {/* ── SIDEBAR ── */}
-        <aside className="bar-book-sidebar">
-          <nav className="sidebar-nav">
-            {pages.map(page => (
-              <div key={page._id} className={`sidebar-page-item ${activePageId === page._id ? 'active' : ''}`}>
-                {editingPageTitle?.id === page._id ? (
-                  <input
-                    className="sidebar-title-input"
-                    value={editingPageTitle.value}
-                    autoFocus
-                    onChange={e => setEditingPageTitle(p => ({ ...p, value: e.target.value }))}
-                    onBlur={() => commitPageTitle(page)}
-                    onKeyDown={e => { if (e.key === 'Enter') commitPageTitle(page); if (e.key === 'Escape') setEditingPageTitle(null) }}
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    className="sidebar-nav-item-btn"
-                    onClick={() => setActivePageId(page._id)}
-                  >
-                    <span className="nav-symbol">{typeSymbol(page.type)}</span>
-                    <span className="nav-label">{pageDisplayTitle(page)}</span>
-                  </button>
-                )}
-                {isAdmin && activePageId === page._id && (
-                  <div className="sidebar-page-actions">
-                    <button type="button" className="btn-icon" title={t('rename')}
-                      onClick={() => setEditingPageTitle({ id: page._id, value: page.customTitle || pageDisplayTitle(page) })}>✎</button>
-                    <button type="button" className="btn-icon" title={t('delete')}
-                      onClick={() => deletePage(page._id)}>×</button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </nav>
-
-          <div className="sidebar-add-page">
-            <button type="button" className="btn-add-page" onClick={() => setShowAddModal(true)} title={t('addPage')}>
-              +
-            </button>
-          </div>
-        </aside>
-
-        {/* ── MAIN ── */}
         <main className="bar-book-main">
           {isLoading && <p className="bar-book-loading">{t('loadingBarBook')}</p>}
           {!isLoading && loadError && <p className="bar-book-error">{loadError}</p>}
@@ -386,44 +195,39 @@ export function BarBookPage() {
           {!isLoading && !loadError && pages.length === 0 && (
             <div className="empty-state">
               <p>{t('barBookEmpty')}</p>
-              <button type="button" className="btn-add" onClick={() => setShowAddModal(true)}>
-                + {t('addPage')}
-              </button>
+              {isAdmin && (
+                <button type="button" className="btn-add" onClick={() => setShowAddModal(true)}>
+                  + {t('addPage')}
+                </button>
+              )}
             </div>
           )}
 
           {activePage && (
-            <>
-              <div className="content-topbar">
-                <span className="content-topbar-title">{pageDisplayTitle(activePage)}</span>
-              </div>
-
-              <div className="page-content-area">
-                {activePage.type === 'checklists' && (
-                  <ChecklistsPageView page={activePage} isAdmin={isAdmin} onPageChange={updateActivePage} />
-                )}
-                {activePage.type === 'checklist' && (
-                  <SingleChecklistView page={activePage} isAdmin={isAdmin} onPageChange={updateActivePage} />
-                )}
-                {activePage.type === 'daily' && (
-                  <DailyView page={activePage} isAdmin={isAdmin} onPageChange={updateActivePage} />
-                )}
-                {activePage.type === 'stock' && (
-                  <StockView page={activePage} isAdmin={isAdmin} onPageChange={updateActivePage} />
-                )}
-                {activePage.type === 'recipes' && (
-                  <RecipesView page={activePage} isAdmin={isAdmin} onPageChange={updateActivePage} />
-                )}
-              </div>
-            </>
+            <div className="page-content-area">
+              {activePage.type === 'checklists' && (
+                <ChecklistBoard page={activePage} lang={lang} isAdmin={isAdmin} isEditing={isEditing} onPageChange={updateActivePage} />
+              )}
+              {activePage.type === 'checklist' && (
+                <SingleChecklistView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              )}
+              {activePage.type === 'daily' && (
+                <DailyView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              )}
+              {activePage.type === 'stock' && (
+                <StockView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              )}
+              {activePage.type === 'recipes' && (
+                <RecipesView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              )}
+            </div>
           )}
         </main>
-      </div>
 
-      {showAddModal && (
-        <AddPageModal onAdd={addPage} onClose={() => setShowAddModal(false)} />
-      )}
-    </section>
+        {showAddModal && (
+          <AddPageModal onAdd={addPage} onClose={() => setShowAddModal(false)} />
+        )}
+      </section>
     </AppShell>
   )
 }
