@@ -94,6 +94,78 @@ export const IconPlus = () => (
   <svg {...base} strokeWidth="2.2"><path d="M12 5v14M5 12h14" /></svg>
 )
 
+// ─── Bar Book page types ────────────────────────────────
+// One icon per format a bar can keep in its book. Drawn on the same 24px grid
+// as the navigation above, so the tab strip reads as part of the app rather
+// than a row of text symbols.
+
+export const IconChecklists = () => (
+  <svg {...base}>
+    <path d="M3.5 6.5 5 8l2.5-2.5" />
+    <path d="M3.5 12.5 5 14l2.5-2.5" />
+    <path d="M3.5 18.5 5 20l2.5-2.5" />
+    <path d="M11 7h9M11 13h9M11 19h6" />
+  </svg>
+)
+
+export const IconChecklist = () => (
+  <svg {...base}>
+    <rect x="4" y="3.5" width="16" height="17" rx="2" />
+    <path d="M8.5 11.5 11 14l4.5-4.5" />
+  </svg>
+)
+
+export const IconDaily = () => (
+  <svg {...base}>
+    <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+    <path d="M3.5 10h17M8 3.5v3M16 3.5v3" />
+  </svg>
+)
+
+export const IconTable = () => (
+  <svg {...base}>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+    <path d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10" />
+  </svg>
+)
+
+export const IconRecipes = () => (
+  <svg {...base}>
+    <path d="M4.5 4.5h15L12 13z" />
+    <path d="M12 13v6.5M8.5 19.5h7" />
+  </svg>
+)
+
+export const IconInfo = () => (
+  <svg {...base}>
+    <path d="M6 3.5h8l4.5 4.5v12.5H6z" />
+    <path d="M13.5 3.5V8h4.5" />
+    <path d="M9 12.5h6M9 16h4" />
+  </svg>
+)
+
+export const IconContacts = () => (
+  <svg {...base}>
+    <circle cx="12" cy="8.5" r="3.5" />
+    <path d="M5 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5" />
+  </svg>
+)
+
+export const IconLinks = () => (
+  <svg {...base}>
+    <path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.3-2.3a4 4 0 0 0-5.7-5.7l-1.3 1.3" />
+    <path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.3 2.3a4 4 0 0 0 5.7 5.7l1.3-1.3" />
+  </svg>
+)
+
+export const IconGallery = () => (
+  <svg {...base}>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+    <circle cx="8.5" cy="9.5" r="1.5" />
+    <path d="M3.5 16.5 9 11l5 5 2.5-2.5 3 3" />
+  </svg>
+)
+
 /** Navigation shared by the rail and the bottom nav, in one order. */
 export const NAV_ITEMS = [
   { to: '/home', labelKey: 'home', Icon: IconHome },

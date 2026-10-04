@@ -2075,3 +2075,303 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     .runner-tap { padding-inline: 0.85rem; }
   }
 }
+
+// ============================================
+// BOOK FORMATS — info, contacts, links, gallery
+// ============================================
+// A bar book is whatever that bar keeps, so the page types are a vocabulary of
+// shapes rather than a fixed table of contents. These are the text-based ones.
+
+.bar-book-page {
+  // Icons replaced the text glyphs in the tab strip, so the slot has a size now.
+  .bb-tab-symbol {
+    display: inline-flex;
+    width: 17px;
+    height: 17px;
+    opacity: 0.75;
+
+    svg { width: 100%; height: 100%; }
+  }
+
+  .bb-tab.is-active .bb-tab-symbol {
+    color: $book-accent;
+    opacity: 1;
+  }
+
+  // ── Shared inline editing ──
+  .bb-inline {
+    &.is-editable {
+      cursor: text;
+      border-radius: 4px;
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+
+      @include hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      &:empty::before {
+        content: attr(data-placeholder);
+        color: $book-text-muted;
+      }
+    }
+  }
+
+  .bb-inline-input {
+    width: 100%;
+    padding: 0.4rem 0.55rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid $book-accent;
+    border-radius: 6px;
+    color: $book-text;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    resize: vertical;
+  }
+
+  // The × that removes one row of any format.
+  .bb-row-remove {
+    position: absolute;
+    inset-inline-end: 0.5rem;
+    top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: none;
+    color: $book-text-muted;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+
+    @include hover { color: #e06a6a; }
+  }
+
+  // ── INFO PAGE ──
+  .bb-info {
+    padding: 1.25rem;
+    overflow-y: auto;
+    max-width: 70ch;
+  }
+
+  .bb-info-section {
+    position: relative;
+    padding: 1rem 1.1rem;
+    margin-block-end: 0.85rem;
+    background: $book-page;
+    border: 1px solid $book-page-border;
+    border-radius: 10px;
+
+    h3 {
+      margin: 0 0 0.4rem;
+      color: $book-text;
+      font-family: $font-heading;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+  }
+
+  .bb-info-body {
+    color: $book-text-muted;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    white-space: pre-wrap;
+  }
+
+  // ── CONTACTS ──
+  .bb-contacts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.75rem;
+    padding: 1.25rem;
+    align-content: start;
+    overflow-y: auto;
+  }
+
+  .bb-contact {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.95rem 1rem;
+    background: $book-page;
+    border: 1px solid $book-page-border;
+    border-radius: 10px;
+  }
+
+  .bb-contact-id {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding-inline-end: 1.5rem;
+  }
+
+  .bb-contact-name {
+    color: $book-text;
+    font-family: $font-heading;
+    font-size: 0.98rem;
+    font-weight: 700;
+  }
+
+  .bb-contact-role {
+    color: $book-text-muted;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .bb-contact-reach {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  // Big enough to hit with a thumb while something is going wrong.
+  .bb-contact-phone {
+    align-self: start;
+    color: $book-text;
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+
+    &.is-link {
+      padding: 0.35rem 0.6rem;
+      background: rgba($book-accent, 0.12);
+      border-radius: 6px;
+      color: $book-accent;
+      text-decoration: none;
+      font-weight: 600;
+
+      @include hover { background: rgba($book-accent, 0.2); }
+    }
+  }
+
+  .bb-contact-note {
+    color: $book-text-muted;
+    font-size: 0.85rem;
+  }
+
+  // ── LINKS ──
+  .bb-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    max-width: 70ch;
+    overflow-y: auto;
+  }
+
+  .bb-link {
+    position: relative;
+    background: $book-page;
+    border: 1px solid $book-page-border;
+    border-radius: 10px;
+  }
+
+  .bb-link-id {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.85rem 1rem;
+    padding-inline-end: 2rem;
+  }
+
+  .bb-link-open {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.85rem 1rem;
+    text-decoration: none;
+
+    @include hover {
+      .bb-link-title { color: $book-accent; }
+    }
+  }
+
+  .bb-link-title {
+    color: $book-text;
+    font-weight: 600;
+    transition: color 0.15s ease;
+  }
+
+  .bb-link-url {
+    color: $book-text-muted;
+    font-size: 0.78rem;
+    word-break: break-all;
+  }
+
+  // ── GALLERY ──
+  .bb-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.85rem;
+    padding: 1.25rem;
+    align-content: start;
+    overflow-y: auto;
+  }
+
+  .bb-photo {
+    position: relative;
+    margin: 0;
+    background: $book-page;
+    border: 1px solid $book-page-border;
+    border-radius: 10px;
+    overflow: hidden;
+
+    img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+
+    figcaption {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.65rem 0.8rem;
+      color: $book-text;
+      font-size: 0.88rem;
+    }
+  }
+
+  // A photo whose address is missing or broken still holds its place in the grid
+  // rather than collapsing the row.
+  .bb-photo-empty {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.03) 10px,
+      transparent 10px,
+      transparent 20px
+    );
+  }
+
+  .bb-photo-url {
+    color: $book-text-muted;
+    font-size: 0.72rem;
+    word-break: break-all;
+  }
+
+  @media (max-width: 768px) {
+    .bb-info,
+    .bb-links,
+    .bb-contacts,
+    .bb-gallery {
+      padding: 0.85rem;
+    }
+
+    .bb-contacts,
+    .bb-gallery {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// The add-page modal lists the formats, so its tiles carry the same icons.
+.add-page-modal .pt-symbol {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+
+  svg { width: 100%; height: 100%; }
+}

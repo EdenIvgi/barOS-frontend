@@ -2,20 +2,24 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createPage } from '../../services/barBook.service.js'
 import { PAGE_TYPES } from './pageTypes.js'
+import { translateField } from '../../services/translate.service.js'
 
 export function AddPageModal({ onAdd, onClose }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.resolvedLanguage || 'he'
   const [type, setType] = useState('checklist')
   const [title, setTitle] = useState('')
   const inputRef = useRef(null)
 
   useEffect(() => { inputRef.current?.focus() }, [])
 
-  function handleSubmit(e) {
+  // The title is stored as { he, en } like everything else in the book, so a page
+  // named in one language still reads in the other.
+  async function handleSubmit(e) {
     e.preventDefault()
     const trimmed = title.trim()
     if (!trimmed) return
-    onAdd(createPage(type, trimmed))
+    onAdd(createPage(type, await translateField(trimmed, lang)))
     onClose()
   }
 
@@ -32,7 +36,7 @@ export function AddPageModal({ onAdd, onClose }) {
                 className={`page-type-btn ${type === pt.type ? 'active' : ''}`}
                 onClick={() => setType(pt.type)}
               >
-                <span className="pt-symbol">{pt.symbol}</span>
+                <span className="pt-symbol"><pt.Icon /></span>
                 <span className="pt-label">{t(pt.labelKey)}</span>
               </button>
             ))}

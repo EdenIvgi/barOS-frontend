@@ -7,8 +7,8 @@ export function getEmptyContent() {
 }
 
 export function createPage(type, title) {
-  // The sidebar renders `customTitle`, so a page created with a name must set it here —
-  // otherwise the name is stored but never displayed.
+  // The tab strip renders `customTitle`, so a page created with a name must set it
+  // here — otherwise the name is stored but never displayed.
   return {
     _id: crypto.randomUUID(),
     type,
@@ -24,6 +24,10 @@ function defaultPageData(type) {
     case 'daily':      return { tasks: [] }
     case 'stock':      return { headers: [], rows: [] }
     case 'recipes':    return { items: [] }
+    case 'info':       return { sections: [] }
+    case 'contacts':   return { contacts: [] }
+    case 'links':      return { links: [] }
+    case 'gallery':    return { photos: [] }
     default:           return {}
   }
 }

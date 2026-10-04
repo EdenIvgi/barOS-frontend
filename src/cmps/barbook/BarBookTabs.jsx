@@ -11,6 +11,10 @@ import { useTranslation } from 'react-i18next'
  * Rename, delete and add only appear in edit mode, which is why a bartender
  * running a shift sees nothing here but the names of the pages.
  */
+function renderIcon(Icon) {
+  return Icon ? <Icon /> : null
+}
+
 export function BarBookTabs({
   pages,
   activePageId,
@@ -23,7 +27,7 @@ export function BarBookTabs({
   onEditTitle,
   onTitleChange,
   onCommitTitle,
-  symbolFor,
+  iconFor,
   titleFor,
 }) {
   const { t } = useTranslation()
@@ -60,7 +64,7 @@ export function BarBookTabs({
               aria-selected={isActive}
               onClick={() => onSelect(page._id)}
             >
-              <span className="bb-tab-symbol" aria-hidden="true">{symbolFor(page.type)}</span>
+              <span className="bb-tab-symbol" aria-hidden="true">{renderIcon(iconFor(page.type))}</span>
               <span className="bb-tab-label">{titleFor(page)}</span>
             </button>
 

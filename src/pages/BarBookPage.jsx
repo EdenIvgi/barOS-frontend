@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { barBookService } from '../services/barBook.service.js'
 import { AppShell } from '../cmps/AppShell'
 import { translateField, getLangText, migrateAllContent } from '../services/translate.service.js'
-import { PAGE_TYPES } from '../cmps/barbook/pageTypes.js'
+import { getPageType } from '../cmps/barbook/pageTypes.js'
 import { AddPageModal } from '../cmps/barbook/AddPageModal.jsx'
 import { BarBookTabs } from '../cmps/barbook/BarBookTabs.jsx'
 import { ChecklistBoard } from '../cmps/barbook/ChecklistBoard.jsx'
@@ -12,6 +12,10 @@ import { StockView } from '../cmps/barbook/StockView.jsx'
 import { SingleChecklistView } from '../cmps/barbook/SingleChecklistView.jsx'
 import { DailyView } from '../cmps/barbook/DailyView.jsx'
 import { RecipesView } from '../cmps/barbook/RecipesView.jsx'
+import { InfoView } from '../cmps/barbook/InfoView.jsx'
+import { ContactsView } from '../cmps/barbook/ContactsView.jsx'
+import { LinksView } from '../cmps/barbook/LinksView.jsx'
+import { GalleryView } from '../cmps/barbook/GalleryView.jsx'
 import { resetChecks, countChecks } from '../cmps/barbook/shiftReset.js'
 
 /**
@@ -128,15 +132,15 @@ export function BarBookPage() {
     setPages(prev => resetChecks(prev))
   }
 
-  function typeSymbol(type) {
-    return PAGE_TYPES.find(pt => pt.type === type)?.symbol || '▤'
+  function typeIcon(type) {
+    return getPageType(type)?.Icon || null
   }
 
   function pageDisplayTitle(page) {
     // `title` is the legacy field — pages created before customTitle existed still carry it.
     const custom = page.customTitle ?? page.title
     if (custom) return getLangText(custom, lang)
-    const pt = PAGE_TYPES.find(p => p.type === page.type)
+    const pt = getPageType(page.type)
     return pt ? t(pt.labelKey) : ''
   }
 
@@ -183,7 +187,7 @@ export function BarBookPage() {
           onEditTitle={setEditingPageTitle}
           onTitleChange={value => setEditingPageTitle(p => ({ ...p, value }))}
           onCommitTitle={commitPageTitle}
-          symbolFor={typeSymbol}
+          iconFor={typeIcon}
           titleFor={pageDisplayTitle}
         />
 
@@ -219,6 +223,18 @@ export function BarBookPage() {
               )}
               {activePage.type === 'recipes' && (
                 <RecipesView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              )}
+              {activePage.type === 'info' && (
+                <InfoView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              )}
+              {activePage.type === 'contacts' && (
+                <ContactsView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              )}
+              {activePage.type === 'links' && (
+                <LinksView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              )}
+              {activePage.type === 'gallery' && (
+                <GalleryView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
               )}
             </div>
           )}
