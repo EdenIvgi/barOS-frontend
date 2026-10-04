@@ -24,86 +24,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 
   // ────────────────────────────────────────────
-  // OUTER LAYOUT: sidebar | main
-  // ────────────────────────────────────────────
-  .bar-book-layout {
-    display: flex;
-    height: 100%;
-    overflow: hidden;
-    background: $book-bg;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: $book-shadow;
-  }
-
-  // ────────────────────────────────────────────
-  // SIDEBAR — minimal, clean
-  // ────────────────────────────────────────────
-  .bar-book-sidebar {
-    width: $sidebar-width;
-    min-width: $sidebar-width;
-    background: $book-sidebar-bg;
-    border-inline-end: 1px solid $book-line-strong;
-    display: flex;
-    flex-direction: column;
-    padding-top: 1.5rem;
-    overflow-y: auto;
-    height: 100%;
-  }
-
-  .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 0 0.75rem;
-  }
-
-  .sidebar-nav-item {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    width: 100%;
-    padding: 0.65rem 0.85rem;
-    background: transparent;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-family: $font-body;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.4);
-    text-align: start;
-    transition: background 0.15s ease, color 0.15s ease;
-
-    .nav-symbol {
-      font-size: 0.8rem;
-      width: 1.1em;
-      text-align: center;
-      flex-shrink: 0;
-      opacity: 0.7;
-      transition: opacity 0.15s ease;
-    }
-
-    @include hover {
-      background: rgba(255, 255, 255, 0.04);
-      color: rgba(255, 255, 255, 0.75);
-
-      .nav-symbol {
-        opacity: 1;
-      }
-    }
-
-    &.active {
-      background: rgba($book-accent, 0.1);
-      color: $book-accent;
-      font-weight: 600;
-
-      .nav-symbol {
-        opacity: 1;
-      }
-    }
-  }
-
-  // ────────────────────────────────────────────
   // MAIN CONTENT AREA
   // ────────────────────────────────────────────
   .bar-book-main {
@@ -115,56 +35,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     overflow: hidden;
   }
 
-  // ────────────────────────────────────────────
-  // CONTENT TOPBAR — section title + edit toggle
-  // ────────────────────────────────────────────
-  .content-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.9rem 2rem;
-    border-bottom: 1px solid $book-line-strong;
-    background: rgba(255, 255, 255, 0.015);
-    flex-shrink: 0;
-
-    .content-topbar-title {
-      font-family: $font-heading;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.35);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    .topbar-edit-btn {
-      padding: 0.35rem 0.85rem;
-      background: transparent;
-      border: 1px solid $book-line-strong;
-      border-radius: 4px;
-      color: rgba(255, 255, 255, 0.35);
-      font-size: 0.75rem;
-      font-family: $font-body;
-      font-weight: 600;
-      cursor: pointer;
-      letter-spacing: 0.02em;
-      transition: all 0.2s ease;
-
-      @include hover {
-        border-color: rgba(255, 255, 255, 0.25);
-        color: rgba(255, 255, 255, 0.7);
-      }
-
-      &.active {
-        background: rgba($book-accent, 0.12);
-        border-color: rgba($book-accent, 0.4);
-        color: $book-accent;
-      }
-    }
-  }
-
   // Actual scrollable content inside main
-  .bar-book-checklists,
-  .bar-book-full-pages,
   .bar-book-recipes {
     padding: 1.75rem 2rem;
     flex: 1;
@@ -227,55 +98,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
         background: $accent-hover;
       }
     }
-  }
-
-  // ────────────────────────────────────────────
-  // CHECKLISTS — 3-column grid
-  // ────────────────────────────────────────────
-  .bar-book-checklists {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  .checklists-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    align-items: start;
-  }
-
-  .checklist-section {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid $book-page-border;
-    border-radius: 6px;
-    padding: 1.25rem 1.25rem 1rem;
-    box-shadow: $book-page-shadow;
-    position: relative;
-
-    // Subtle top accent line
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      inset-inline-start: 0;
-      inset-inline-end: 0;
-      height: 2px;
-      background: $book-accent;
-      border-radius: 6px 6px 0 0;
-      opacity: 0.6;
-    }
-  }
-
-  .checklist-title {
-    margin: 0 0 0.85rem 0;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: $book-text;
-    font-family: $font-heading;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid $book-line-strong;
-    letter-spacing: 0.01em;
   }
 
   .checklist-list {
@@ -397,26 +219,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
   }
 
-  .checklist-title.editable,
-  .section-title.editable {
-    cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 3px;
-
-    @include hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
-  }
-
-  .checklist-title-edit,
-  .section-title-edit {
-    margin-bottom: 0.85rem;
-  }
-
-  .checklist-item-edit {
-    margin-bottom: 0.4rem;
-  }
-
   // ────────────────────────────────────────────
   // EDIT INPUTS
   // ────────────────────────────────────────────
@@ -436,12 +238,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       outline: none;
       border-color: rgba($book-accent, 0.6);
       box-shadow: 0 0 0 2px rgba($book-accent, 0.1);
-    }
-
-    &.title-input {
-      font-size: 1rem;
-      font-weight: 700;
-      font-family: $font-heading;
     }
 
     &.cell-input {
@@ -491,63 +287,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   .btn-delete-row {
     font-size: 0.78rem;
     white-space: nowrap;
-  }
-
-  .bar-book-reset-wrap {
-    margin-top: 1.5rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid $book-line;
-  }
-
-  .btn-reset-default {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.75rem;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    color: rgba(255, 255, 255, 0.25);
-    cursor: pointer;
-    font-family: $font-body;
-    transition: all 0.2s ease;
-
-    @include hover {
-      color: $color-error;
-      border-color: rgba($color-error, 0.4);
-    }
-  }
-
-  // ────────────────────────────────────────────
-  // DAILY TASKS & STOCK PAGES
-  // ────────────────────────────────────────────
-  .bar-book-full-pages {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  .daily-tasks-section,
-  .stock-section {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid $book-page-border;
-    border-radius: 6px;
-    padding: 1.5rem 1.75rem;
-    box-shadow: $book-page-shadow;
-  }
-
-  .section-title {
-    margin: 0 0 0.75rem 0;
-    font-size: 1rem;
-    font-weight: 700;
-    color: $book-text;
-    font-family: $font-heading;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid $book-line-strong;
-  }
-
-  .section-intro {
-    margin: 0 0 1rem 0;
-    color: $book-text-muted;
-    font-size: 0.85rem;
   }
 
   // ────────────────────────────────────────────
@@ -716,16 +455,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       padding: 0.8rem 1rem;
       border-bottom: 1px solid $book-line-strong;
       flex-shrink: 0;
-
-      .panel-title {
-        margin: 0;
-        font-family: $font-heading;
-        font-size: 0.65rem;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.3);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-      }
 
       .btn-add-recipe {
         padding: 0.28rem 0.6rem;
@@ -1056,107 +785,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   }
 
   // ────────────────────────────────────────────
-  // DYNAMIC SIDEBAR PAGES
-  // ────────────────────────────────────────────
-  .sidebar-page-item {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    border-radius: 6px;
-    transition: background 0.15s ease;
-
-    &.active {
-      background: rgba($book-accent, 0.1);
-
-      .sidebar-nav-item-btn {
-        color: $book-accent;
-        font-weight: 600;
-      }
-    }
-
-    &:not(.active):hover {
-      background: rgba(255, 255, 255, 0.04);
-    }
-  }
-
-  .sidebar-nav-item-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    padding: 0.65rem 0.85rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-family: $font-body;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.4);
-    text-align: start;
-    min-width: 0;
-
-    .nav-label {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-  .sidebar-page-actions {
-    display: flex;
-    gap: 2px;
-    padding-inline-end: 0.4rem;
-    flex-shrink: 0;
-
-    .btn-icon {
-      font-size: 0.85rem;
-      padding: 0.15rem 0.3rem;
-      opacity: 0.5;
-
-      @include hover {
-        opacity: 1;
-      }
-    }
-  }
-
-  .sidebar-title-input {
-    flex: 1;
-    margin: 0.3rem 0.5rem;
-    padding: 0.35rem 0.5rem;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba($book-accent, 0.4);
-    border-radius: 4px;
-    color: $book-text;
-    font-size: 0.85rem;
-    font-family: $font-body;
-    outline: none;
-  }
-
-  .sidebar-add-page {
-    margin-top: auto;
-    padding: 0.85rem 0.75rem;
-    border-top: 1px solid $book-line-strong;
-  }
-
-  .btn-add-page {
-    width: 100%;
-    padding: 0.5rem 0.85rem;
-    background: transparent;
-    border: 1px dashed rgba(255, 255, 255, 0.15);
-    border-radius: 6px;
-    color: rgba(255, 255, 255, 0.35);
-    font-size: 0.8rem;
-    font-family: $font-body;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    @include hover {
-      border-color: rgba($book-accent, 0.5);
-      color: rgba(255, 255, 255, 0.7);
-    }
-  }
-
-  // ────────────────────────────────────────────
   // PAGE CONTENT AREA (scrollable)
   // ────────────────────────────────────────────
   .page-content-area {
@@ -1169,7 +797,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     &::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
 
     // Full-bleed pages — negate parent padding so layout fills edge-to-edge
-    .checklists-page-view,
     .bar-book-recipes {
       margin: -1.75rem -2rem;
       height: calc(100% + 3.5rem);
@@ -1180,130 +807,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   .daily-page-view,
   .stock-page-view {
     max-width: 900px;
-  }
-
-  // ────────────────────────────────────────────
-  // CHECKLISTS PAGE — master/detail (like recipes)
-  // ────────────────────────────────────────────
-  .checklists-page-view {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .checklists-layout {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
-
-  .checklists-list-panel {
-    width: $panel-list-width;
-    min-width: $panel-list-width;
-    border-inline-end: 1px solid $book-line-strong;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.015);
-
-    .checklist-index-item {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-      width: 100%;
-      padding: 0.8rem 1rem;
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid $book-line;
-      border-inline-start: 2px solid transparent;
-      cursor: pointer;
-      text-align: start;
-      transition: background 0.12s, border-color 0.12s;
-
-      @include hover { background: rgba(255, 255, 255, 0.025); }
-
-      &.active {
-        background: rgba($book-accent, 0.06);
-        border-inline-start-color: $book-accent;
-      }
-
-      .checklist-index-title {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: $book-text;
-        line-height: 1.3;
-      }
-
-      .checklist-index-meta {
-        font-size: 0.72rem;
-        color: rgba(255, 255, 255, 0.3);
-      }
-
-      .checklist-index-actions {
-        position: absolute;
-        inset-inline-end: 0.4rem;
-        top: 50%;
-        transform: translateY(-50%);
-        display: flex;
-        gap: 2px;
-
-        .btn-icon {
-          font-size: 0.85rem;
-          opacity: 0.5;
-          @include hover { opacity: 1; }
-        }
-      }
-
-      .checklist-title-edit-input {
-        width: 100%;
-        font-size: 0.875rem;
-      }
-    }
-
-    .btn-add-checklist-list {
-      margin: 0.6rem 0.75rem;
-      padding: 0.4rem 0.7rem;
-      background: transparent;
-      border: 1px dashed rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-      color: rgba(255, 255, 255, 0.35);
-      font-size: 0.78rem;
-      font-family: $font-body;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-      @include hover {
-        border-color: rgba($book-accent, 0.5);
-        color: rgba(255, 255, 255, 0.7);
-      }
-    }
-
-    .checklist-new-list-form {
-      padding: 0.5rem 0.75rem;
-    }
-  }
-
-  .checklists-detail-panel {
-    flex: 1;
-    min-width: 0;
-    overflow-y: auto;
-    padding: 1.5rem 2rem;
-
-    &::-webkit-scrollbar { width: 3px; }
-    &::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); }
-
-    .checklist-detail-placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 60%;
-      min-height: 180px;
-      color: rgba(255, 255, 255, 0.2);
-      font-size: 0.9rem;
-      font-style: italic;
-    }
   }
 
   // ────────────────────────────────────────────
@@ -1348,6 +851,10 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    // The format list grows as the book learns new ones, so on a short screen
+    // the dialog has to be reachable rather than centred and clipped.
+    padding: 1rem;
+    overflow-y: auto;
   }
 
   .add-page-modal {
@@ -1356,6 +863,8 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
     padding: 1.75rem;
     width: min(380px, 92vw);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 
     h3 {
@@ -1451,84 +960,12 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   // RESPONSIVE
   // ────────────────────────────────────────────
   @media (max-width: 1024px) {
-    .checklists-grid {
-      grid-template-columns: 1fr 1fr;
-    }
   }
 
   @media (max-width: 768px) {
     height: auto;
     min-height: calc(100vh - #{$header-height});
     overflow: visible;
-
-    .bar-book-layout {
-      flex-direction: column;
-      height: auto;
-      min-height: calc(100vh - #{$header-height});
-      overflow: visible;
-    }
-
-    // ── Sidebar → horizontal tab bar ──
-    .bar-book-sidebar {
-      width: 100%;
-      min-width: 0;
-      height: auto;
-      flex-direction: row;
-      align-items: center;
-      padding-top: 0;
-      border-inline-end: none;
-      border-bottom: 1px solid $book-line-strong;
-      overflow: visible;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .sidebar-nav {
-      flex-direction: row;
-      flex: 1;
-      gap: 0;
-      padding: 0;
-      overflow-x: auto;
-      overflow-y: hidden;
-
-      &::-webkit-scrollbar { display: none; }
-    }
-
-    .sidebar-page-item {
-      border-radius: 0;
-      flex-shrink: 0;
-      border-bottom: 2px solid transparent;
-
-      &.active {
-        background: rgba($book-accent, 0.06);
-        border-bottom-color: $book-accent;
-      }
-    }
-
-    .sidebar-nav-item-btn {
-      padding: 0.65rem 0.85rem;
-      white-space: nowrap;
-      font-size: 0.82rem;
-
-      .nav-symbol { display: none; }
-    }
-
-    .sidebar-page-actions { display: none; }
-
-    .sidebar-add-page {
-      margin-top: 0;
-      padding: 0.4rem 0.5rem;
-      border-top: none;
-      border-inline-start: 1px solid $book-line-strong;
-
-      .btn-add-page {
-        white-space: nowrap;
-        font-size: 0.75rem;
-        padding: 0.4rem 0.65rem;
-        border-radius: 4px;
-      }
-    }
 
     // ── Main content ──
     .bar-book-main {
@@ -1537,17 +974,12 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       overflow: visible;
     }
 
-    .content-topbar {
-      padding: 0.6rem 1rem;
-    }
-
     .page-content-area {
       flex: none;
       overflow: visible;
       padding: 1rem;
       min-height: 60vh;
 
-      .checklists-page-view,
       .bar-book-recipes {
         margin: -1rem;
         height: auto;
@@ -1569,33 +1001,6 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     .stock-table {
       font-size: 0.8rem;
       th, td { padding: 0.4rem 0.5rem; }
-    }
-
-    // ── Checklists master/detail ──
-    .checklists-page-view {
-      flex-direction: column;
-      height: auto;
-      overflow: visible;
-    }
-
-    .checklists-layout {
-      flex-direction: column;
-      overflow: visible;
-    }
-
-    .checklists-list-panel {
-      width: 100%;
-      min-width: 0;
-      max-height: 180px;
-      border-inline-end: none;
-      border-bottom: 1px solid $book-line-strong;
-      overflow-y: auto;
-    }
-
-    .checklists-detail-panel {
-      padding: 1rem;
-      overflow: visible;
-      min-height: 200px;
     }
 
     // ── Recipes master/detail ──
