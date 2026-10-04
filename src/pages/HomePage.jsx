@@ -7,6 +7,7 @@ import { SupplierOrdersSummary } from '../cmps/SupplierOrdersSummary'
 import { loadItems } from '../store/actions/item.actions'
 import { loadOrders } from '../store/actions/order.actions'
 import { barBookService } from '../services/barBook.service'
+import { setupService } from '../services/setup.service'
 import { AppShell } from '../cmps/AppShell'
 import { formatQty } from '../services/util.service'
 
@@ -16,9 +17,19 @@ export function HomePage() {
   const orders = useSelector((storeState) => storeState.orderModule.orders)
   const user = useSelector((storeState) => storeState.userModule.loggedInUser)
   const [barBookDailyTasks, setBarBookDailyTasks] = useState([])
+  const [setupState, setSetupState] = useState(null)
 
   useEffect(() => {
     if (user) loadItems()
+  }, [user])
+
+  // Only an admin can run setup, and the endpoint is admin-only, so nobody else
+  // asks for it.
+  useEffect(() => {
+    if (user?.role !== 'admin') return
+    setupService.getState()
+      .then(setSetupState)
+      .catch(() => { /* the card is an offer, not something worth an error for */ })
   }, [user])
 
   useEffect(() => {
@@ -119,6 +130,27 @@ export function HomePage() {
 
   return (
     <AppShell title={t('home')} subtitle={displayDayName}>
+      {setupService.isPending(setupState) && (
+        <div className="dash-card setup-resume">
+          <div className="setup-resume-text">
+            <h3 className="dash-card-title">{t('setupResumeTitle')}</h3>
+            <p className="setup-resume-sub">
+              {t('setupResumeProgress', { done: setupService.doneCount(setupState), total: 4 })}
+            </p>
+          </div>
+          <div className="setup-resume-actions">
+            <button
+              type="button"
+              className="btn-shell"
+              onClick={() => setupService.finish().then(() => setSetupState(s => ({ ...s, status: 'done' })))}
+            >
+              {t('setupDismiss')}
+            </button>
+            <Link to="/setup" className="btn-shell is-primary">{t('setupContinue')}</Link>
+          </div>
+        </div>
+      )}
+
       {/* What needs doing, before anything describing the past. */}
       <div className="dash-kpis">
         <div className="k-card">

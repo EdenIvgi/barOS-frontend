@@ -46,6 +46,10 @@ export function LandingPage() {
     }
     setIsLoading(true)
     try {
+      // Signing up without an invite code creates the bar and makes you its
+      // admin, so there is a bar to set up. With a code you joined one that is
+      // already set up, and setup is not yours to run.
+      const isNewBar = isSignup && !credentials.inviteCode?.trim()
       if (isSignup) {
         await signup(credentials)
         showSuccessMsg(t('welcomeMsg'))
@@ -53,7 +57,7 @@ export function LandingPage() {
         await login(credentials)
         showSuccessMsg(t('welcomeMsg'))
       }
-      navigate('/home')
+      navigate(isNewBar ? '/setup' : '/home')
     } catch (err) {
       // Surface the server's own message (e.g. "Username already exists") when there
       // is one — the generic fallback hides the actual reason from the user.
