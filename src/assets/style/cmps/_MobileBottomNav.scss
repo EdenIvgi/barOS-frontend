@@ -1,26 +1,31 @@
 @import '../setup/vars';
 @import '../setup/mixins';
 
+// The bottom nav is the rail in phone form: same glyphs, same sizes, same way
+// of showing which destination you are on. They used to diverge — 22px icons
+// against the rail's 19px, the logo face with extra letter-spacing, and a
+// scale transform instead of the rail's filled pill — so the two read as two
+// different products.
 .mobile-bottom-nav {
   display: none;
 
   @media (max-width: 768px) {
     display: flex;
+    align-items: stretch;
+    gap: 2px;
     position: fixed;
+    inset-inline: 0;
     bottom: 0;
-    left: 0;
-    right: 0;
     height: $bottom-nav-height;
+    padding: 5px 6px calc(5px + env(safe-area-inset-bottom, 0px));
     background: $bg-surface;
-    border-top: 1px solid $glass-border;
-    backdrop-filter: blur($glass-blur-heavy);
-    -webkit-backdrop-filter: blur($glass-blur-heavy);
+    border-top: 1px solid $line;
     z-index: 1001;
 
     .bottom-nav-item {
       // min-width: 0 is what makes `flex: 1` actually shrink. Without it each
-      // item sat at its label's intrinsic width and the five of them totalled
-      // 474px on a 375px screen — hidden until body stopped clipping overflow.
+      // item sat at its label's intrinsic width and the five of them overflowed
+      // a 375px screen.
       flex: 1 1 0;
       min-width: 0;
       display: flex;
@@ -28,20 +33,25 @@
       align-items: center;
       justify-content: center;
       gap: 3px;
+      border: 0;
+      border-radius: $radius;
+      background: transparent;
       color: $text-muted;
       text-decoration: none;
-      font-size: 0.6rem;
-      font-family: $font-logo;
+      font-family: inherit;
+      font-size: 10px;
       font-weight: 500;
-      letter-spacing: 0.04em;
-      transition: color 0.2s ease;
-      padding: 6px 0;
+      cursor: pointer;
 
       svg {
-        width: 22px;
-        height: 22px;
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
         flex-shrink: 0;
-        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
       span {
@@ -53,22 +63,20 @@
       }
 
       @include hover {
-        color: $text-secondary;
+        color: $text-primary;
+        background: $bg-elevated;
       }
 
+      &:focus-visible {
+        outline: 2px solid $accent-primary;
+        outline-offset: -2px;
+      }
+
+      // Matches the rail's active treatment: filled pill plus the accent colour.
       &.active {
-        color: $accent-text;
-
-        svg {
-          transform: scale(1.1);
-        }
+        background: $bg-elevated;
+        color: $accent-primary;
       }
-    }
-
-    .bottom-nav-more {
-      background: none;
-      border: none;
-      cursor: pointer;
     }
   }
 }

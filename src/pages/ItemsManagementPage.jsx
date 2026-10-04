@@ -456,9 +456,12 @@ export function ItemsManagementPage() {
         dryRun: false,
         mode: 'set',
         createMissing,
+        confirmedMatches: importState.report?.matches ?? null,
       })
       await loadItems()
       const created = res?.summary?.createdCount || 0
+      const stale = res?.summary?.staleMatches || 0
+      if (stale > 0) showErrorMsg(t('importStaleMatches', { n: stale }))
       showSuccessMsg(created > 0 ? t('importCreatedProducts', { n: created }) : t('stockUpdatedSuccess'))
       closeImportModal()
     } catch (err) {
