@@ -266,3 +266,18 @@ $setup-border: rgba(255, 255, 255, 0.08);
 
   .setup-row { flex-wrap: wrap; }
 }
+
+// The two ways out of an empty products page, side by side.
+.empty-detail-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+}
+
+// On the Bar Book the card sits above the tab strip, which is flush to the
+// page edges, so it needs its own breathing room.
+.bar-book-page > .setup-resume {
+  margin: 1rem 1rem 0;
+}

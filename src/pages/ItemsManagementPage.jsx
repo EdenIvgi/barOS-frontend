@@ -648,12 +648,28 @@ export function ItemsManagementPage() {
         onClose={closeImportModal}
       />
 
+      {/* Shared by both branches: the import used to live inside the filters,
+          which only render once products exist — so a brand new bar, the one
+          most likely to have a spreadsheet to import, could not reach it. */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".xlsx,.xls,.csv"
+        style={{ display: 'none' }}
+        onChange={handleImportFile}
+      />
+
       {!items || items.length === 0 ? (
         <div className="empty-detail">
           <p>{t('noProductsInSystem')}</p>
-          <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
-            {t('addFirstProduct')}
-          </button>
+          <div className="empty-detail-actions">
+            <button type="button" className="btn-shell" onClick={() => fileInputRef.current?.click()}>
+              {t('importStockExcel')}
+            </button>
+            <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
+              {t('addFirstProduct')}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="stocktake">
@@ -664,13 +680,6 @@ export function ItemsManagementPage() {
             onFilterChange={handleFilterChange}
             onClearFilters={handleClearFilters}
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xls,.csv"
-              style={{ display: 'none' }}
-              onChange={handleImportFile}
-            />
             {totalItemsToOrder > 0 && (
               <button type="button" className="btn-shell" onClick={openCreateOrderModal}>
                 {t('createOrder', { n: totalItemsToOrder })}

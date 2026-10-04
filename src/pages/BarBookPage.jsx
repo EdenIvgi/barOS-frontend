@@ -17,6 +17,7 @@ import { ContactsView } from '../cmps/barbook/ContactsView.jsx'
 import { LinksView } from '../cmps/barbook/LinksView.jsx'
 import { GalleryView } from '../cmps/barbook/GalleryView.jsx'
 import { resetChecks, countChecks } from '../cmps/barbook/shiftReset.js'
+import { SetupResumeCard } from '../cmps/setup/SetupResumeCard'
 
 /**
  * The Bar Book.
@@ -175,6 +176,8 @@ export function BarBookPage() {
       flush
     >
       <section className="bar-book-page">
+        <SetupResumeCard />
+
         <BarBookTabs
           pages={pages}
           activePageId={activePageId}
