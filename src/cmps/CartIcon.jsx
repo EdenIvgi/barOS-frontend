@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { checkout } from '../store/actions/order.actions'
 
 export function CartIcon() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const cart = useSelector((storeState) => storeState.orderModule.cart)
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
   const totalUnits = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)

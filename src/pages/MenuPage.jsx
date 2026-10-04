@@ -52,7 +52,6 @@ export function MenuPage() {
           of controls instead of a tall search box above a separate chip row. */}
       <div className="catalog-bar">
         <CategoryFilter
-          filterBy={filterBy}
           onSetFilter={onSetFilter}
           selectedCategoryId={filterBy.categoryId}
         />

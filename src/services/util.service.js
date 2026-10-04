@@ -4,7 +4,6 @@ export const utilService = {
   getRandomIntInclusive,
   loadFromStorage,
   saveToStorage,
-  animateCSS,
   debounce,
   getAssetSrc,
 }
@@ -87,24 +86,6 @@ function debounce(func, timeout = 300) {
       func.apply(this, args)
     }, timeout)
   }
-}
-
-// In our utilService
-function animateCSS(el, animation) {
-  const prefix = 'animate__'
-  return new Promise((resolve, reject) => {
-    const animationName = `${prefix}${animation}`
-
-    el.classList.add(`${prefix}animated`, animationName)
-
-    // When the animation ends, we clean the classes and resolve the Promise
-    function handleAnimationEnd(event) {
-      event.stopPropagation()
-      el.classList.remove(`${prefix}animated`, animationName)
-      resolve('Animation ended')
-    }
-    el.addEventListener('animationend', handleAnimationEnd, { once: true })
-  })
 }
 
 function getAssetSrc(name) {

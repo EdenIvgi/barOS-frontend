@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 // Categories are now loaded from items, so we don't need to load from backend
 // import { loadCategories } from '../store/actions/category.actions'
 
-export function CategoryFilter({ filterBy, onSetFilter, selectedCategoryId }) {
+export function CategoryFilter({ onSetFilter, selectedCategoryId }) {
   const { t, i18n } = useTranslation()
   const items = useSelector((storeState) => storeState.itemModule.items)
 
