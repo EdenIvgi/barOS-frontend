@@ -39,8 +39,6 @@ export function ItemFilters({
         {activeCount > 0 && <span className="filters-count">{activeCount}</span>}
       </button>
 
-      {children && <div className="list-filters-actions">{children}</div>}
-
       <div className={'list-filters-fields' + (isOpen ? ' is-open' : '')}>
         <label className="pane-field">
           <span>{t('category')}</span>
@@ -78,6 +76,11 @@ export function ItemFilters({
           </button>
         )}
       </div>
+
+      {/* After the fields, so the auto start-margin pushes only these buttons to
+          the far edge. Before them it pushed the whole row there, leaving the
+          filters floating against the wrong side. */}
+      {children && <div className="list-filters-actions">{children}</div>}
     </div>
   )
 }
