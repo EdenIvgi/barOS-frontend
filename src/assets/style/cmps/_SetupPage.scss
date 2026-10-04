@@ -194,7 +194,7 @@ $setup-border: rgba(255, 255, 255, 0.08);
   line-height: 1;
   cursor: pointer;
 
-  @include hover { color: #e06a6a; }
+  @include hover { color: $color-error; }
 }
 
 // ── Stock step ──

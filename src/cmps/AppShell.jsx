@@ -62,8 +62,10 @@ export function AppShell({ title, subtitle, actions, children, flush = false }) 
 
       <div className="shell-main">
         <header className="topbar">
-          <h1 className="topbar-title">{title}</h1>
-          {subtitle && <span className="topbar-sub">{subtitle}</span>}
+          <div className="topbar-id">
+            <h1 className="topbar-title">{title}</h1>
+            {subtitle && <span className="topbar-sub">{subtitle}</span>}
+          </div>
           <div className="topbar-spacer" />
           {actions}
         </header>

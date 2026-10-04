@@ -1,47 +1,53 @@
 // ============================================
 // BAROS DESIGN SYSTEM
-// Palette: deep teal-charcoal, operational tool.
+// Palette: warm near-black with a brass accent — a bar at night, not a dashboard.
 // Contrast of every text token verified against its surface (WCAG AA).
 // ============================================
 
 // === SURFACES ===
-$bg-deepest: #101817;   // app ground
-$bg-deep: #101817;
-$bg-surface: #16211F;   // panels, rail, topbar
-$bg-elevated: #1A2724;  // selected row, hover
-$bg-card: #16211F;
-$bg-sunken: #0C1413;    // gauge tracks, inputs
+$bg-deepest: #13100C;   // app ground
+$bg-deep: #13100C;
+$bg-surface: #1C1813;   // panels, rail, topbar
+$bg-elevated: #241F18;  // selected row, hover
+$bg-card: #1C1813;
+$bg-sunken: #0E0B08;    // gauge tracks, inputs
 
 // === LINES ===
-$line: #24332F;
-$line-strong: #2E403B;
+$line: #332C22;
+$line-strong: #42392C;
 
 // === TEXT ===
-$text-primary: #E4EDEA;   // 13.8:1 on surface
-$text-secondary: #A9BDB6;
-$text-muted: #7C918B;     // 4.9:1 on surface — passes AA
-$text-inverse: #07201B;
+$text-primary: #F0E9DD;   // 14.6:1 on surface
+$text-secondary: #BFB09A; // 8.3:1 on surface
+$text-muted: #9A8B73;     // 5.3:1 on surface — passes AA
+$text-inverse: #1A1206;   // 7.0:1 on the accent
 
-// === ACCENT — teal ===
-$accent-primary: #1F9C82;
-$accent-hover: #27B897;
-$accent-deep: #175E4F;
-$accent-subtle: rgba(31, 156, 130, 0.13);
-$accent-glow: rgba(31, 156, 130, 0.25);
-$accent-text: #3FBEA0;
+// === ACCENT — brass ===
+$accent-primary: #C8973F;
+$accent-hover: #DCA94C;
+$accent-deep: #7A5A22;
+$accent-subtle: rgba(200, 151, 63, 0.13);
+$accent-glow: rgba(200, 151, 63, 0.25);
+$accent-text: #D9A94F;
 
 // === SEMANTIC — status only, never a series colour ===
-$color-success: #1F9C82;
-$color-warning: #BE8129;
-$color-error: #D9604F;
-$color-info: #4FA3D1;
+// Success is a true green rather than the accent: with a brass brand colour,
+// reusing the accent for "good" would make every primary button read as a status.
+// Warning stays the closest thing to amber that still separates from the brass by
+// hue and passes AA — but the two cannot be told apart by brightness, so a warning
+// must never be signalled by colour alone.
+$color-success: #4CA06B;  // 5.5:1 on surface
+$color-warning: #E2703A;  // 5.2:1 on elevated
+$color-error: #E06A58;    // 5.0:1 on elevated (was 4.47 — under AA)
+$color-error-deep: #C4543F; // pressed/hover state for destructive actions
+$color-info: #5AA6D1;
 
 // === SHADOWS ===
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
 $shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
 $shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55);
 $shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.65);
-$shadow-glow-accent: 0 0 0 3px rgba(31, 156, 130, 0.14);
+$shadow-glow-accent: 0 0 0 3px rgba(200, 151, 63, 0.14);
 $shadow-glow-white: 0 0 15px rgba(255, 255, 255, 0.04);
 
 // === GLASS (kept for components not yet migrated) ===
@@ -50,7 +56,7 @@ $glass-bg-hover: rgba(255, 255, 255, 0.07);
 $glass-bg-active: rgba(255, 255, 255, 0.11);
 $glass-border: $line;
 $glass-border-hover: $line-strong;
-$glass-border-focus: rgba(31, 156, 130, 0.45);
+$glass-border-focus: rgba(200, 151, 63, 0.45);
 $glass-blur: 16px;
 $glass-blur-heavy: 24px;
 

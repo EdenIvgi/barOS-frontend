@@ -50,7 +50,7 @@
     margin-bottom: 12px;
     border-radius: $radius;
     background: $accent-deep;
-    color: #DFF3EC;
+    color: $text-primary;
     font-weight: 800;
     font-size: 13px;
     text-decoration: none;
@@ -63,7 +63,7 @@
     height: 30px;
     border-radius: 50%;
     background: $accent-deep;
-    color: #DFF3EC;
+    color: $text-primary;
     display: grid;
     place-items: center;
     font-size: 12px;
@@ -132,19 +132,43 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 10px 18px;
+  padding: 13px 18px;
   background: $bg-surface;
   border-bottom: 1px solid $line;
   min-height: $topbar-height;
 
-  .topbar-title {
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    margin: 0;
+  // The page name is the one thing every screen has in common, so it is given
+  // the room to act as the heading rather than sitting inline like a label.
+  .topbar-id {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
-  .topbar-sub { font-size: 12px; color: $text-muted; }
+
+  .topbar-title {
+    font-size: 25px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topbar-sub {
+    font-size: 12px;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .topbar-spacer { flex: 1; }
+
+  @media (max-width: 768px) {
+    .topbar-title { font-size: 21px; }
+  }
 }
 
 .shell-content {
@@ -230,7 +254,7 @@
 
   &:hover { color: $text-primary; }
   &:focus-visible { outline: 2px solid $accent-primary; outline-offset: 2px; }
-  &.is-on { background: $accent-deep; border-color: $accent-deep; color: #CFEDE4; }
+  &.is-on { background: $accent-deep; border-color: $accent-deep; color: $text-primary; }
 }
 
 // ── List rows ─────────────────────────────────────
@@ -770,7 +794,7 @@ $stock-cols: minmax(0, 1fr) 84px 68px 132px 92px 40px;
 
   svg { width: 15px; height: 15px; }
 
-  &:hover:not(:disabled) { background: $accent-deep; color: #DFF3EC; }
+  &:hover:not(:disabled) { background: $accent-deep; color: $text-primary; }
   &:focus-visible { outline: 2px solid $accent-primary; outline-offset: -2px; }
   &:disabled { opacity: 0.35; cursor: not-allowed; }
 }
