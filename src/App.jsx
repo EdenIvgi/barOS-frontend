@@ -16,6 +16,7 @@ import { OrdersListPage } from './pages/OrdersListPage'
 import { ItemsManagementPage } from './pages/ItemsManagementPage'
 import { BarBookPage } from './pages/BarBookPage'
 import { ProtectedRoute } from './cmps/ProtectedRoute'
+import { ErrorBoundary } from './cmps/ErrorBoundary'
 import { store } from './store/store'
 import { loadCartFromStorage } from './store/actions/order.actions'
 
@@ -32,6 +33,8 @@ function ScrollToTop() {
  * only carries what sits outside any single page: scroll reset and the phone nav.
  */
 function AppLayout() {
+  const { pathname } = useLocation()
+
   useEffect(() => {
     loadCartFromStorage()
   }, [])
@@ -39,6 +42,8 @@ function AppLayout() {
   return (
     <>
       <ScrollToTop />
+      {/* Keyed on the path so navigating away from a crashed page clears it. */}
+      <ErrorBoundary resetKey={pathname}>
       <Routes>
         <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
         <Route path="/about" element={<About />} />
@@ -50,6 +55,7 @@ function AppLayout() {
         <Route path="/items-management" element={<ProtectedRoute><ItemsManagementPage /></ProtectedRoute>} />
         <Route path="/bar-book" element={<ProtectedRoute><BarBookPage /></ProtectedRoute>} />
       </Routes>
+      </ErrorBoundary>
       <MobileBottomNav />
     </>
   )
