@@ -72,7 +72,7 @@
 
       button {
         padding: 0.5rem 1rem;
-        background: rgba($color-error, 0.15);
+        background: error(0.15);
         color: $color-error;
         border: none;
         border-radius: $border-radius;
@@ -81,7 +81,7 @@
         transition: all 0.3s;
 
         @include hover {
-          background: rgba($color-error, 0.25);
+          background: error(0.25);
         }
       }
     }

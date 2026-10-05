@@ -108,7 +108,10 @@
       border-bottom: 1px solid $glass-border;
       color: $text-secondary;
       font-size: 0.82rem;
-      font-family: $font-logo;
+      // Orbitron is the logo face and carries no Hebrew glyphs, so a menu set in
+      // it reads in a different typeface from the rest of the app and falls back
+      // to a third one in Hebrew.
+      font-family: $font-body;
       font-weight: 500;
       letter-spacing: 0.03em;
       cursor: pointer;

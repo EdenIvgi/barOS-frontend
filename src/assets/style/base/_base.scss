@@ -66,7 +66,7 @@ a.active {
   width: 40vw;
   align-items: center;
   @include glass-card;
-  background: rgba(20, 20, 20, 0.95);
+  background: $bg-surface;
   backdrop-filter: blur($glass-blur-heavy);
   display: flex;
   inset: 0;
@@ -97,7 +97,7 @@ a.active {
   .app-footer,
   .landing-auth-card,
   .user-msg {
-    background: rgba(10, 10, 10, 0.95) !important;
+    background: $bg-deep !important;
   }
 }
 
@@ -119,10 +119,10 @@ html[dir="rtl"],
   background: $bg-deep;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: fg(0.1);
   border-radius: 4px;
 
   @include hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: fg(0.15);
   }
 }

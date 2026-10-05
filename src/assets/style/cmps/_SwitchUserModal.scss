@@ -7,7 +7,7 @@
 
   width: 200px;
   background: $bg-deep;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid fg(0.12);
   padding: 1rem;
 
   display: flex;
@@ -23,8 +23,8 @@
     width: 10px;
     height: 10px;
     background: $bg-deep;
-    border-inline-start: 1px solid rgba(255, 255, 255, 0.12);
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-inline-start: 1px solid fg(0.12);
+    border-top: 1px solid fg(0.12);
     transform: rotate(45deg);
   }
 
@@ -32,7 +32,7 @@
     font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.14em;
-    color: rgba(255, 255, 255, 0.35);
+    color: fg(0.35);
     margin: 0 0 0.25rem;
   }
 
@@ -46,19 +46,19 @@
       width: 100%;
       padding: 0.45rem 0.65rem;
       background: $bg-elevated;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid fg(0.08);
       font-size: 0.8rem;
       color: $text-primary;
       outline: none;
       transition: box-shadow 0.2s, border-color 0.2s;
 
       &::placeholder {
-        color: rgba(255, 255, 255, 0.3);
+        color: fg(0.3);
       }
 
       &:focus {
-        border-color: rgba(200, 50, 50, 0.5);
-        box-shadow: 0 0 0 2px rgba(200, 50, 50, 0.2);
+        border-color: error(0.5);
+        box-shadow: 0 0 0 2px error(0.2);
       }
     }
   }

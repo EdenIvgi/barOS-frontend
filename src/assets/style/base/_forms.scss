@@ -34,7 +34,7 @@ button {
 }
 
 input {
-  background: rgba(255, 255, 255, 0.05);
+  background: fg(0.05);
   color: $text-primary;
   border: 1px solid $glass-border;
   padding: 0.5em 0.8em;
@@ -46,7 +46,7 @@ input {
 
   &:focus {
     @include accent-focus;
-    background: rgba(255, 255, 255, 0.08);
+    background: fg(0.08);
   }
 
   &::placeholder {
@@ -55,7 +55,7 @@ input {
 }
 
 select {
-  background: rgba(255, 255, 255, 0.05);
+  background: fg(0.05);
   color: $text-primary;
   border: 1px solid $glass-border;
   padding: 0.5em 0.8em;
@@ -74,7 +74,7 @@ select {
 }
 
 textarea {
-  background: rgba(255, 255, 255, 0.05);
+  background: fg(0.05);
   color: $text-primary;
   border: 1px solid $glass-border;
   padding: 0.5em 0.8em;
@@ -85,7 +85,7 @@ textarea {
 
   &:focus {
     @include accent-focus;
-    background: rgba(255, 255, 255, 0.08);
+    background: fg(0.08);
   }
 
   &::placeholder {

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { logout } from '../store/actions/user.actions'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { NAV_ITEMS, IconLogout } from './icons'
+import { ThemeToggle } from './ThemeToggle'
 
 
 function initials(name) {
@@ -50,6 +51,8 @@ export function AppShell({ title, subtitle, actions, children, flush = false }) 
         ))}
 
         <div className="rail-spacer" />
+
+        <ThemeToggle className="rail-item" />
 
         <NavLink to="/user" className="rail-avatar" title={user?.fullname || ''}>
           {initials(user?.fullname)}

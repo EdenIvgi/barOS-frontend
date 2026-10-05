@@ -6,6 +6,7 @@ import { login, signup } from '../store/actions/user.actions'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { AnimatedBackground } from '../cmps/AnimatedBackground'
 import { BarOSWordmark } from '../cmps/Wordmark'
+import { ThemeToggle } from '../cmps/ThemeToggle'
 
 // Client-side company name validation — mirrors the backend sanitise logic
 function validateCompanyName(name) {
@@ -79,9 +80,12 @@ export function LandingPage() {
     <section className="landing-page" dir={isHe ? 'rtl' : 'ltr'}>
       <AnimatedBackground />
 
-      <button className="landing-lang-btn" onClick={toggleLanguage}>
-        {isHe ? 'EN' : 'HE'}
-      </button>
+      <div className="landing-corner-actions">
+        <ThemeToggle className="landing-theme-btn" />
+        <button className="landing-lang-btn" onClick={toggleLanguage}>
+          {isHe ? 'EN' : 'HE'}
+        </button>
+      </div>
 
       <div className="landing-center">
 

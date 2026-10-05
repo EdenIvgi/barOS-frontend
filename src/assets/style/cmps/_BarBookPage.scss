@@ -9,15 +9,15 @@ $sidebar-width: 190px;
 $panel-list-width: 250px;
 $book-bg: $bg-deep;
 $book-sidebar-bg: $bg-sunken;
-$book-page: rgba(255, 255, 255, 0.05);
-$book-page-border: rgba(255, 255, 255, 0.07);
-$book-line: rgba(255, 255, 255, 0.06);
-$book-line-strong: rgba(255, 255, 255, 0.1);
+$book-page: fg(0.05);
+$book-page-border: fg(0.07);
+$book-line: fg(0.06);
+$book-line-strong: fg(0.1);
 $book-text: $text-primary;
 $book-text-muted: $text-secondary;
 $book-accent: $accent-primary;
-$book-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-$book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+$book-shadow: 0 8px 32px shade(0.5);
+$book-page-shadow: 0 1px 6px shade(0.12);
 
 .bar-book-page {
   height: calc(100vh - #{$header-height});
@@ -47,7 +47,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
+      background: fg(0.1);
       border-radius: 2px;
     }
   }
@@ -126,7 +126,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       flex-shrink: 0;
       width: 0.95rem;
       height: 0.95rem;
-      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border: 1.5px solid fg(0.25);
       border-radius: 3px;
       background: transparent;
       cursor: pointer;
@@ -150,7 +150,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       }
 
       &:hover:not(:checked) {
-        border-color: rgba($book-accent, 0.5);
+        border-color: accent(0.5);
       }
     }
 
@@ -170,7 +170,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
         cursor: pointer;
 
         @include hover {
-          background: rgba(255, 255, 255, 0.06);
+          background: fg(0.06);
         }
       }
     }
@@ -194,7 +194,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   .checklist-add-row {
     margin-top: 0.5rem;
     padding-top: 0.35rem;
-    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    border-top: 1px dashed fg(0.08);
   }
 
   .checklist-add-input {
@@ -203,19 +203,19 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     background: transparent;
     border: none;
     border-bottom: 1px solid transparent;
-    color: rgba(255, 255, 255, 0.35);
+    color: fg(0.35);
     font-size: 0.88rem;
     font-family: $font-body;
     outline: none;
     transition: color 0.15s, border-color 0.15s;
 
     &::placeholder {
-      color: rgba(255, 255, 255, 0.2);
+      color: fg(0.2);
     }
 
     &:focus {
       color: $book-text;
-      border-bottom-color: rgba($book-accent, 0.4);
+      border-bottom-color: accent(0.4);
     }
   }
 
@@ -227,17 +227,17 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     max-width: 100%;
     padding: 0.4rem 0.6rem;
     font-size: 0.95rem;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid fg(0.12);
     border-radius: 3px;
     font-family: inherit;
-    background: rgba(255, 255, 255, 0.05);
+    background: fg(0.05);
     color: $book-text;
     transition: border-color 0.2s ease;
 
     &:focus {
       outline: none;
-      border-color: rgba($book-accent, 0.6);
-      box-shadow: 0 0 0 2px rgba($book-accent, 0.1);
+      border-color: accent(0.6);
+      box-shadow: 0 0 0 2px accent(0.1);
     }
 
     &.cell-input {
@@ -254,17 +254,17 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     padding: 0.4rem 0.8rem;
     font-size: 0.8rem;
     background: transparent;
-    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border: 1px dashed fg(0.15);
     border-radius: 3px;
     cursor: pointer;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.3);
+    color: fg(0.3);
     font-family: $font-body;
     transition: all 0.2s ease;
 
     @include hover {
-      border-color: rgba($book-accent, 0.5);
-      color: rgba(255, 255, 255, 0.7);
+      border-color: accent(0.5);
+      color: fg(0.7);
     }
   }
 
@@ -273,14 +273,14 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     border: none;
     cursor: pointer;
     font-size: 1rem;
-    color: rgba(255, 255, 255, 0.25);
+    color: fg(0.25);
     padding: 0.15rem 0.35rem;
     border-radius: 3px;
     transition: all 0.15s ease;
 
     @include hover {
       color: $color-error;
-      background: rgba($color-error, 0.08);
+      background: error(0.08);
     }
   }
 
@@ -301,7 +301,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
+      background: fg(0.1);
       border-radius: 2px;
     }
   }
@@ -324,7 +324,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     th {
       background: transparent;
       font-weight: 700;
-      color: rgba(255, 255, 255, 0.4);
+      color: fg(0.4);
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -336,7 +336,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
 
     tbody tr:hover {
-      background: rgba(255, 255, 255, 0.02);
+      background: fg(0.02);
     }
   }
 
@@ -366,7 +366,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
           cursor: pointer;
 
           @include hover {
-            background: rgba(255, 255, 255, 0.04);
+            background: fg(0.04);
           }
         }
       }
@@ -375,16 +375,16 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
         width: 100%;
         min-height: 90px;
         resize: vertical;
-        background: rgba(255, 255, 255, 0.05);
+        background: fg(0.05);
         color: $book-text;
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        border: 1px solid fg(0.12);
         border-radius: 3px;
         font-family: inherit;
         padding: 0.5rem;
 
         &:focus {
           outline: none;
-          border-color: rgba($book-accent, 0.5);
+          border-color: accent(0.5);
         }
       }
 
@@ -408,7 +408,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       min-width: 2em;
 
       @include hover {
-        background: rgba(255, 255, 255, 0.05);
+        background: fg(0.05);
       }
     }
 
@@ -445,7 +445,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.015);
+    background: fg(0.015);
 
     .recipes-panel-header {
       display: flex;
@@ -460,17 +460,17 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
         padding: 0.28rem 0.6rem;
         font-size: 0.75rem;
         background: transparent;
-        border: 1px dashed rgba(255, 255, 255, 0.18);
+        border: 1px dashed fg(0.18);
         border-radius: 3px;
-        color: rgba(255, 255, 255, 0.35);
+        color: fg(0.35);
         cursor: pointer;
         font-family: $font-body;
         white-space: nowrap;
         transition: all 0.2s ease;
 
         @include hover {
-          border-color: rgba($book-accent, 0.5);
-          color: rgba(255, 255, 255, 0.7);
+          border-color: accent(0.5);
+          color: fg(0.7);
         }
       }
     }
@@ -484,7 +484,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       }
 
       &::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.08);
+        background: fg(0.08);
       }
     }
 
@@ -503,11 +503,11 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       transition: background 0.12s ease, border-color 0.12s ease;
 
       @include hover {
-        background: rgba(255, 255, 255, 0.025);
+        background: fg(0.025);
       }
 
       &.active {
-        background: rgba($book-accent, 0.06);
+        background: accent(0.06);
         border-inline-start-color: $book-accent;
       }
 
@@ -521,14 +521,14 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 
       .recipe-index-meta {
         font-size: 0.72rem;
-        color: rgba(255, 255, 255, 0.3);
+        color: fg(0.3);
       }
     }
 
     .recipes-empty {
       padding: 2.5rem 1rem;
       text-align: center;
-      color: rgba(255, 255, 255, 0.25);
+      color: fg(0.25);
       font-size: 0.85rem;
       font-style: italic;
     }
@@ -546,7 +546,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.08);
+      background: fg(0.08);
     }
 
     .recipe-detail-placeholder {
@@ -555,7 +555,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       justify-content: center;
       height: 60%;
       min-height: 180px;
-      color: rgba(255, 255, 255, 0.2);
+      color: fg(0.2);
       font-size: 0.9rem;
       font-style: italic;
     }
@@ -597,7 +597,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
         font-family: $font-heading;
         font-size: 0.65rem;
         font-weight: 700;
-        color: rgba(255, 255, 255, 0.3);
+        color: fg(0.3);
         text-transform: uppercase;
         letter-spacing: 0.12em;
         margin: 0 0 0.85rem 0;
@@ -631,11 +631,11 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     .btn-edit-recipe,
     .btn-delete-recipe {
       background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid fg(0.1);
       border-radius: 3px;
       cursor: pointer;
       font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.3);
+      color: fg(0.3);
       padding: 0.28rem 0.6rem;
       font-family: $font-body;
       font-weight: 500;
@@ -643,13 +643,13 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
 
     .btn-edit-recipe:hover {
-      color: rgba(255, 255, 255, 0.8);
-      border-color: rgba(255, 255, 255, 0.25);
+      color: fg(0.8);
+      border-color: fg(0.25);
     }
 
     .btn-delete-recipe:hover {
       color: $color-error;
-      border-color: rgba($color-error, 0.4);
+      border-color: error(0.4);
     }
   }
 
@@ -659,7 +659,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   .recipe-form-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(10, 10, 10, 0.98);
+    background: $bg-deep;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -670,14 +670,14 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 
   .recipe-form-container {
     background: $bg-surface;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid fg(0.08);
     border-radius: 6px;
     padding: 1.75rem 2rem;
     max-width: 520px;
     width: 95%;
     max-height: 84vh;
     overflow-y: auto;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 24px 64px shade(0.6);
 
     h2 {
       font-family: $font-heading;
@@ -685,7 +685,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       font-size: 1.25rem;
       margin: 0 0 1.5rem 0;
       padding-bottom: 0.75rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid fg(0.08);
       font-weight: 700;
     }
   }
@@ -702,7 +702,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 
       label {
         font-size: 0.72rem;
-        color: rgba(255, 255, 255, 0.4);
+        color: fg(0.4);
         font-weight: 700;
         font-family: $font-body;
         text-transform: uppercase;
@@ -713,8 +713,8 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     .form-input,
     .form-textarea {
       padding: 0.6rem 0.75rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: fg(0.05);
+      border: 1px solid fg(0.1);
       border-radius: 3px;
       color: $book-text;
       font-family: inherit;
@@ -723,12 +723,12 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 
       &:focus {
         outline: none;
-        border-color: rgba($book-accent, 0.5);
-        box-shadow: 0 0 0 2px rgba($book-accent, 0.08);
+        border-color: accent(0.5);
+        box-shadow: 0 0 0 2px accent(0.08);
       }
 
       &::placeholder {
-        color: rgba(255, 255, 255, 0.2);
+        color: fg(0.2);
       }
     }
 
@@ -768,9 +768,9 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     .btn-cancel {
       padding: 0.6rem 1.4rem;
       background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid fg(0.12);
       border-radius: 4px;
-      color: rgba(255, 255, 255, 0.45);
+      color: fg(0.45);
       font-weight: 600;
       font-family: $font-body;
       cursor: pointer;
@@ -778,8 +778,8 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       transition: all 0.2s ease;
 
       @include hover {
-        color: rgba(255, 255, 255, 0.75);
-        border-color: rgba(255, 255, 255, 0.25);
+        color: fg(0.75);
+        border-color: fg(0.25);
       }
     }
   }
@@ -794,7 +794,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     padding: 1.75rem 2rem;
 
     &::-webkit-scrollbar { width: 4px; }
-    &::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
+    &::-webkit-scrollbar-thumb { background: fg(0.1); border-radius: 2px; }
 
     // Full-bleed pages — negate parent padding so layout fills edge-to-edge
     .bar-book-recipes {
@@ -814,17 +814,17 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   // ────────────────────────────────────────────
   .btn-add-col {
     background: transparent;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border: 1px dashed fg(0.2);
     border-radius: 3px;
-    color: rgba(255, 255, 255, 0.35);
+    color: fg(0.35);
     font-size: 0.9rem;
     cursor: pointer;
     padding: 0.1rem 0.4rem;
     transition: all 0.15s ease;
 
     @include hover {
-      border-color: rgba($book-accent, 0.5);
-      color: rgba(255, 255, 255, 0.7);
+      border-color: accent(0.5);
+      color: fg(0.7);
     }
   }
 
@@ -845,7 +845,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   .add-page-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: shade(0.6);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -859,13 +859,13 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 
   .add-page-modal {
     background: $bg-surface;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid fg(0.1);
     border-radius: 10px;
     padding: 1.75rem;
     width: min(380px, 92vw);
     max-height: calc(100vh - 2rem);
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 20px 60px shade(0.6);
 
     h3 {
       font-family: $font-heading;
@@ -892,31 +892,31 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     align-items: center;
     gap: 0.35rem;
     padding: 0.75rem 0.5rem;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: fg(0.04);
+    border: 1px solid fg(0.08);
     border-radius: 7px;
     cursor: pointer;
     transition: all 0.15s ease;
 
     .pt-symbol {
       font-size: 1.1rem;
-      color: rgba(255, 255, 255, 0.5);
+      color: fg(0.5);
     }
 
     .pt-label {
       font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.45);
+      color: fg(0.45);
       font-family: $font-body;
     }
 
     @include hover {
-      background: rgba(255, 255, 255, 0.07);
-      border-color: rgba(255, 255, 255, 0.15);
+      background: fg(0.07);
+      border-color: fg(0.15);
     }
 
     &.active {
-      background: rgba($book-accent, 0.12);
-      border-color: rgba($book-accent, 0.5);
+      background: accent(0.12);
+      border-color: accent(0.5);
 
       .pt-symbol, .pt-label {
         color: $book-accent;
@@ -941,10 +941,10 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
 
     .btn-cancel {
-      background: rgba(255, 255, 255, 0.07);
-      color: rgba(255, 255, 255, 0.5);
+      background: fg(0.07);
+      color: fg(0.5);
 
-      @include hover { background: rgba(255, 255, 255, 0.11); }
+      @include hover { background: fg(0.11); }
     }
 
     .btn-save {
@@ -1132,7 +1132,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     min-width: 8rem;
     margin: 0.5rem 0.25rem;
     padding: 0.4rem 0.6rem;
-    background: rgba(255, 255, 255, 0.06);
+    background: fg(0.06);
     border: 1px solid $book-accent;
     border-radius: 4px;
     color: $book-text;
@@ -1185,7 +1185,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
 
     &.is-complete {
-      border-color: rgba($book-accent, 0.45);
+      border-color: accent(0.45);
     }
 
     &.is-new {
@@ -1198,7 +1198,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
         flex: 1;
         min-width: 0;
         padding: 0.5rem 0.65rem;
-        background: rgba(255, 255, 255, 0.06);
+        background: fg(0.06);
         border: 1px solid $book-line-strong;
         border-radius: 6px;
         color: $book-text;
@@ -1270,7 +1270,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     }
 
     .ring-track {
-      stroke: rgba(255, 255, 255, 0.1);
+      stroke: fg(0.1);
     }
 
     .ring-fill {
@@ -1392,7 +1392,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     font-size: 0.95rem;
     cursor: pointer;
 
-    @include hover { background: rgba(255, 255, 255, 0.03); }
+    @include hover { background: fg(0.03); }
   }
 
   .runner-box {
@@ -1433,7 +1433,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     flex: 1;
     min-width: 0;
     padding: 0.6rem 0.7rem;
-    background: rgba(255, 255, 255, 0.06);
+    background: fg(0.06);
     border: 1px solid $book-accent;
     border-radius: 6px;
     color: $book-text;
@@ -1462,7 +1462,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
       flex: 1;
       min-width: 0;
       padding: 0.6rem 0.7rem;
-      background: rgba(255, 255, 255, 0.06);
+      background: fg(0.06);
       border: 1px solid $book-line-strong;
       border-radius: 6px;
       color: $book-text;
@@ -1508,10 +1508,10 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     &.is-editable {
       cursor: text;
       border-radius: 4px;
-      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 -1px 0 fg(0.12);
 
       @include hover {
-        background: rgba(255, 255, 255, 0.04);
+        background: fg(0.04);
       }
 
       &:empty::before {
@@ -1524,7 +1524,7 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   .bb-inline-input {
     width: 100%;
     padding: 0.4rem 0.55rem;
-    background: rgba(255, 255, 255, 0.06);
+    background: fg(0.06);
     border: 1px solid $book-accent;
     border-radius: 6px;
     color: $book-text;
@@ -1638,13 +1638,13 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 
     &.is-link {
       padding: 0.35rem 0.6rem;
-      background: rgba($book-accent, 0.12);
+      background: accent(0.12);
       border-radius: 6px;
       color: $book-accent;
       text-decoration: none;
       font-weight: 600;
 
-      @include hover { background: rgba($book-accent, 0.2); }
+      @include hover { background: accent(0.2); }
     }
   }
 
@@ -1744,8 +1744,8 @@ $book-page-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
     aspect-ratio: 4 / 3;
     background: repeating-linear-gradient(
       45deg,
-      rgba(255, 255, 255, 0.03),
-      rgba(255, 255, 255, 0.03) 10px,
+      fg(0.03),
+      fg(0.03) 10px,
       transparent 10px,
       transparent 20px
     );

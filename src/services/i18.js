@@ -143,6 +143,11 @@ const resources = {
       typeContacts: 'אנשי קשר',
       typeLinks: 'קישורים',
       typeGallery: 'גלריה',
+      // Theme
+      theme_light: 'מצב בהיר',
+      theme_dark: 'מצב כהה',
+      theme_auto: 'לפי המכשיר',
+      themeToggle: 'ערכת צבעים: {{state}}. לחצו להחלפה',
       // Account setup flow
       setupTitle: 'הקמת הבר',
       setupStepOf: 'שלב {{step}} מתוך {{total}}',
@@ -574,6 +579,11 @@ const resources = {
       typeContacts: 'Contacts',
       typeLinks: 'Links',
       typeGallery: 'Gallery',
+      // Theme
+      theme_light: 'Light Mode',
+      theme_dark: 'Dark Mode',
+      theme_auto: 'Match Device',
+      themeToggle: 'Theme: {{state}}. Click To Change',
       // Account setup flow
       setupTitle: 'Set Up Your Bar',
       setupStepOf: 'Step {{step}} Of {{total}}',

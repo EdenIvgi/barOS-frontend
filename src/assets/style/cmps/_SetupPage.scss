@@ -7,8 +7,8 @@
 // The first screen a new bar sees, so it reads as an invitation rather than a
 // form: one question per step, nothing required, and a way out on every screen.
 
-$setup-surface: rgba(255, 255, 255, 0.05);
-$setup-border: rgba(255, 255, 255, 0.08);
+$setup-surface: fg(0.05);
+$setup-border: fg(0.08);
 
 .setup-page {
   max-width: 62ch;
@@ -39,7 +39,7 @@ $setup-border: rgba(255, 255, 255, 0.08);
   .setup-pip-dot {
     height: 3px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.12);
+    background: fg(0.12);
     transition: background 0.2s ease;
   }
 
@@ -103,14 +103,14 @@ $setup-border: rgba(255, 255, 255, 0.08);
   transition: border-color 0.15s ease, background 0.15s ease;
 
   @include hover {
-    border-color: rgba(255, 255, 255, 0.18);
+    border-color: fg(0.18);
   }
 
   // Chosen reads as a filled, accented card rather than a tick alone, so the
   // shape of the book is visible at a glance.
   &.is-chosen {
     border-color: $accent-primary;
-    background: rgba($accent-primary, 0.1);
+    background: accent(0.1);
   }
 }
 
@@ -169,14 +169,14 @@ $setup-border: rgba(255, 255, 255, 0.08);
   flex: 1;
   min-width: 0;
   padding: 0.6rem 0.7rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: fg(0.06);
   border: 1px solid $setup-border;
   border-radius: 8px;
   color: $text-primary;
   font-family: $font-body;
   font-size: 0.92rem;
 
-  &::placeholder { color: rgba(255, 255, 255, 0.3); }
+  &::placeholder { color: fg(0.3); }
 
   &:focus {
     outline: none;
@@ -242,7 +242,7 @@ $setup-border: rgba(255, 255, 255, 0.08);
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  border-color: rgba($accent-primary, 0.35);
+  border-color: accent(0.35);
 }
 
 .setup-resume-sub {
@@ -276,8 +276,10 @@ $setup-border: rgba(255, 255, 255, 0.08);
   margin-top: 0.85rem;
 }
 
-// On the Bar Book the card sits above the tab strip, which is flush to the
-// page edges, so it needs its own breathing room.
+// On the Bar Book the card sits between the header and the tab strip, both of
+// which are flush to the page edges, so it carries its own spacing. The top gap
+// matches what the other pages get from .shell-content's padding, and the bottom
+// keeps it off the tabs.
 .bar-book-page > .setup-resume {
-  margin: 1rem 1rem 0;
+  margin: 1.5rem 1rem 1rem;
 }

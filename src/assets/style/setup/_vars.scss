@@ -1,62 +1,202 @@
 // ============================================
 // BAROS DESIGN SYSTEM
 // Palette: warm near-black with a brass accent — a bar at night, not a dashboard.
-// Contrast of every text token verified against its surface (WCAG AA).
+// Light mode is the same bar in daylight: warm paper, the same brass darkened
+// enough to carry text.
 // ============================================
+//
+// Values live in CSS custom properties so the theme can change at runtime; the
+// SCSS names below stay the interface every component already uses, so a rule
+// written as `background: $bg-surface` keeps working untouched.
+//
+// Contrast of every text token was measured against every surface it sits on.
+// Nothing here is eyeballed.
 
-// === SURFACES ===
-$bg-deepest: #13100C;   // app ground
-$bg-deep: #13100C;
-$bg-surface: #1C1813;   // panels, rail, topbar
-$bg-elevated: #241F18;  // selected row, hover
-$bg-card: #1C1813;
-$bg-sunken: #0E0B08;    // gauge tracks, inputs
+:root {
+  // === SURFACES ===
+  --bg-deepest: #13100C;
+  --bg-deep: #13100C;
+  --bg-surface: #1C1813;
+  --bg-elevated: #241F18;
+  --bg-card: #1C1813;
+  --bg-sunken: #0E0B08;
 
-// === LINES ===
-$line: #332C22;
-$line-strong: #42392C;
+  // === LINES ===
+  --line: #332C22;
+  --line-strong: #42392C;
 
-// === TEXT ===
-$text-primary: #F0E9DD;   // 14.6:1 on surface
-$text-secondary: #BFB09A; // 8.3:1 on surface
-$text-muted: #9A8B73;     // 5.3:1 on surface — passes AA
-$text-inverse: #1A1206;   // 7.0:1 on the accent
+  // === TEXT ===
+  --text-primary: #F0E9DD;   // 14.6:1 on surface
+  --text-secondary: #BFB09A; // 8.3:1
+  --text-muted: #9A8B73;     // 5.3:1
+  --text-inverse: #1A1206;   // 7.0:1 on the accent
 
-// === ACCENT — brass ===
-$accent-primary: #C8973F;
-$accent-hover: #DCA94C;
-$accent-deep: #7A5A22;
-$accent-subtle: rgba(200, 151, 63, 0.13);
-$accent-glow: rgba(200, 151, 63, 0.25);
-$accent-text: #D9A94F;
+  // === ACCENT — brass ===
+  --accent-primary: #C8973F;
+  --accent-hover: #DCA94C;
+  --accent-deep: #7A5A22;
+  --accent-text: #D9A94F;
 
-// === SEMANTIC — status only, never a series colour ===
-// Success is a true green rather than the accent: with a brass brand colour,
-// reusing the accent for "good" would make every primary button read as a status.
-// Warning stays the closest thing to amber that still separates from the brass by
-// hue and passes AA — but the two cannot be told apart by brightness, so a warning
-// must never be signalled by colour alone.
-$color-success: #4CA06B;  // 5.5:1 on surface
-$color-warning: #E2703A;  // 5.2:1 on elevated
-$color-error: #E06A58;    // 5.0:1 on elevated (was 4.47 — under AA)
-$color-error-deep: #C4543F; // pressed/hover state for destructive actions
-$color-info: #5AA6D1;
+  // === SEMANTIC — status only, never a series colour ===
+  --color-success: #4CA06B;
+  --color-warning: #E2703A;
+  --color-error: #E06A58;
+  --color-error-deep: #C4543F;
+  --color-info: #5AA6D1;
+
+  // === CHANNELS ===
+  // Alpha cannot be applied to a var() through rgba(), and an overlay has to
+  // change direction with the theme: on dark it lifts a surface, on light it
+  // presses one down. These carry the channels so any alpha can be mixed at use
+  // site and still mean the same thing in both themes.
+  --fg-rgb: 255 255 255;
+  --accent-rgb: 200 151 63;
+  --success-rgb: 76 160 107;
+  --warning-rgb: 226 112 58;
+  --error-rgb: 224 106 88;
+  --shadow-rgb: 0 0 0;
+  --shadow-strength: 1;
+}
+
+// Light applies when it is chosen outright...
+:root[data-theme='light'] {
+  --bg-deepest: #F3EFE8;
+  --bg-deep: #F3EFE8;
+  --bg-surface: #FAF7F2;
+  --bg-elevated: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-sunken: #EDE7DD;
+
+  --line: #E0D8CA;
+  --line-strong: #CBC0AD;
+
+  --text-primary: #1C1813;   // 16.5:1 on surface
+  --text-secondary: #4A4238; // 9.2:1
+  --text-muted: #6B6155;     // 5.7:1
+  --text-inverse: #FFFFFF;   // 5.4:1 on the accent
+
+  // The brass stays brass, darkened until it can carry text: the dark-mode
+  // #C8973F reaches only 2.47:1 on this surface, where text needs 4.5.
+  --accent-primary: #8A6420; // 5.0:1
+  --accent-hover: #6E4F1C;
+  --accent-deep: #6E4F1C;
+  --accent-text: #7A5A22;
+
+  // Every status colour from dark mode lands near 3.0:1 here, so each has its
+  // own darker value rather than being shared between themes.
+  // A status badge is its colour on a 15% tint of itself, which lightens the
+  // background it has to be read against. These are set so they clear 4.5 on
+  // that tint, not merely on the plain surface.
+  --color-success: #276B43;  // 5.2:1 on its own tint
+  --color-warning: #994316;  // 5.3:1 on its own tint
+  --color-error: #A63423;    // 5.3:1 on its own tint
+  --color-error-deep: #852818;
+  --color-info: #2E6E96;
+
+  --fg-rgb: 28 24 19;
+  --accent-rgb: 138 100 32;
+  --success-rgb: 39 107 67;
+  --warning-rgb: 153 67 22;
+  --error-rgb: 166 52 35;
+  // Shadows on paper are a hint, not the heavy lift they do on dark surfaces.
+  --shadow-strength: 0.35;
+}
+
+// ...and when the device asks for it and nothing has been chosen.
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --bg-deepest: #F3EFE8;
+    --bg-deep: #F3EFE8;
+    --bg-surface: #FAF7F2;
+    --bg-elevated: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-sunken: #EDE7DD;
+
+    --line: #E0D8CA;
+    --line-strong: #CBC0AD;
+
+    --text-primary: #1C1813;
+    --text-secondary: #4A4238;
+    --text-muted: #6B6155;
+    --text-inverse: #FFFFFF;
+
+    --accent-primary: #8A6420;
+    --accent-hover: #6E4F1C;
+    --accent-deep: #6E4F1C;
+    --accent-text: #7A5A22;
+
+    --color-success: #276B43;
+    --color-warning: #994316;
+    --color-error: #A63423;
+    --color-error-deep: #852818;
+    --color-info: #2E6E96;
+
+    --fg-rgb: 28 24 19;
+    --accent-rgb: 138 100 32;
+    --success-rgb: 39 107 67;
+    --warning-rgb: 153 67 22;
+    --error-rgb: 166 52 35;
+    --shadow-strength: 0.35;
+  }
+}
+
+// === SCSS INTERFACE — the names components use ===
+$bg-deepest: var(--bg-deepest);
+$bg-deep: var(--bg-deep);
+$bg-surface: var(--bg-surface);
+$bg-elevated: var(--bg-elevated);
+$bg-card: var(--bg-card);
+$bg-sunken: var(--bg-sunken);
+
+$line: var(--line);
+$line-strong: var(--line-strong);
+
+$text-primary: var(--text-primary);
+$text-secondary: var(--text-secondary);
+$text-muted: var(--text-muted);
+$text-inverse: var(--text-inverse);
+
+$accent-primary: var(--accent-primary);
+$accent-hover: var(--accent-hover);
+$accent-deep: var(--accent-deep);
+$accent-text: var(--accent-text);
+
+$color-success: var(--color-success);
+$color-warning: var(--color-warning);
+$color-error: var(--color-error);
+$color-error-deep: var(--color-error-deep);
+$color-info: var(--color-info);
+
+// === MIXING HELPERS ===
+// `rgba($token, .5)` cannot work once a token is a runtime value, so alpha is
+// mixed from the channel variables instead.
+// Interpolation yields an unquoted string, which keeps these out of the global
+// `unquote()` that Dart Sass is retiring.
+@function fg($a) { @return #{"rgb(var(--fg-rgb) / #{$a})"}; }
+@function accent($a) { @return #{"rgb(var(--accent-rgb) / #{$a})"}; }
+@function success($a) { @return #{"rgb(var(--success-rgb) / #{$a})"}; }
+@function warning($a) { @return #{"rgb(var(--warning-rgb) / #{$a})"}; }
+@function error($a) { @return #{"rgb(var(--error-rgb) / #{$a})"}; }
+@function shade($a) { @return #{"rgb(var(--shadow-rgb) / calc(#{$a} * var(--shadow-strength)))"}; }
+
+$accent-subtle: accent(0.13);
+$accent-glow: accent(0.25);
 
 // === SHADOWS ===
-$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
-$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
-$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55);
-$shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.65);
-$shadow-glow-accent: 0 0 0 3px rgba(200, 151, 63, 0.14);
-$shadow-glow-white: 0 0 15px rgba(255, 255, 255, 0.04);
+$shadow-sm: 0 1px 3px shade(0.35);
+$shadow-md: 0 4px 12px shade(0.45);
+$shadow-lg: 0 8px 24px shade(0.55);
+$shadow-xl: 0 16px 48px shade(0.65);
+$shadow-glow-accent: 0 0 0 3px accent(0.14);
+$shadow-glow-white: 0 0 15px fg(0.04);
 
 // === GLASS (kept for components not yet migrated) ===
-$glass-bg: rgba(255, 255, 255, 0.04);
-$glass-bg-hover: rgba(255, 255, 255, 0.07);
-$glass-bg-active: rgba(255, 255, 255, 0.11);
+$glass-bg: fg(0.04);
+$glass-bg-hover: fg(0.07);
+$glass-bg-active: fg(0.11);
 $glass-border: $line;
 $glass-border-hover: $line-strong;
-$glass-border-focus: rgba(200, 151, 63, 0.45);
+$glass-border-focus: accent(0.45);
 $glass-blur: 16px;
 $glass-blur-heavy: 24px;
 
@@ -84,11 +224,11 @@ $black-light: $bg-elevated;
 $white: #ffffff;
 $white-off: $bg-surface;
 
-$gray-50: rgba(255, 255, 255, 0.03);
-$gray-100: rgba(255, 255, 255, 0.05);
+$gray-50: fg(0.03);
+$gray-100: fg(0.05);
 $gray-200: $line;
 $gray-300: $line-strong;
-$gray-400: rgba(255, 255, 255, 0.2);
+$gray-400: fg(0.2);
 $gray-500: $text-muted;
 $gray-600: $text-secondary;
 $gray-700: $text-secondary;

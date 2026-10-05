@@ -1,17 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { NAV_ITEMS, IconProfile, IconAbout, IconMore } from './icons'
+import { NAV_ITEMS, IconProfile, IconAbout, IconMore, IconSun, IconMoon, IconAuto } from './icons'
+import { themeService } from '../services/theme.service'
 
 // The rail shows five destinations; the phone shows the first four and folds the
 // rest behind "more", so both draw the same glyphs in the same order.
 const PRIMARY = NAV_ITEMS.slice(0, 4)
 const SECONDARY = NAV_ITEMS.slice(4)
 
+const THEME_ICONS = { light: IconSun, dark: IconMoon, auto: IconAuto }
+const NEXT_THEME = { auto: 'light', light: 'dark', dark: 'auto' }
+
 export function MobileBottomNav() {
   const { t } = useTranslation()
   const [isMoreOpen, setIsMoreOpen] = useState(false)
+  const [theme, setTheme] = useState(() => themeService.getChoice())
   const navigate = useNavigate()
+
+  useEffect(() => { themeService.applyChoice(theme) }, [theme])
 
   function goTo(path) {
     setIsMoreOpen(false)
@@ -40,6 +47,17 @@ export function MobileBottomNav() {
             <IconAbout />
             <span>{t('about')}</span>
           </button>
+          {/* The rail carries the theme control on a laptop, and the rail is not
+              here — without this a phone could not change theme at all. The menu
+              stays open so the next state is one more tap away. */}
+          <button
+            type="button"
+            className="more-menu-item"
+            onClick={() => setTheme(themeService.setChoice(NEXT_THEME[theme]))}
+          >
+            <ThemeIcon theme={theme} />
+            <span>{t(`theme_${theme}`)}</span>
+          </button>
         </div>
       )}
 
@@ -62,4 +80,9 @@ export function MobileBottomNav() {
       </nav>
     </>
   )
+}
+
+function ThemeIcon({ theme }) {
+  const Icon = THEME_ICONS[theme] || IconAuto
+  return <Icon />
 }

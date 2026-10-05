@@ -60,12 +60,12 @@
         font-weight: 600;
 
         &.available {
-          background: rgba($color-success, 0.15);
+          background: success(0.15);
           color: $color-success;
         }
 
         &.unavailable {
-          background: rgba($color-error, 0.15);
+          background: error(0.15);
           color: $color-error;
         }
       }

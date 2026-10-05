@@ -94,6 +94,29 @@ export const IconPlus = () => (
   <svg {...base} strokeWidth="2.2"><path d="M12 5v14M5 12h14" /></svg>
 )
 
+// ─── Theme ──────────────────────────────────────────────
+
+export const IconSun = () => (
+  <svg {...base}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6" />
+  </svg>
+)
+
+export const IconMoon = () => (
+  <svg {...base}>
+    <path d="M20 13.5A8 8 0 0 1 10.5 4a8 8 0 1 0 9.5 9.5z" />
+  </svg>
+)
+
+// Half lit, half not: the theme is whatever the device says.
+export const IconAuto = () => (
+  <svg {...base}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor" stroke="none" />
+  </svg>
+)
+
 // ─── Bar Book page types ────────────────────────────────
 // One icon per format a bar can keep in its book. Drawn on the same 24px grid
 // as the navigation above, so the tab strip reads as part of the app rather

@@ -49,8 +49,8 @@
     place-items: center;
     margin-bottom: 12px;
     border-radius: $radius;
-    background: $accent-deep;
-    color: $text-primary;
+    background: $accent-primary;
+    color: $text-inverse;
     font-weight: 800;
     font-size: 13px;
     text-decoration: none;
@@ -62,8 +62,8 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: $accent-deep;
-    color: $text-primary;
+    background: $accent-primary;
+    color: $text-inverse;
     display: grid;
     place-items: center;
     font-size: 12px;
@@ -254,7 +254,10 @@
 
   &:hover { color: $text-primary; }
   &:focus-visible { outline: 2px solid $accent-primary; outline-offset: 2px; }
-  &.is-on { background: $accent-deep; border-color: $accent-deep; color: $text-primary; }
+  // $accent-deep is dark in both themes while $text-primary flips, so pairing
+  // them put dark text on dark brass in light mode. The accent and its inverse
+  // are the pair that is measured against each other in both.
+  &.is-on { background: $accent-primary; border-color: $accent-primary; color: $text-inverse; }
 }
 
 // ── List rows ─────────────────────────────────────
@@ -279,7 +282,7 @@
   cursor: pointer;
   position: relative;
 
-  &:hover { background: rgba(255, 255, 255, 0.025); }
+  &:hover { background: fg(0.025); }
   &:focus-visible { outline: 2px solid $accent-primary; outline-offset: -2px; }
 
   &.is-selected {
@@ -313,8 +316,8 @@
   border-radius: $radius-pill;
   white-space: nowrap;
 
-  &.is-critical { color: $color-error; background: rgba(217, 96, 79, 0.14); }
-  &.is-warning { color: $color-warning; background: rgba(190, 129, 41, 0.15); }
+  &.is-critical { color: $color-error; background: error(0.14); }
+  &.is-warning { color: $color-warning; background: warning(0.15); }
   &.is-ok { color: $accent-primary; background: $accent-subtle; }
 }
 
@@ -385,7 +388,7 @@
 .sheet-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: shade(0.55);
   z-index: 40;
 }
 
@@ -745,7 +748,7 @@ $stock-cols: minmax(0, 1fr) 84px 68px 132px 92px 40px;
   border-bottom: 1px solid $line;
   position: relative;
 
-  &:hover { background: rgba(255, 255, 255, 0.02); }
+  &:hover { background: fg(0.02); }
 
   // A hairline on the inline edge carries the status, so the row itself
   // stays quiet while the ones needing attention still read at a glance.
@@ -794,7 +797,7 @@ $stock-cols: minmax(0, 1fr) 84px 68px 132px 92px 40px;
 
   svg { width: 15px; height: 15px; }
 
-  &:hover:not(:disabled) { background: $accent-deep; color: $text-primary; }
+  &:hover:not(:disabled) { background: $accent-primary; color: $text-inverse; }
   &:focus-visible { outline: 2px solid $accent-primary; outline-offset: -2px; }
   &:disabled { opacity: 0.35; cursor: not-allowed; }
 }
@@ -1168,7 +1171,7 @@ $stock-cols: minmax(0, 1fr) 84px 68px 132px 92px 40px;
   padding: 0 5px;
   margin-inline-start: 7px;
   border-radius: $radius-pill;
-  background: rgba(217, 96, 79, 0.16);
+  background: error(0.16);
   color: $color-error;
   font-size: 10.5px;
   font-weight: 700;
@@ -1328,4 +1331,19 @@ $stock-cols: minmax(0, 1fr) 84px 68px 132px 92px 40px;
   }
 
   .page-error-actions { display: flex; gap: 8px; margin-top: 4px; }
+}
+
+// ── Theme toggle ──────────────────────────────────
+// Sits in the rail with the other rail items, so it inherits their size and
+// hover; only the icon box needs saying.
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+
+  svg { width: 20px; height: 20px; }
 }
