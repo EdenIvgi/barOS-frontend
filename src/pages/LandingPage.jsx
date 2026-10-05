@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { login, signup } from '../store/actions/user.actions'
+import { login, signup, startDemo } from '../store/actions/user.actions'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { AnimatedBackground } from '../cmps/AnimatedBackground'
 import { BarOSWordmark } from '../cmps/Wordmark'
@@ -27,6 +27,7 @@ export function LandingPage() {
 
   const [isSignup, setIsSignup] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isDemoLoading, setIsDemoLoading] = useState(false)
   const [credentials, setCredentials] = useState({ username: '', password: '', fullname: '', companyName: '', inviteCode: '' })
   const [companyError, setCompanyError] = useState(false)
 
@@ -66,6 +67,21 @@ export function LandingPage() {
       showErrorMsg(err?.response?.data?.error || t('loginError'))
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // A demo lands on the dashboard rather than setup: it already has a bar worth
+  // looking at, which is the whole point of it.
+  async function handleDemo() {
+    setIsDemoLoading(true)
+    try {
+      await startDemo()
+      showSuccessMsg(t('demoReady'))
+      navigate('/home')
+    } catch (err) {
+      showErrorMsg(err?.response?.data?.error || t('demoError'))
+    } finally {
+      setIsDemoLoading(false)
     }
   }
 
@@ -189,6 +205,19 @@ export function LandingPage() {
               {isLoading ? t('loading') : isSignup ? t('landingSignupBtn') : t('landingLoginBtn')}
             </button>
           </form>
+
+          <div className="landing-demo">
+            <span className="landing-demo-rule" aria-hidden="true" />
+            <button
+              type="button"
+              className="landing-demo-btn"
+              onClick={handleDemo}
+              disabled={isDemoLoading || isLoading}
+            >
+              {isDemoLoading ? t('demoLoading') : t('demoTry')}
+            </button>
+            <span className="landing-demo-hint">{t('demoHint')}</span>
+          </div>
 
           <button
             type="button"

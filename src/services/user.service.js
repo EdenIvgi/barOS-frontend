@@ -1,6 +1,7 @@
 import { httpService } from './http.service'
 
 export const userService = {
+  startDemo,
   login,
   signup,
   logout,
@@ -25,6 +26,13 @@ async function login({ username, password }) {
 
 async function signup(credentials) {
   const user = await httpService.post(BASE_URL + 'signup', credentials)
+  _setLoggedInUser(user)
+  return user
+}
+
+/** Builds a disposable demo bar on the server and signs in to it. */
+async function startDemo() {
+  const user = await httpService.post(BASE_URL + 'demo')
   _setLoggedInUser(user)
   return user
 }

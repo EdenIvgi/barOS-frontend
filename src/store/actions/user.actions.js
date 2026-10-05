@@ -25,6 +25,17 @@ export async function signup(credentials) {
   }
 }
 
+export async function startDemo() {
+  try {
+    const user = await userService.startDemo()
+    store.dispatch(setUser(user))
+    return user
+  } catch (error) {
+    console.error('user actions -> Cannot start demo', error)
+    throw error
+  }
+}
+
 export async function logout() {
   try {
     await userService.logout()

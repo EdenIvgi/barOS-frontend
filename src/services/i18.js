@@ -147,6 +147,12 @@ const resources = {
       theme_light: 'מצב בהיר',
       theme_dark: 'מצב כהה',
       theme_auto: 'לפי המכשיר',
+      // Demo
+      demoTry: 'כניסה לדמו',
+      demoHint: 'בר לדוגמה עם מלאי, הזמנות וספר בר — בלי להירשם.',
+      demoLoading: 'מכינים בר לדוגמה…',
+      demoReady: 'הדמו מוכן. אפשר לשחק עם הכל.',
+      demoError: 'לא הצלחנו להכין דמו. נסו שוב.',
       themeToggle: 'ערכת צבעים: {{state}}. לחצו להחלפה',
       // Account setup flow
       setupTitle: 'הקמת הבר',
@@ -583,6 +589,12 @@ const resources = {
       theme_light: 'Light Mode',
       theme_dark: 'Dark Mode',
       theme_auto: 'Match Device',
+      // Demo
+      demoTry: 'Try The Demo',
+      demoHint: 'A sample bar with stock, orders and a bar book — no signup.',
+      demoLoading: 'Pouring A Sample Bar…',
+      demoReady: 'Demo Ready. Change Anything You Like.',
+      demoError: 'Could Not Start A Demo. Please Try Again.',
       themeToggle: 'Theme: {{state}}. Click To Change',
       // Account setup flow
       setupTitle: 'Set Up Your Bar',
