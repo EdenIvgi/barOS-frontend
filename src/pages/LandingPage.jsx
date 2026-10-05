@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { login, signup } from '../store/actions/user.actions'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { AnimatedBackground } from '../cmps/AnimatedBackground'
+import { BarOSWordmark } from '../cmps/Wordmark'
 
 // Client-side company name validation — mirrors the backend sanitise logic
 function validateCompanyName(name) {
@@ -96,7 +97,7 @@ export function LandingPage() {
               <circle cx="38" cy="28" r="5" strokeWidth="1" />
               <line x1="38" y1="23" x2="38" y2="15" strokeWidth="0.8" />
             </svg>
-            <h1 className="landing-app-name">BarOS</h1>
+            <h1 className="landing-app-name"><BarOSWordmark /></h1>
           </div>
           <p className="landing-tagline">{t('landingTagline')}</p>
         </div>

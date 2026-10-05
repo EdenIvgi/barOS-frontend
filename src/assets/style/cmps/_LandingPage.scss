@@ -78,14 +78,22 @@
   flex-shrink: 0;
 }
 
+// The heading now holds the wordmark rather than type, so it carries the colour
+// the mark inherits and the width it draws at.
 .landing-app-name {
-  font-family: $font-logo;
-  font-size: 3.6rem;
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  display: flex;
   color: $text-primary;
   margin: 0;
   line-height: 1;
+
+  svg {
+    width: 13rem;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-app-name svg { width: 10rem; }
 }
 
 .landing-tagline {
