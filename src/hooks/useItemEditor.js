@@ -58,6 +58,11 @@ export function useItemEditor() {
     setIsEditing(false)
   }
 
+  /** Fills several fields at once, the way a scan hands back a whole product. */
+  function applyPatch(patch) {
+    setEditingItem(prev => ({ ...prev, ...patch }))
+  }
+
   function handleChange(ev) {
     const { name, value, type, checked } = ev.target
     setEditingItem(prev => ({
@@ -115,6 +120,7 @@ export function useItemEditor() {
       itemCount: items?.length || 0,
       onSubmit: handleSubmit,
       onChange: handleChange,
+      onScanned: applyPatch,
       onCancel: close,
       onDelete: removeFromForm,
     },

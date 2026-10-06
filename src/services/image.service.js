@@ -23,9 +23,9 @@ export const imageService = {
  * Always re-encodes as JPEG, which also converts the HEIC an iPhone produces
  * into something every browser can draw.
  */
-export async function downscale(file) {
+export async function downscale(file, maxEdge = MAX_EDGE) {
   const bitmap = await loadBitmap(file)
-  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height))
+  const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height))
   const width = Math.round(bitmap.width * scale)
   const height = Math.round(bitmap.height * scale)
 

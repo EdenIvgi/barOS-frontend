@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { ImagePicker } from './ImagePicker'
+import { ProductScanner } from './ProductScanner'
 
 export function ItemForm({
   isOpen,
@@ -10,6 +11,7 @@ export function ItemForm({
   isSaving,
   uniqueCategories,
   uniqueSuppliers,
+  onScanned,
   onSubmit,
   onChange,
   onCancel,
@@ -37,6 +39,12 @@ export function ItemForm({
           </div>
         ) : (
           <h2>{t('addNewProduct')}</h2>
+        )}
+
+        {/* Only when adding: a product already in the book has been identified
+            once, by someone who was looking at it. */}
+        {!isEditing && onScanned && (
+          <ProductScanner categories={uniqueCategories} onScanned={onScanned} />
         )}
         <form onSubmit={onSubmit}>
           <div className="form-row">

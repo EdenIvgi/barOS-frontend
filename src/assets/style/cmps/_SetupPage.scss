@@ -337,3 +337,37 @@ $setup-border: fg(0.08);
 .item-photo-url {
   font-size: 0.82rem;
 }
+
+// ── Product scanner ──────────────────────────────
+// Sits above the fields it fills, framed so it reads as an offer to save typing
+// rather than another field to fill in.
+.product-scanner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px dashed $line-strong;
+  border-radius: $radius;
+  background: fg(0.02);
+}
+
+.product-scanner-hint {
+  margin: 0;
+  color: $text-muted;
+  font-size: 0.75rem;
+}
+
+.product-scanner-error,
+.product-scanner-warning,
+.product-scanner-ok {
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.product-scanner-error { color: $color-error; }
+// An uncertain reading is named in words as well as coloured: the warning is the
+// sentence, not the amber.
+.product-scanner-warning { color: $color-warning; }
+.product-scanner-ok { color: $text-secondary; }
