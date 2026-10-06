@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { translateField, translateArray, getLangText } from '../../services/translate.service.js'
+import { ImagePicker } from '../ImagePicker.jsx'
 
 function linesToArray(text) {
   if (!text || typeof text !== 'string') return []
@@ -27,13 +28,16 @@ export function RecipesView({ page, isAdmin, onPageChange }) {
   const [selectedId, setSelectedId] = useState(null)
   const [formRecipe, setFormRecipe] = useState(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  // Held beside Formik rather than inside it: the picker has nothing to validate
+  // and Formik is here for the three text fields.
+  const [formImageUrl, setFormImageUrl] = useState('')
 
   const recipes = page.items || []
   const selectedRecipe = recipes.find(r => String(r._id) === String(selectedId)) || null
 
-  function openAdd() { setFormRecipe(null); setIsFormOpen(true) }
-  function openEdit(r) { setFormRecipe(r); setIsFormOpen(true) }
-  function closeForm() { setFormRecipe(null); setIsFormOpen(false) }
+  function openAdd() { setFormRecipe(null); setFormImageUrl(''); setIsFormOpen(true) }
+  function openEdit(r) { setFormRecipe(r); setFormImageUrl(r.imageUrl || ''); setIsFormOpen(true) }
+  function closeForm() { setFormRecipe(null); setFormImageUrl(''); setIsFormOpen(false) }
 
   async function handleSubmit(values) {
     const [title, ingredients, instructions] = await Promise.all([
@@ -41,7 +45,7 @@ export function RecipesView({ page, isAdmin, onPageChange }) {
       translateArray(linesToArray(values.ingredientsText), lang),
       translateArray(linesToArray(values.instructionsText), lang),
     ])
-    const payload = { title, ingredients, instructions }
+    const payload = { title, ingredients, instructions, imageUrl: formImageUrl || '' }
     if (formRecipe) {
       onPageChange({ ...page, items: recipes.map(r => String(r._id) === String(formRecipe._id) ? { ...r, ...payload } : r) })
     } else {
@@ -82,6 +86,9 @@ export function RecipesView({ page, isAdmin, onPageChange }) {
                 <button key={r._id} type="button"
                   className={`recipe-index-item ${selectedId === r._id ? 'active' : ''}`}
                   onClick={() => setSelectedId(r._id)}>
+                  {r.imageUrl
+                    ? <img className="recipe-index-thumb" src={r.imageUrl} alt="" />
+                    : <span className="recipe-index-thumb is-empty" aria-hidden="true" />}
                   <span className="recipe-index-title">{getLangText(r.title, lang)}</span>
                   <span className="recipe-index-meta">{r.ingredients?.length} {t('ingredients')}</span>
                 </button>
@@ -101,6 +108,9 @@ export function RecipesView({ page, isAdmin, onPageChange }) {
                   </div>
                 )}
               </div>
+              {selectedRecipe.imageUrl && (
+                <img className="recipe-detail-photo" src={selectedRecipe.imageUrl} alt="" />
+              )}
               <div className="recipe-detail-body">
                 <div className="recipe-detail-section">
                   <h3>{t('ingredients')}</h3>
@@ -124,6 +134,13 @@ export function RecipesView({ page, isAdmin, onPageChange }) {
             <h2>{formRecipe ? t('editingRecipe') : t('addingRecipe')}</h2>
             <Formik initialValues={initialValues} validationSchema={getRecipeSchema(t)} onSubmit={handleSubmit} enableReinitialize>
               <Form className="recipe-form">
+                <div className="form-group">
+                  <label>{t('recipePhoto')}</label>
+                  <div className="recipe-photo-field">
+                    {formImageUrl && <img className="recipe-photo-preview" src={formImageUrl} alt="" />}
+                    <ImagePicker value={formImageUrl} onChange={setFormImageUrl} />
+                  </div>
+                </div>
                 <div className="form-group">
                   <label>{t('recipeNameLabel')}</label>
                   <Field name="title" type="text" className="form-input" placeholder={t('recipeNamePlaceholder')} />

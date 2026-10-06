@@ -162,6 +162,7 @@ const resources = {
       imageNotAnImage: 'אפשר להעלות תמונות בלבד.',
       imageTooLarge: 'התמונה גדולה מדי גם אחרי הקטנה.',
       productPhoto: 'תמונת מוצר',
+      recipePhoto: 'תמונת הקוקטייל',
       themeToggle: 'ערכת צבעים: {{state}}. לחצו להחלפה',
       // Account setup flow
       setupTitle: 'הקמת הבר',
@@ -613,6 +614,7 @@ const resources = {
       imageNotAnImage: 'Images Only, Please.',
       imageTooLarge: 'That Photo Is Still Too Large After Shrinking.',
       productPhoto: 'Product Photo',
+      recipePhoto: 'Cocktail Photo',
       themeToggle: 'Theme: {{state}}. Click To Change',
       // Account setup flow
       setupTitle: 'Set Up Your Bar',

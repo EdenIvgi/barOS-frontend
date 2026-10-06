@@ -489,9 +489,13 @@ $book-page-shadow: 0 1px 6px shade(0.12);
     }
 
     .recipe-index-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
+      // A thumbnail beside a stacked name and count: the image spans both text
+      // rows rather than sitting above them.
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 0.65rem;
+      row-gap: 0.15rem;
+      align-items: center;
       width: 100%;
       padding: 0.8rem 1rem;
       background: transparent;
@@ -1779,4 +1783,49 @@ $book-page-shadow: 0 1px 6px shade(0.12);
   height: 22px;
 
   svg { width: 100%; height: 100%; }
+}
+
+// ── Cocktail photographs ──────────────────────────
+// A list of cocktails is exactly where a picture earns its place: the name tells
+// you less than the glass does.
+.recipe-index-thumb {
+  grid-row: 1 / span 2;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: $radius-sm;
+  object-fit: cover;
+  border: 1px solid $book-line;
+
+  &.is-empty {
+    background: fg(0.04);
+    border-style: dashed;
+  }
+}
+
+.recipe-index-title,
+.recipe-index-meta { grid-column: 2; }
+
+.recipe-detail-photo {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: $radius;
+  margin-bottom: 1rem;
+}
+
+.recipe-photo-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.recipe-photo-preview {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: $radius-sm;
+  border: 1px solid $book-line;
 }
