@@ -283,3 +283,57 @@ $setup-border: fg(0.08);
 .bar-book-page > .setup-resume {
   margin: 1.5rem 1rem 1rem;
 }
+
+// ── Photo picker ──────────────────────────────────
+// Shared by the bar book gallery and the product form.
+.image-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.image-picker-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.image-picker-clear {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  color: $text-muted;
+  font-size: 0.78rem;
+  text-decoration: underline;
+  cursor: pointer;
+
+  @include hover { color: $color-error; }
+}
+
+.image-picker-error {
+  margin: 0;
+  color: $color-error;
+  font-size: 0.78rem;
+}
+
+// The product form shows what is attached before offering to change it.
+.item-photo-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.item-photo-preview {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: $radius-sm;
+  border: 1px solid $line;
+}
+
+.item-photo-url {
+  font-size: 0.82rem;
+}

@@ -153,6 +153,15 @@ const resources = {
       demoLoading: 'מכינים בר לדוגמה…',
       demoReady: 'הדמו מוכן. אפשר לשחק עם הכל.',
       demoError: 'לא הצלחנו להכין דמו. נסו שוב.',
+      // Photos
+      imageAdd: 'הוספת תמונה',
+      imageReplace: 'החלפת תמונה',
+      imageRemove: 'הסרה',
+      imageUploading: 'מעלה…',
+      imageUploadFailed: 'ההעלאה נכשלה. נסו שוב.',
+      imageNotAnImage: 'אפשר להעלות תמונות בלבד.',
+      imageTooLarge: 'התמונה גדולה מדי גם אחרי הקטנה.',
+      productPhoto: 'תמונת מוצר',
       themeToggle: 'ערכת צבעים: {{state}}. לחצו להחלפה',
       // Account setup flow
       setupTitle: 'הקמת הבר',
@@ -595,6 +604,15 @@ const resources = {
       demoLoading: 'Pouring A Sample Bar…',
       demoReady: 'Demo Ready. Change Anything You Like.',
       demoError: 'Could Not Start A Demo. Please Try Again.',
+      // Photos
+      imageAdd: 'Add Photo',
+      imageReplace: 'Replace Photo',
+      imageRemove: 'Remove',
+      imageUploading: 'Uploading…',
+      imageUploadFailed: 'Upload Failed. Please Try Again.',
+      imageNotAnImage: 'Images Only, Please.',
+      imageTooLarge: 'That Photo Is Still Too Large After Shrinking.',
+      productPhoto: 'Product Photo',
       themeToggle: 'Theme: {{state}}. Click To Change',
       // Account setup flow
       setupTitle: 'Set Up Your Bar',

@@ -1,13 +1,14 @@
 import { useTranslation } from 'react-i18next'
 import { InlineText } from './InlineText.jsx'
+import { ImagePicker } from '../ImagePicker.jsx'
 
 /**
  * Reference photos: what the display should look like, how a garnish is cut, how
  * a plate goes out. A standard is easier to hold to when you can see it.
  *
- * Images are addressed by URL, the same way product images already work in this
- * app — there is no file upload anywhere in the project yet, and adding storage
- * is its own piece of work rather than a detail of this page.
+ * A photo can be taken on the spot, chosen from the library, or given as an
+ * address if it is already hosted somewhere. The address field stays because
+ * linking an existing picture is still worth doing.
  */
 export function GalleryView({ page, isAdmin, onPageChange }) {
   const { t, i18n } = useTranslation()
@@ -43,15 +44,21 @@ export function GalleryView({ page, isAdmin, onPageChange }) {
               onCommit={caption => updatePhoto(index, { caption })}
             />
             {isAdmin && (
-              <InlineText
-                value={photo.imageUrl}
-                lang={lang}
-                isAdmin={isAdmin}
-                raw
-                className="bb-photo-url"
-                placeholder={t('photoUrl')}
-                onCommit={imageUrl => updatePhoto(index, { imageUrl })}
-              />
+              <>
+                <ImagePicker
+                  value={photo.imageUrl}
+                  onChange={imageUrl => updatePhoto(index, { imageUrl })}
+                />
+                <InlineText
+                  value={photo.imageUrl}
+                  lang={lang}
+                  isAdmin={isAdmin}
+                  raw
+                  className="bb-photo-url"
+                  placeholder={t('photoUrl')}
+                  onCommit={imageUrl => updatePhoto(index, { imageUrl })}
+                />
+              </>
             )}
           </figcaption>
 

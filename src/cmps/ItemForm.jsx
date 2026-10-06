@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
+import { ImagePicker } from './ImagePicker'
 
 export function ItemForm({
   isOpen,
@@ -115,8 +116,31 @@ export function ItemForm({
           </div>
 
           <div className="form-group">
-            <label>{t('imageUrl')}:</label>
-            <input type="url" name="imageUrl" value={editingItem?.imageUrl || ''} onChange={onChange} />
+            <label>{t('productPhoto')}:</label>
+            <div className="item-photo-field">
+              {editingItem?.imageUrl && (
+                <img className="item-photo-preview" src={editingItem.imageUrl} alt="" />
+              )}
+              {/* The form speaks in change events, so the picker's URL is handed
+                  over as one rather than giving this field its own path. */}
+              <ImagePicker
+                value={editingItem?.imageUrl || ''}
+                onChange={url => onChange({ target: { name: 'imageUrl', value: url } })}
+              />
+            </div>
+            {/* Not type="url": an uploaded photo is stored as the relative path
+                /api/image/<id>, which browser URL validation rejects outright —
+                with it, attaching a photo made the whole form unsubmittable.
+                The field still has to accept a pasted external address too. */}
+            <input
+              type="text"
+              inputMode="url"
+              name="imageUrl"
+              className="item-photo-url"
+              placeholder={t('imageUrl')}
+              value={editingItem?.imageUrl || ''}
+              onChange={onChange}
+            />
           </div>
 
           <div className="form-group checkbox-group">
