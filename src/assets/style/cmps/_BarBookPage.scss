@@ -292,8 +292,7 @@ $book-page-shadow: 0 1px 6px shade(0.12);
   // ────────────────────────────────────────────
   // TABLES
   // ────────────────────────────────────────────
-  .daily-tasks-table-wrap,
-  .stock-table-wrap {
+  .bb-table-wrap {
     overflow-x: auto;
 
     &::-webkit-scrollbar {
@@ -306,8 +305,7 @@ $book-page-shadow: 0 1px 6px shade(0.12);
     }
   }
 
-  .daily-tasks-table,
-  .stock-table {
+  .bb-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
@@ -340,64 +338,7 @@ $book-page-shadow: 0 1px 6px shade(0.12);
     }
   }
 
-  .daily-tasks-table {
-    &.daily-tasks-vertical {
-      .daily-task-day-cell {
-        width: 1%;
-        white-space: nowrap;
-        font-weight: 700;
-        color: $book-text;
-        font-family: $font-heading;
-        font-size: 0.9rem;
-      }
-
-      .daily-task-details-cell {
-        min-width: 240px;
-      }
-
-      .daily-task-text {
-        white-space: pre-wrap;
-        min-height: 2em;
-        padding: 0.35rem;
-        border-radius: 3px;
-        transition: background 0.15s ease;
-
-        &.editable {
-          cursor: pointer;
-
-          @include hover {
-            background: fg(0.04);
-          }
-        }
-      }
-
-      .daily-task-textarea {
-        width: 100%;
-        min-height: 90px;
-        resize: vertical;
-        background: fg(0.05);
-        color: $book-text;
-        border: 1px solid fg(0.12);
-        border-radius: 3px;
-        font-family: inherit;
-        padding: 0.5rem;
-
-        &:focus {
-          outline: none;
-          border-color: accent(0.5);
-        }
-      }
-
-      .th-actions,
-      .td-actions {
-        width: 1%;
-        white-space: nowrap;
-        vertical-align: middle;
-      }
-    }
-  }
-
-  .stock-table {
+  .bb-table {
     th .editable,
     td .editable {
       cursor: pointer;
@@ -808,13 +749,12 @@ $book-page-shadow: 0 1px 6px shade(0.12);
   }
 
   .checklist-page-view,
-  .daily-page-view,
-  .stock-page-view {
+  .bb-table-view {
     max-width: 900px;
   }
 
   // ────────────────────────────────────────────
-  // STOCK TABLE — column management
+  // TABLE — column management
   // ────────────────────────────────────────────
   .btn-add-col {
     background: transparent;
@@ -990,19 +930,13 @@ $book-page-shadow: 0 1px 6px shade(0.12);
       }
     }
 
-    // ── Checklist & Daily ──
+    // ── Checklist & table ──
     .checklist-page-view,
-    .daily-page-view,
-    .stock-page-view {
+    .bb-table-view {
       max-width: 100%;
     }
 
-    .daily-tasks-table.daily-tasks-vertical {
-      .daily-task-details-cell { min-width: 0; }
-      .daily-task-day-cell { white-space: normal; }
-    }
-
-    .stock-table {
+    .bb-table {
       font-size: 0.8rem;
       th, td { padding: 0.4rem 0.5rem; }
     }

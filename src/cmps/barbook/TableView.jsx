@@ -7,7 +7,18 @@ import {
 } from '@tanstack/react-table'
 import { translateField, getLangText } from '../../services/translate.service.js'
 
-export function StockView({ page, isAdmin, onPageChange }) {
+/**
+ * A table, whatever the bar wants to put in one.
+ *
+ * Stock counts, the week's tasks, a par sheet, who is on which shift: these are
+ * all the same shape — named columns and rows someone fills in — so they are one
+ * format here rather than one component each. The daily tasks page is this view
+ * with two columns already named; the legacy `stock` type is this view too.
+ *
+ * Cells carry { he, en } like the rest of the book, so a table written in Hebrew
+ * still reads in English.
+ */
+export function TableView({ page, isAdmin, onPageChange }) {
   const { t, i18n } = useTranslation()
   const lang = i18n.resolvedLanguage || 'he'
   const [editCell, setEditCell] = useState({ row: null, col: null, value: '' })
@@ -31,17 +42,20 @@ export function StockView({ page, isAdmin, onPageChange }) {
 
   const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() })
 
-  function commitCell() {
+  async function commitCell() {
     const { row, col, value } = editCell
-    if (row == null) return
-    const newRows = rows.map((r, ri) => {
-      if (ri !== row) return r
-      const nr = [...r]
-      nr[col] = value
-      return nr
-    })
-    onPageChange({ ...page, rows: newRows })
     setEditCell({ row: null, col: null, value: '' })
+    if (row == null) return
+    const translated = await translateField(value, lang)
+    onPageChange({
+      ...page,
+      rows: rows.map((r, ri) => {
+        if (ri !== row) return r
+        const next = [...r]
+        next[col] = translated
+        return next
+      }),
+    })
   }
 
   async function commitHeader() {
@@ -56,15 +70,19 @@ export function StockView({ page, isAdmin, onPageChange }) {
 
   async function addColumn() {
     const translated = await translateField(t('newColumn'), lang)
-    const newHeaders = [...headers, translated]
-    const newRows = rows.map(r => [...r, ''])
-    onPageChange({ ...page, headers: newHeaders, rows: newRows })
+    onPageChange({
+      ...page,
+      headers: [...headers, translated],
+      rows: rows.map(r => [...r, '']),
+    })
   }
 
   function removeColumn(colIdx) {
-    const newHeaders = headers.filter((_, i) => i !== colIdx)
-    const newRows = rows.map(r => r.filter((_, i) => i !== colIdx))
-    onPageChange({ ...page, headers: newHeaders, rows: newRows })
+    onPageChange({
+      ...page,
+      headers: headers.filter((_, i) => i !== colIdx),
+      rows: rows.map(r => r.filter((_, i) => i !== colIdx)),
+    })
   }
 
   function addRow() {
@@ -76,9 +94,9 @@ export function StockView({ page, isAdmin, onPageChange }) {
   }
 
   return (
-    <div className="stock-page-view">
-      <div className="stock-table-wrap">
-        <table className="stock-table">
+    <div className="bb-table-view">
+      <div className="bb-table-wrap">
+        <table className="bb-table">
           <thead>
             <tr>
               {table.getHeaderGroups()[0]?.headers.map((header) => {
@@ -118,6 +136,7 @@ export function StockView({ page, isAdmin, onPageChange }) {
                 {row.getVisibleCells().map((cell) => {
                   const colIdx = cell.column.columnDef._colIdx
                   const isEditing = editCell.row === rowIdx && editCell.col === colIdx
+                  const text = getLangText(cell.getValue(), lang)
                   return (
                     <td key={cell.id}>
                       {isEditing ? (
@@ -135,9 +154,9 @@ export function StockView({ page, isAdmin, onPageChange }) {
                       ) : (
                         <span
                           className={isAdmin ? 'editable' : ''}
-                          onClick={() => isAdmin && setEditCell({ row: rowIdx, col: colIdx, value: cell.getValue() ?? '' })}
+                          onClick={() => isAdmin && setEditCell({ row: rowIdx, col: colIdx, value: text })}
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          {text}
                         </span>
                       )}
                     </td>

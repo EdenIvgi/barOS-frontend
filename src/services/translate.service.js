@@ -2,6 +2,9 @@ const BASE_URL = '/api/translate'
 
 export async function translateField(text, sourceLang) {
   if (!text?.trim()) return { he: text || '', en: text || '' }
+  // A count, a date or a price reads the same in both languages, and a table is
+  // full of them — there is nothing to ask the translator for.
+  if (!/\p{Letter}/u.test(text)) return { he: text, en: text }
   try {
     const res = await fetch(BASE_URL, {
       method: 'POST',
@@ -43,7 +46,7 @@ async function migratePage(page) {
     return translateField(v, 'he')
   }
 
-  if (p.type === 'stock' && Array.isArray(p.headers)) {
+  if (Array.isArray(p.headers)) {
     p.headers = await Promise.all(p.headers.map(tf))
   }
 
@@ -65,11 +68,16 @@ async function migratePage(page) {
     })))
   }
 
+  // A daily page is a table now; these are the three field names its rows were
+  // written with before that, translated here so the shape migration that
+  // follows carries whole { he, en } values into the cells.
   if (p.type === 'daily' && Array.isArray(p.tasks)) {
-    p.tasks = await Promise.all(p.tasks.map(async task => ({
-      ...task,
-      day: await tf(task.day),
-      task: await tf(task.task),
+    p.tasks = await Promise.all(p.tasks.map(async entry => ({
+      ...entry,
+      day: await tf(entry.day),
+      task: await tf(entry.task),
+      text: await tf(entry.text),
+      ...(Array.isArray(entry.items) ? { items: await Promise.all(entry.items.map(tf)) } : {}),
     })))
   }
 

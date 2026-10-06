@@ -4,19 +4,19 @@ import { useSelector } from 'react-redux'
 import { barBookService } from '../services/barBook.service.js'
 import { AppShell } from '../cmps/AppShell'
 import { translateField, getLangText, migrateAllContent } from '../services/translate.service.js'
-import { getPageType } from '../cmps/barbook/pageTypes.js'
+import { getPageType, TABLE_TYPES } from '../cmps/barbook/pageTypes.js'
 import { AddPageModal } from '../cmps/barbook/AddPageModal.jsx'
 import { BarBookTabs } from '../cmps/barbook/BarBookTabs.jsx'
 import { ChecklistBoard } from '../cmps/barbook/ChecklistBoard.jsx'
-import { StockView } from '../cmps/barbook/StockView.jsx'
+import { TableView } from '../cmps/barbook/TableView.jsx'
 import { SingleChecklistView } from '../cmps/barbook/SingleChecklistView.jsx'
-import { DailyView } from '../cmps/barbook/DailyView.jsx'
 import { RecipesView } from '../cmps/barbook/RecipesView.jsx'
 import { InfoView } from '../cmps/barbook/InfoView.jsx'
 import { ContactsView } from '../cmps/barbook/ContactsView.jsx'
 import { LinksView } from '../cmps/barbook/LinksView.jsx'
 import { GalleryView } from '../cmps/barbook/GalleryView.jsx'
 import { resetChecks, countChecks } from '../cmps/barbook/shiftReset.js'
+import { migrateDailyPages } from '../cmps/barbook/migrations.js'
 import { SetupResumeCard } from '../cmps/setup/SetupResumeCard'
 
 /**
@@ -57,7 +57,11 @@ export function BarBookPage() {
         const loaded = Array.isArray(data?.pages) ? data.pages : []
         baseUpdatedAtRef.current = data?.updatedAt
         if (loaded.length > 0) setActivePageId(loaded[0]._id)
-        const { pages: migrated, changed } = await migrateAllContent(loaded)
+        // Strings become { he, en } first, so the table conversion below carries
+        // whole bilingual values across rather than bare Hebrew.
+        const { pages: translated, changed: textChanged } = await migrateAllContent(loaded)
+        const { pages: migrated, changed: shapeChanged } = migrateDailyPages(translated)
+        const changed = textChanged || shapeChanged
         setPages(migrated)
         if (changed) {
           save(migrated).catch(err => console.error('migration save failed', err))
@@ -218,11 +222,8 @@ export function BarBookPage() {
               {activePage.type === 'checklist' && (
                 <SingleChecklistView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
               )}
-              {activePage.type === 'daily' && (
-                <DailyView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
-              )}
-              {activePage.type === 'stock' && (
-                <StockView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              {TABLE_TYPES.includes(activePage.type) && (
+                <TableView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
               )}
               {activePage.type === 'recipes' && (
                 <RecipesView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />

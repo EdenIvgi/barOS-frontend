@@ -17,11 +17,26 @@ export function createPage(type, title) {
   }
 }
 
+// Column names are written out in both languages rather than translated at
+// creation time: a new page should not wait on a network call to be usable.
+const DAILY_COLUMNS = [
+  { he: 'יום', en: 'Day' },
+  { he: 'משימה', en: 'Task' },
+]
+
+const TABLE_COLUMNS = [
+  { he: 'עמודה 1', en: 'Column 1' },
+  { he: 'עמודה 2', en: 'Column 2' },
+]
+
 function defaultPageData(type) {
   switch (type) {
     case 'checklists': return { lists: [] }
     case 'checklist':  return { items: [] }
-    case 'daily':      return { tasks: [] }
+    // A day-by-day plan is a table whose columns are already named. An empty
+    // first row is there so the page opens with somewhere to type.
+    case 'daily':      return { headers: DAILY_COLUMNS, rows: [['', '']] }
+    case 'table':      return { headers: TABLE_COLUMNS, rows: [['', '']] }
     case 'stock':      return { headers: [], rows: [] }
     case 'recipes':    return { items: [] }
     case 'info':       return { sections: [] }

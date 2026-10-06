@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createPage } from '../../services/barBook.service.js'
-import { PAGE_TYPES } from './pageTypes.js'
+import { ADDABLE_PAGE_TYPES } from './pageTypes.js'
 import { translateField } from '../../services/translate.service.js'
 
 export function AddPageModal({ onAdd, onClose }) {
@@ -29,7 +29,7 @@ export function AddPageModal({ onAdd, onClose }) {
         <h3>{t('addPage')}</h3>
         <form onSubmit={handleSubmit}>
           <div className="page-type-grid">
-            {PAGE_TYPES.map(pt => (
+            {ADDABLE_PAGE_TYPES.map(pt => (
               <button
                 key={pt.type}
                 type="button"

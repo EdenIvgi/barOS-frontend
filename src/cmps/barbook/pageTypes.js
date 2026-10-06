@@ -24,13 +24,23 @@ export const PAGE_TYPES = [
   { type: 'checklists', Icon: IconChecklists, labelKey: 'typeChecklists' },
   { type: 'checklist',  Icon: IconChecklist,  labelKey: 'typeChecklist' },
   { type: 'daily',      Icon: IconDaily,      labelKey: 'typeDaily' },
-  { type: 'stock',      Icon: IconTable,      labelKey: 'typeStock' },
+  { type: 'table',      Icon: IconTable,      labelKey: 'typeTable' },
+  // Books made before the plain table existed still hold `stock` pages. It is a
+  // table with a narrower name, so it keeps rendering and keeps its icon, but a
+  // new one is not worth offering beside the table it is a special case of.
+  { type: 'stock',      Icon: IconTable,      labelKey: 'typeStock', isLegacy: true },
   { type: 'recipes',    Icon: IconRecipes,    labelKey: 'typeRecipes' },
   { type: 'info',       Icon: IconInfo,       labelKey: 'typeInfo' },
   { type: 'contacts',   Icon: IconContacts,   labelKey: 'typeContacts' },
   { type: 'links',      Icon: IconLinks,      labelKey: 'typeLinks' },
   { type: 'gallery',    Icon: IconGallery,    labelKey: 'typeGallery' },
 ]
+
+/** The formats worth offering when adding a page. */
+export const ADDABLE_PAGE_TYPES = PAGE_TYPES.filter(pt => !pt.isLegacy)
+
+/** Formats whose page is a table of named columns. */
+export const TABLE_TYPES = ['table', 'daily', 'stock']
 
 export function getPageType(type) {
   return PAGE_TYPES.find(pt => pt.type === type) || null
