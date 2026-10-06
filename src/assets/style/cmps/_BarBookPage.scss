@@ -13,6 +13,10 @@ $book-page: fg(0.05);
 $book-page-border: fg(0.07);
 $book-line: fg(0.06);
 $book-line-strong: fg(0.1);
+// Table rules carry structure on their own, so they are drawn to be seen —
+// the hairlines used elsewhere in the book disappear once there is a grid of them.
+$book-grid: fg(0.16);
+$book-grid-strong: fg(0.28);
 $book-text: $text-primary;
 $book-text-muted: $text-secondary;
 $book-accent: $accent-primary;
@@ -305,28 +309,32 @@ $book-page-shadow: 0 1px 6px shade(0.12);
     }
   }
 
+  // Ruled like a table written into a book: every cell bounded, nothing
+  // floating in space. The lines carry the structure, so the cells themselves
+  // stay unshaded and the text is what stands out.
   .bb-table {
-    width: 100%;
+    // Not 100%: the ruled area ends where the data ends, so the controls in the
+    // gutter beside it are plainly not a column of the table.
+    width: auto;
+    min-width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
 
     th,
     td {
-      padding: 0.6rem 0.85rem;
+      padding: 0.5rem 0.7rem;
       text-align: start;
-      border: none;
-      border-bottom: 1px solid $book-line;
-      vertical-align: top;
+      border: 1px solid $book-grid;
+      vertical-align: middle;
     }
 
     th {
-      background: transparent;
-      font-weight: 700;
-      color: fg(0.4);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      border-bottom: 1px solid $book-line-strong;
+      background: fg(0.05);
+      font-weight: 600;
+      color: $book-text;
+      font-size: 0.78rem;
+      border-bottom-color: $book-grid-strong;
+      white-space: nowrap;
     }
 
     td {
@@ -339,24 +347,34 @@ $book-page-shadow: 0 1px 6px shade(0.12);
   }
 
   .bb-table {
+    // A cell is the target, not the few characters inside it — clicking the
+    // empty half of a cell should start editing it, as it does in a spreadsheet.
     th .editable,
     td .editable {
       cursor: pointer;
-      border-radius: 3px;
-      padding: 2px 4px;
-      display: inline-block;
+      display: block;
       min-height: 1.4em;
-      min-width: 2em;
+      border-radius: 2px;
 
       @include hover {
         background: fg(0.05);
       }
     }
 
+    .cell-input {
+      width: 100%;
+      min-width: 6ch;
+    }
+
+    // The row and column controls are not data, so they stand outside the ruled
+    // area rather than reading as two more empty columns.
     .th-actions,
     .td-actions {
       width: 1%;
       white-space: nowrap;
+      border: none;
+      background: transparent;
+      text-align: center;
     }
   }
 

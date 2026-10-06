@@ -126,8 +126,9 @@ export function TableView({ page, isAdmin, onPageChange }) {
                   </th>
                 )
               })}
+              {/* One gutter outside the ruled area: add a column from its head,
+                  delete a row from its line. */}
               {isAdmin && <th className="th-actions"><button type="button" className="btn-add-col" onClick={addColumn}>+</button></th>}
-              {isAdmin && <th className="th-actions"></th>}
             </tr>
           </thead>
           <tbody>
@@ -162,7 +163,6 @@ export function TableView({ page, isAdmin, onPageChange }) {
                     </td>
                   )
                 })}
-                {isAdmin && <td />}
                 {isAdmin && (
                   <td className="td-actions">
                     <button type="button" className="btn-icon btn-delete-row" onClick={() => removeRow(rowIdx)}>×</button>
