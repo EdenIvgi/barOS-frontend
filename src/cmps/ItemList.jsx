@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { ItemPreview } from './ItemPreview'
 
-export function ItemList({ items, onAdd }) {
+export function ItemList({ items, onAdd, onEdit }) {
   const { t } = useTranslation()
   if (!items || !items.length) {
     return (
@@ -20,7 +20,7 @@ export function ItemList({ items, onAdd }) {
     <section className="item-list">
       <div className="products-grid">
         {items.map((item) => (
-          <ItemPreview key={item._id} item={item} />
+          <ItemPreview key={item._id} item={item} onEdit={onEdit} />
         ))}
       </div>
     </section>

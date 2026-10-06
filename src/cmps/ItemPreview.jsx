@@ -11,7 +11,7 @@ import { IconMinus, IconPlus } from './icons'
  * and supplier are supporting detail — not the headline they used to be, where
  * an identical "700 ml" shouted from almost every card.
  */
-export function ItemPreview({ item }) {
+export function ItemPreview({ item, onEdit }) {
   const { t } = useTranslation()
   const cart = useSelector(state => state.orderModule.cart)
   const inCart = cart.find(c => c.itemId === item._id)
@@ -50,9 +50,27 @@ export function ItemPreview({ item }) {
   return (
     <article className={'product-card' + (isOut ? ' is-out' : '')}>
       <Link to={`/products/${item._id}`} className="product-main">
+        {/* A photograph only earns its place when there is one: an empty frame on
+            every card would push the names down for nothing. */}
+        {item.imageUrl && (
+          <img className="product-photo" src={item.imageUrl} alt="" loading="lazy" />
+        )}
         <h2 className="product-name">{item.name}</h2>
         {meta && <p className="product-meta">{meta}</p>}
       </Link>
+
+      {/* The same product, the same form as on the stocktake. */}
+      {onEdit && (
+        <button
+          type="button"
+          className="product-edit"
+          onClick={ev => { stopLink(ev); onEdit(item) }}
+          aria-label={`${t('edit')} ${item.name}`}
+          title={t('edit')}
+        >
+          ⋯
+        </button>
+      )}
 
       <div className="product-foot">
         <span className="product-stock">

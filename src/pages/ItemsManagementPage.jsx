@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
-import { loadItems, removeItem, saveItem } from '../store/actions/item.actions'
+import { Link, useNavigate } from 'react-router-dom'
+import { loadItems, saveItem } from '../store/actions/item.actions'
+import { useItemEditor, getCategoryNameFromItem } from '../hooks/useItemEditor'
 // Categories are now loaded from items, so we don't need to load from backend
 // import { loadCategories } from '../store/actions/category.actions'
 import { itemService } from '../services/item.service'
@@ -19,18 +20,6 @@ import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import * as XLSX from 'xlsx'
 import { NO_SUPPLIER_KEY } from '../services/constants'
 
-function getCategoryNameFromItem(item) {
-  if (item?.category?.name) return item.category.name
-  if (item?.category && typeof item.category === 'string') return item.category
-  const categoryId = item?.categoryId
-  if (categoryId) {
-    if (typeof categoryId === 'string' && categoryId.length < 24) return categoryId
-    if (typeof categoryId === 'string') return categoryId
-    if (typeof categoryId === 'object') return categoryId.toString()
-  }
-  return null
-}
-
 export function ItemsManagementPage() {
   const { t } = useTranslation()
   const items = useSelector((storeState) => storeState.itemModule.items)
@@ -40,10 +29,7 @@ export function ItemsManagementPage() {
   const isLoading = useSelector((storeState) => storeState.itemModule.flag.isLoading)
   const navigate = useNavigate()
 
-  const [isEditing, setIsEditing] = useState(false)
-  const [editingItem, setEditingItem] = useState(null)
-  const [showForm, setShowForm] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
+  const { openEdit, openAdd, uniqueCategories, uniqueSuppliers, formProps } = useItemEditor()
   const [filters, setFilters] = useState({
     category: '',
     supplier: '',
@@ -70,30 +56,6 @@ export function ItemsManagementPage() {
     loadItems()
   }, [])
 
-  const uniqueCategories = useMemo(() => {
-    if (!items || !Array.isArray(items)) return []
-    const categorySet = new Set()
-    items.forEach((item) => {
-      if (item.category) {
-        if (typeof item.category === 'string') categorySet.add(item.category)
-        else if (item.category.name) categorySet.add(item.category.name)
-      }
-      if (item.categoryId && typeof item.categoryId === 'string' && item.categoryId.length < 24) {
-        categorySet.add(item.categoryId)
-      }
-    })
-    return Array.from(categorySet).sort()
-  }, [items])
-
-  const uniqueSuppliers = useMemo(() => {
-    if (!items || !Array.isArray(items)) return []
-    const supplierSet = new Set()
-    items.forEach((item) => {
-      if (item.supplier && item.supplier.trim()) supplierSet.add(item.supplier.trim())
-    })
-    return Array.from(supplierSet).sort()
-  }, [items])
-
   const filteredItems = useMemo(() => {
     if (!items || !Array.isArray(items)) return []
     return items.filter((item) => {
@@ -109,102 +71,6 @@ export function ItemsManagementPage() {
       return true
     })
   }, [items, filters])
-
-  async function handleDelete(itemId) {
-    if (!window.confirm(t('confirmDeleteItem'))) {
-      return
-    }
-
-    try {
-      setIsSaving(true)
-      await removeItem(itemId)
-      showSuccessMsg(t('itemDeletedSuccess'))
-    } catch (error) {
-      showErrorMsg(t('itemDeleteError'))
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  function handleEdit(item) {
-    // Prepare item for editing
-    const itemToEdit = { ...item }
-    
-    // Handle category - prioritize category string from items
-    if (itemToEdit.category) {
-      if (typeof itemToEdit.category === 'string') {
-        // Use category string directly
-        itemToEdit.categoryId = itemToEdit.category
-      } else if (itemToEdit.category.name) {
-        // If category is an object with name, use the name
-        itemToEdit.categoryId = itemToEdit.category.name
-      }
-    } else if (itemToEdit.categoryId) {
-      // If only categoryId exists, check if it's a string (category name) or ObjectId
-      if (typeof itemToEdit.categoryId === 'object') {
-        // If it's an ObjectId object, convert to string
-        itemToEdit.categoryId = itemToEdit.categoryId.toString()
-      } else if (typeof itemToEdit.categoryId !== 'string') {
-        // If it's not a string, convert it
-        itemToEdit.categoryId = String(itemToEdit.categoryId)
-      }
-      // If categoryId is a short string (not ObjectId), it's likely a category name
-      // Keep it as is for the select
-    }
-    
-    setEditingItem(itemToEdit)
-    setIsEditing(true)
-    setShowForm(true)
-  }
-
-  function handleAdd() {
-    setEditingItem(itemService.getEmptyItem())
-    setIsEditing(false)
-    setShowForm(true)
-  }
-
-  async function onDeleteFromForm(itemId) {
-    await handleDelete(itemId)
-    handleCancel()
-  }
-
-  function handleCancel() {
-    setShowForm(false)
-    setEditingItem(null)
-    setIsEditing(false)
-  }
-
-  async function handleSubmit(ev) {
-    ev.preventDefault()
-    try {
-      setIsSaving(true)
-      const itemToSave = { ...editingItem }
-      
-      if (itemToSave.categoryId) {
-        if (typeof itemToSave.categoryId === 'string' && !itemToSave.categoryId.match(/^[0-9a-fA-F]{24}$/)) {
-          itemToSave.category = itemToSave.categoryId
-        } else if (typeof itemToSave.categoryId === 'object') {
-          itemToSave.categoryId = itemToSave.categoryId._id || itemToSave.categoryId.toString()
-        }
-      }
-
-      await saveItem(itemToSave)
-      showSuccessMsg(isEditing ? t('itemUpdatedSuccess') : t('itemSavedSuccess'))
-      handleCancel()
-    } catch (error) {
-      showErrorMsg(t('itemSaveError'))
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  function handleChange(ev) {
-    const { name, value, type, checked } = ev.target
-    setEditingItem((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : type === 'number' ? +value : value,
-    }))
-  }
 
   if (isLoading) return <Loader />
 
@@ -617,19 +483,7 @@ export function ItemsManagementPage() {
       subtitle={t('showingProducts', { count: filteredItems.length, total: items?.length || 0 })}
       flush
     >
-      <ItemForm
-        isOpen={showForm}
-        isEditing={isEditing}
-        editingItem={editingItem}
-        isSaving={isSaving}
-        uniqueCategories={uniqueCategories}
-        uniqueSuppliers={uniqueSuppliers}
-        itemCount={items?.length || 0}
-        onSubmit={handleSubmit}
-        onChange={handleChange}
-        onCancel={handleCancel}
-        onDelete={onDeleteFromForm}
-      />
+      <ItemForm {...formProps} />
 
       <CreateOrderModal
         isOpen={createOrderModal.isOpen}
@@ -666,7 +520,7 @@ export function ItemsManagementPage() {
             <button type="button" className="btn-shell" onClick={() => fileInputRef.current?.click()}>
               {t('importStockExcel')}
             </button>
-            <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
+            <button type="button" className="btn-shell is-primary" onClick={openAdd}>
               {t('addFirstProduct')}
             </button>
           </div>
@@ -688,7 +542,7 @@ export function ItemsManagementPage() {
             <button type="button" className="btn-shell" onClick={() => fileInputRef.current?.click()}>
               {t('importStockExcel')}
             </button>
-            <button type="button" className="btn-shell is-primary" onClick={handleAdd}>
+            <button type="button" className="btn-shell is-primary" onClick={openAdd}>
               {t('addProduct')}
             </button>
           </ItemFilters>
@@ -715,7 +569,7 @@ export function ItemsManagementPage() {
                   toOrder={getToOrderQuantity(item)}
                   onStockChange={handleStockChange}
                   onToOrderChange={handleToOrderChange}
-                  onEdit={handleEdit}
+                  onEdit={openEdit}
                 />
               ))}
             </ul>
@@ -760,7 +614,9 @@ function StockRow({ item, status, categoryName, toOrder, onStockChange, onToOrde
   return (
     <li className={`stock-row is-${status}`}>
       <div className="stock-id">
-        <span className="stock-name">{item.name}</span>
+        {/* The two screens are one list seen twice, so a count can lead straight
+            to the product's own page instead of being a dead end. */}
+        <Link to={`/products/${item._id}`} className="stock-name">{item.name}</Link>
         <span className="stock-meta">
           {categoryName}{item.supplier ? ` · ${item.supplier}` : ''}
         </span>

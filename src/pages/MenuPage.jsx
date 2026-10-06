@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { Loader } from '../cmps/Loader'
 import { CategoryFilter } from '../cmps/CategoryFilter'
 import { ItemSearch } from '../cmps/ItemSearch'
@@ -9,9 +10,12 @@ import { PaginationButtons } from '../cmps/PaginationButtons'
 import { loadItems, setFilterBy } from '../store/actions/item.actions'
 import { showErrorMsg } from '../services/event-bus.service'
 import { AppShell } from '../cmps/AppShell'
+import { ItemForm } from '../cmps/ItemForm'
+import { useItemEditor } from '../hooks/useItemEditor'
 
 export function MenuPage() {
   const { t } = useTranslation()
+  const { openEdit, formProps } = useItemEditor()
   const items = useSelector((storeState) => storeState.itemModule.items)
   const filterBy = useSelector((storeState) => storeState.itemModule.filterBy)
   const maxPage = useSelector((storeState) => storeState.itemModule.maxPage)
@@ -50,15 +54,22 @@ export function MenuPage() {
     >
       {/* Categories and search share one bar, so the header stays a single row
           of controls instead of a tall search box above a separate chip row. */}
+      <ItemForm {...formProps} />
+
       <div className="catalog-bar">
         <CategoryFilter
           onSetFilter={onSetFilter}
           selectedCategoryId={filterBy.categoryId}
         />
         <ItemSearch filterBy={filterBy} onSetFilter={onSetFilter} />
+        {/* Counting and ordering are the same bottles from two angles, so each
+            screen says where the other one is. */}
+        <Link to="/items-management" className="btn-shell catalog-bar-link">
+          {t('itemsManagementTitle')}
+        </Link>
       </div>
       {isLoading && <Loader />}
-      {!isLoading && <ItemList items={items} />}
+      {!isLoading && <ItemList items={items} onEdit={openEdit} />}
       {!!items.length && maxPage > 1 && (
         <PaginationButtons
           pageIdx={filterBy.pageIdx}
