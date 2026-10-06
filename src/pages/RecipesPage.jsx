@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AppShell } from '../cmps/AppShell'
 import { Loader } from '../cmps/Loader'
 import { RecipeList } from '../cmps/recipes/RecipeList'
 import { RecipeDetail } from '../cmps/recipes/RecipeDetail'
+import { RecipeImportModal } from '../cmps/recipes/RecipeImportModal'
 import { recipeService } from '../services/recipe.service'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 
@@ -31,6 +32,8 @@ export function RecipesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [selected, setSelected] = useState(null)
   const [hasLoadError, setHasLoadError] = useState(false)
+  const [isImporting, setIsImporting] = useState(false)
+  const [reloadToken, setReloadToken] = useState(0)
   const [filterBy, setFilterBy] = useState({ q: '', availability: 'all', kind: 'all', scope: 'all' })
 
   const ingredientsBySlug = useMemo(
@@ -76,7 +79,7 @@ export function RecipesPage() {
     // every render, so a translator in this list turns one fetch into a loop
     // that only stops when the rate limiter starts refusing. Failures are held
     // as state and worded during render instead.
-  }, [filterBy])
+  }, [filterBy, reloadToken])
 
   async function onAddToBook(recipe) {
     try {
@@ -88,6 +91,21 @@ export function RecipesPage() {
     }
   }
 
+  // Adding an ingredient mid-import must be felt immediately: the pickers on
+  // screen are the ones that need the new entry.
+  const onCreateIngredient = useCallback(async draft => {
+    const created = await recipeService.addIngredient(draft)
+    setIngredients(prev => [...prev, created])
+    return created
+  }, [])
+
+  function onImported(result) {
+    setIsImporting(false)
+    setReloadToken(n => n + 1)
+    if (result?.added) showSuccessMsg(t('recipeImportAdded', { count: result.added }))
+    if (result?.skipped?.length) showErrorMsg(t('recipeImportSkipped', { count: result.skipped.length }))
+  }
+
   function setFilter(patch) {
     setFilterBy(prev => ({ ...prev, ...patch }))
   }
@@ -97,6 +115,11 @@ export function RecipesPage() {
       title={t('recipesTitle')}
       subtitle={t('recipesSubtitle', { count: total, ingredients: availableCount })}
       flush
+      actions={
+        <button type="button" className="btn-shell is-primary" onClick={() => setIsImporting(true)}>
+          {t('recipeImportTitle')}
+        </button>
+      }
     >
       <div className="recipes-bar">
         <input
@@ -145,6 +168,16 @@ export function RecipesPage() {
           ingredientsBySlug={ingredientsBySlug}
           lang={lang}
           onSelect={setSelected}
+        />
+      )}
+
+      {isImporting && (
+        <RecipeImportModal
+          ingredients={ingredients}
+          lang={lang}
+          onCreateIngredient={onCreateIngredient}
+          onClose={() => setIsImporting(false)}
+          onSaved={onImported}
         />
       )}
 

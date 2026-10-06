@@ -8,8 +8,12 @@ export const recipeService = {
     getById,
     save,
     remove,
+    saveMany,
+    parseText,
     getIngredients,
+    addIngredient,
     addToBarBook,
+    toBookRecipe,
     formatAmount,
 }
 
@@ -31,8 +35,23 @@ async function remove(id) {
 }
 
 async function getIngredients() {
-    const res = await httpService.get(BASE_URL + 'ingredients')
+    const res = await httpService.get('ingredient')
     return res.ingredients || []
+}
+
+/** An ingredient this bar keeps that the shared catalogue does not know about. */
+async function addIngredient(ingredient) {
+    return httpService.post('ingredient', ingredient)
+}
+
+/** Reads recipes out of pasted text. Saves nothing - these are candidates. */
+async function parseText(text) {
+    return httpService.post(BASE_URL + 'parse', { text })
+}
+
+/** Saves a reviewed batch. Returns how many landed and which were already there. */
+async function saveMany(recipes) {
+    return httpService.post(BASE_URL + 'bulk', { recipes })
 }
 
 /** "60 ml", "2 dash", "8 leaf" - and just the ingredient when no amount is given. */

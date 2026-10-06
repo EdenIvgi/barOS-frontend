@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { translateField, translateArray, getLangText } from '../../services/translate.service.js'
 import { ImagePicker } from '../ImagePicker.jsx'
+import { LibraryPickerModal } from '../recipes/LibraryPickerModal.jsx'
 
 function linesToArray(text) {
   if (!text || typeof text !== 'string') return []
@@ -26,6 +27,7 @@ export function RecipesView({ page, isAdmin, onPageChange }) {
   const { t, i18n } = useTranslation()
   const lang = i18n.resolvedLanguage || 'he'
   const [selectedId, setSelectedId] = useState(null)
+  const [isPicking, setIsPicking] = useState(false)
   const [formRecipe, setFormRecipe] = useState(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   // Held beside Formik rather than inside it: the picker has nothing to validate
@@ -70,13 +72,32 @@ export function RecipesView({ page, isAdmin, onPageChange }) {
       }
     : { title: '', ingredientsText: '', instructionsText: '' }
 
+  function addFromLibrary(bookRecipe) {
+    setIsPicking(false)
+    onPageChange({ ...page, items: [...recipes, bookRecipe] })
+    setSelectedId(bookRecipe._id)
+  }
+
   return (
     <div className="bar-book-recipes">
+      {isPicking && (
+        <LibraryPickerModal
+          existingSlugs={recipes.map(r => r.librarySlug).filter(Boolean)}
+          lang={lang}
+          onPick={addFromLibrary}
+          onClose={() => setIsPicking(false)}
+        />
+      )}
       <div className="recipes-layout">
         <div className="recipes-list-panel">
           {isAdmin && (
             <div className="recipes-panel-header">
               <button type="button" className="btn-add-recipe" onClick={openAdd}>+ {t('addRecipe')}</button>
+              {/* The library is the other half of this page: most of what a bar
+                  keeps here is a classic it did not need to type out. */}
+              <button type="button" className="btn-add-recipe" onClick={() => setIsPicking(true)}>
+                + {t('recipeFromLibrary')}
+              </button>
             </div>
           )}
           <div className="recipes-index">

@@ -228,3 +228,179 @@
   .recipes-bar { padding: 10px 14px; }
   .recipe-overlay { padding: 0.75rem; }
 }
+
+// ── Import, review and the manual editor ──────
+.recipe-modal.is-wide { width: min(760px, 100%); }
+
+.recipe-import-hint {
+  margin: 0.6rem 0;
+  font-size: 12px;
+  color: $text-muted;
+  line-height: 1.5;
+}
+
+.recipe-paste-input,
+.recipe-steps-input {
+  width: 100%;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.recipe-editor {
+  margin-top: 0.6rem;
+
+  .form-row {
+    display: flex;
+    // Without this the row stretches every control to the tallest one, and a
+    // select beside two short fields comes out as a list box.
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+  }
+
+  .form-group {
+    flex: 1 1 160px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  label { font-size: 11px; color: $text-muted; }
+
+  // The picker sits in a row of ingredient lines elsewhere, where a flex basis
+  // is a width. Inside a column it would be read as a height, leaving a tall
+  // empty box under the control.
+  .form-group .ingredient-picker { flex: 0 0 auto; width: 100%; }
+}
+
+.recipe-editor-label {
+  display: block;
+  margin: 1rem 0 0.4rem;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+.recipe-editor-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 5px 0;
+    border-bottom: 1px solid $line;
+  }
+}
+
+.recipe-amount { width: 72px; }
+.recipe-unit { width: 92px; }
+
+.ingredient-picker {
+  flex: 1 1 160px;
+  min-width: 0;
+  display: flex;
+  gap: 6px;
+
+  select, input { width: 100%; min-width: 0; height: 32px; }
+  &.is-creating { flex: 1 1 100%; }
+}
+
+.recipe-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: $text-muted;
+  white-space: nowrap;
+}
+
+// ── Review ────────────────────────────────────
+.recipe-review-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+}
+
+.recipe-review-item {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid $line;
+}
+
+.recipe-review-title {
+  width: 100%;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.recipe-review-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 12.5px;
+  }
+
+  // An unmapped line is the one that needs an answer, so it is marked on the
+  // edge and not only by the word in its own select.
+  .is-unmapped {
+    border-inline-start: 2px solid $color-warning;
+    padding-inline-start: 6px;
+  }
+}
+
+.recipe-review-raw {
+  flex: 1 1 140px;
+  min-width: 0;
+  color: $text-secondary;
+  overflow-wrap: anywhere;
+}
+
+.recipe-review-drop {
+  margin-top: 0.4rem;
+  font-size: 11px;
+  padding: 3px 8px;
+}
+
+// ── Library picker, opened from the Bar Book ──
+.library-pick-list {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.library-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: start;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-bottom-color: $line;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: fg(0.04); }
+  &:disabled { opacity: 0.45; cursor: default; }
+  &:focus-visible { outline: 2px solid $accent-primary; outline-offset: -2px; }
+}
+
+.library-pick-name { font-size: 13.5px; font-weight: 600; }
+.library-pick-meta { font-size: 11px; color: $text-muted; }
