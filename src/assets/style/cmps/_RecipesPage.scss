@@ -1,0 +1,230 @@
+// ============================================
+// Recipes — the library, read against the shelf
+// ============================================
+
+.recipes-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 18px;
+  border-bottom: 1px solid $line;
+}
+
+.recipes-search {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid $line-strong;
+  border-radius: $radius;
+  background: $bg-sunken;
+  color: $text-primary;
+  font-family: inherit;
+  font-size: 13px;
+
+  &:focus {
+    outline: none;
+    border-color: $accent-primary;
+  }
+}
+
+.recipes-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.recipe-grid {
+  list-style: none;
+  margin: 0;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.recipe-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  height: 100%;
+  text-align: start;
+  padding: 13px 14px;
+  border: 1px solid $line;
+  border-radius: $radius-lg;
+  background: $bg-surface;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+
+  &:hover { border-color: $line-strong; }
+  &:focus-visible { outline: 2px solid $accent-primary; outline-offset: 2px; }
+
+  // A drink the bar can actually pour is marked on the inline edge as well as
+  // being said in words below, so it is not colour alone that carries it.
+  &.can-make { border-inline-start: 3px solid $color-success; }
+}
+
+.recipe-card-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.recipe-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.recipe-tag {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid $line-strong;
+  color: $text-muted;
+
+  &.is-own {
+    color: $accent-primary;
+    border-color: accent(0.4);
+  }
+}
+
+.recipe-card-ingredients {
+  font-size: 11.5px;
+  color: $text-muted;
+  line-height: 1.5;
+}
+
+.recipe-card-foot {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid $line;
+  font-size: 11.5px;
+}
+
+.recipe-status {
+  color: $text-secondary;
+
+  &.is-ok { color: $color-success; font-weight: 600; }
+  // One bottle away is the row worth acting on, so it is the one that is loud.
+  &.is-close { color: $color-warning; }
+}
+
+// ── Detail ────────────────────────────────────
+.recipe-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow-y: auto;
+  background: rgb(var(--shadow-rgb) / 0.6);
+  backdrop-filter: blur(6px);
+}
+
+.recipe-modal {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  padding: 1.25rem 1.4rem 1.4rem;
+  border: 1px solid $line-strong;
+  border-radius: $radius-lg;
+  background: $bg-surface;
+
+  h3 {
+    margin: 1.1rem 0 0.4rem;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $text-muted;
+  }
+}
+
+.recipe-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+
+  h2 { margin: 0; font-size: 20px; font-weight: 500; }
+}
+
+.recipe-modal-meta {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: $text-muted;
+}
+
+.recipe-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid $line;
+    font-size: 13.5px;
+  }
+
+  .is-missing .recipe-line-name { color: $text-muted; }
+}
+
+.recipe-line-amount {
+  min-width: 68px;
+  color: $text-secondary;
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+}
+
+.recipe-line-name { flex: 1; }
+
+.recipe-line-note {
+  font-size: 11px;
+  color: $text-muted;
+}
+
+.recipe-line-stock {
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: $color-success;
+
+  .is-missing & { color: $color-warning; }
+}
+
+.recipe-steps {
+  margin: 0;
+  padding-inline-start: 1.2rem;
+  font-size: 13.5px;
+  line-height: 1.65;
+
+  li { margin-bottom: 0.35rem; }
+}
+
+.recipe-modal-foot {
+  display: flex;
+  gap: 8px;
+  margin-top: 1.3rem;
+}
+
+@media (max-width: 860px) {
+  .recipe-grid {
+    grid-template-columns: 1fr;
+    padding: 12px 14px;
+  }
+  .recipes-bar { padding: 10px 14px; }
+  .recipe-overlay { padding: 0.75rem; }
+}

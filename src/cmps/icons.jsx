@@ -196,4 +196,5 @@ export const NAV_ITEMS = [
   { to: '/orders', labelKey: 'orders', Icon: IconOrders },
   { to: '/bar-book', labelKey: 'barBook', Icon: IconBarBook },
   { to: '/products', labelKey: 'products', Icon: IconProducts },
+  { to: '/recipes', labelKey: 'recipesTitle', Icon: IconRecipes },
 ]

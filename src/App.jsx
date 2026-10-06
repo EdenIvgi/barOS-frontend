@@ -15,6 +15,7 @@ import { OrderPage } from './pages/OrderPage'
 import { OrdersListPage } from './pages/OrdersListPage'
 import { ItemsManagementPage } from './pages/ItemsManagementPage'
 import { BarBookPage } from './pages/BarBookPage'
+import { RecipesPage } from './pages/RecipesPage'
 import { SetupPage } from './pages/SetupPage'
 import { ProtectedRoute } from './cmps/ProtectedRoute'
 import { ErrorBoundary } from './cmps/ErrorBoundary'
@@ -55,6 +56,7 @@ function AppLayout() {
         <Route path="/orders" element={<ProtectedRoute><OrdersListPage /></ProtectedRoute>} />
         <Route path="/items-management" element={<ProtectedRoute><ItemsManagementPage /></ProtectedRoute>} />
         <Route path="/bar-book" element={<ProtectedRoute><BarBookPage /></ProtectedRoute>} />
+        <Route path="/recipes" element={<ProtectedRoute><RecipesPage /></ProtectedRoute>} />
         <Route path="/setup" element={<ProtectedRoute><SetupPage /></ProtectedRoute>} />
       </Routes>
       </ErrorBoundary>
