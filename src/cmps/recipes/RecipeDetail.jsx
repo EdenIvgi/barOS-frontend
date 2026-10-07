@@ -9,7 +9,7 @@ import { recipeService } from '../../services/recipe.service'
  * whether that bottle is in stock, so a missing measure is visible where it
  * matters rather than only as a count on the card.
  */
-export function RecipeDetail({ recipe, ingredientsBySlug, lang, onCopyToMine, onClose }) {
+export function RecipeDetail({ recipe, ingredientsBySlug, lang, onCopyToMine, isCopied, onClose }) {
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -82,8 +82,8 @@ export function RecipeDetail({ recipe, ingredientsBySlug, lang, onCopyToMine, on
         <footer className="recipe-modal-foot">
           {/* A recipe the bar already owns is edited, so only the shared library's has anything to copy. */}
           {recipe.source === 'library' && (
-            <button type="button" className="btn-shell is-primary" onClick={() => onCopyToMine(recipe)}>
-              {t('recipeCopyToMine')}
+            <button type="button" className="btn-shell is-primary" disabled={isCopied} onClick={() => onCopyToMine(recipe)}>
+              {isCopied ? t('recipeAlreadyCopied') : t('recipeCopyToMine')}
             </button>
           )}
           <button type="button" className="btn-shell" onClick={onClose}>{t('close')}</button>

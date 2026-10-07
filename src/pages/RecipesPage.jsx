@@ -82,19 +82,32 @@ export function RecipesPage() {
     // as state and worded during render instead.
   }, [filterBy, reloadToken])
 
+  // Only as good as the loaded list: a scope filter that hides the bar's own
+  // recipes also hides a prior copy.
+  const copiedSlugs = useMemo(
+    () => new Set(recipes.filter(r => r.source === 'bar' && r.librarySlug).map(r => r.librarySlug)),
+    [recipes]
+  )
+
   // The library's copy is read-only and shared, so the bar gets its own to
   // adapt. Identity fields stay behind: sending the library's _id would update
   // rather than create. librarySlug is kept so the origin is still known.
   async function onCopyToMine(recipe) {
     const copy = { ...recipe, librarySlug: recipe.slug }
-    for (const key of ['_id', 'slug', 'source', 'isLibrary']) delete copy[key]
+    // Identity belongs to the library's copy; the availability fields are
+    // computed per read and must not be stored inside the recipe.
+    for (const key of ['_id', 'slug', 'source', 'isLibrary', 'canMake', 'missing', 'missingOptional', 'missingCount']) {
+      delete copy[key]
+    }
     try {
       await recipeService.save(copy)
       setSelected(null)
       setReloadToken(n => n + 1)
       showSuccessMsg(t('recipeCopied'))
     } catch {
-      setHasLoadError(true)
+      // The detail stays open so the copy can be retried. This is a failed
+      // write, not a failed load, so the list is left alone.
+      showErrorMsg(t('recipeCopyError'))
     }
   }
 
@@ -208,6 +221,7 @@ export function RecipesPage() {
           ingredientsBySlug={ingredientsBySlug}
           lang={lang}
           onCopyToMine={onCopyToMine}
+          isCopied={copiedSlugs.has(selected.slug)}
           onClose={() => setSelected(null)}
         />
       )}
