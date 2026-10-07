@@ -33,6 +33,8 @@ export function RecipeDetail({ recipe, ingredientsBySlug, lang, onAddToBook, onC
           <button type="button" className="btn-icon" aria-label={t('close')} onClick={onClose}>×</button>
         </header>
 
+        {recipe.imageUrl && <img className="recipe-detail-image" src={recipe.imageUrl} alt="" />}
+
         <p className="recipe-modal-meta">
           {[
             recipe.method && t(`method_${recipe.method}`, recipe.method),

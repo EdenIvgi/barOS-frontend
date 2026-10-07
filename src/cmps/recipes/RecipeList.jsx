@@ -22,6 +22,7 @@ export function RecipeList({ recipes, ingredientsBySlug, lang, onSelect }) {
             className={'recipe-card' + (recipe.canMake ? ' can-make' : '')}
             onClick={() => onSelect(recipe)}
           >
+            {recipe.imageUrl && <img className="recipe-card-thumb" src={recipe.imageUrl} alt="" loading="lazy" />}
             <span className="recipe-card-head">
               <span className="recipe-card-title">{getLangText(recipe.title, lang)}</span>
               {recipe.produces && <span className="recipe-tag">{t('recipesKind_syrup')}</span>}
