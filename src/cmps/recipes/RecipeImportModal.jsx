@@ -254,6 +254,11 @@ function pick(row, names) {
   return ''
 }
 
+const UNIT_TOKENS = {
+  ml: 'ml', cl: 'cl', oz: 'oz', g: 'g', dash: 'dash', tsp: 'tsp', tbsp: 'tbsp',
+  'מ"ל': 'ml', 'מ״ל': 'ml', 'גרם': 'g',
+}
+
 /**
  * A spreadsheet row per recipe: a name, ingredients one to a line, steps one to
  * a line. Ingredients are matched against the catalogue here rather than by a
@@ -276,21 +281,28 @@ function rowsToRecipes(rows, ingredients) {
     const rawSteps = pick(row, ['הוראות', 'instructions', 'method', 'steps', 'הכנה'])
 
     const lines = rawIngredients.split(/[\n;]/).map(s => s.trim()).filter(Boolean).map(line => {
+      // Mirrors parseFreeText in the backend's ingredientCatalog.service.js; the
+      // two live in separate repos, so change both together.
       // "60 ml gin" and "gin 60" both appear in the wild; take the first number
-      // as the amount and whatever is left as the ingredient's name.
-      const amountMatch = line.match(/(\d+(?:[.,]\d+)?)/)
-      const amount = amountMatch ? Number(amountMatch[1].replace(',', '.')) : null
-      const unitMatch = line.match(/\b(ml|cl|oz|g|dash|tsp|tbsp)\b/i)
-      const rawText = line
-        .replace(/\d+(?:[.,]\d+)?/, '')
-        .replace(/\b(ml|cl|oz|g|dash|tsp|tbsp|מ"ל|מ״ל|גרם)\b/gi, '')
-        .trim()
+      // as the amount and whatever is left as the ingredient's name. Units are
+      // matched by whole token because a word-boundary regex does not work on Hebrew.
+      const amountMatch = line.match(/\d+(?:[.,]\d+)?/)
+      const amount = amountMatch ? Number(amountMatch[0].replace(',', '.')) : null
+      const rest = amountMatch ? line.replace(amountMatch[0], ' ') : line
+      let unit = ''
+      const nameTokens = []
+      for (const token of rest.split(/\s+/).filter(Boolean)) {
+        const found = UNIT_TOKENS[token.toLowerCase()]
+        if (found) unit ||= found
+        else nameTokens.push(token)
+      }
+      const rawText = nameTokens.join(' ')
 
       return {
         ingredientId: byText.get(rawText.toLowerCase()) || '',
         rawText: rawText || line,
         amount,
-        unit: unitMatch ? unitMatch[1].toLowerCase() : 'ml',
+        unit: unit || 'ml',
         isOptional: false,
         isGarnish: false,
       }
