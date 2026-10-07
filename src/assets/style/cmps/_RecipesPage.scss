@@ -179,6 +179,7 @@
   }
 
   .is-missing .recipe-line-name { color: $text-muted; }
+  .is-unknown .recipe-line-name { color: $text-muted; font-style: italic; }
 }
 
 .recipe-line-amount {
@@ -203,6 +204,7 @@
   color: $color-success;
 
   .is-missing & { color: $color-warning; }
+  .is-unknown & { color: $text-muted; }
 }
 
 .recipe-steps {

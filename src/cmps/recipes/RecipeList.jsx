@@ -31,7 +31,7 @@ export function RecipeList({ recipes, ingredientsBySlug, lang, onSelect }) {
             <span className="recipe-card-ingredients">
               {(recipe.ingredients || [])
                 .filter(line => !line.isGarnish)
-                .map(line => ingredientsBySlug[line.ingredientId]?.[lang] || line.ingredientId)
+                .map(line => ingredientsBySlug[line.ingredientId]?.[lang] || line.rawText || line.ingredientId)
                 .join(' · ')}
             </span>
 

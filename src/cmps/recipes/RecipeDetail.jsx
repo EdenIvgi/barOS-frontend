@@ -47,17 +47,21 @@ export function RecipeDetail({ recipe, ingredientsBySlug, lang, onAddToBook, onC
         <ul className="recipe-lines">
           {(recipe.ingredients || []).map((line, i) => {
             const ing = ingredientsBySlug[line.ingredientId]
+            // Nothing is claimed about a line the catalogue cannot place: it is
+            // neither in stock nor missing, because the bar never said.
+            const isUnmapped = !line.ingredientId
             const isMissing = missing.has(line.ingredientId) || missingOptional.has(line.ingredientId)
             return (
-              <li key={i} className={isMissing ? 'is-missing' : 'is-present'}>
+              <li key={i} className={isUnmapped ? 'is-unknown' : isMissing ? 'is-missing' : 'is-present'}>
                 <span className="recipe-line-amount">{recipeService.formatAmount(line, t)}</span>
-                <span className="recipe-line-name">{ing?.[lang] || line.ingredientId}</span>
+                {/* An unmapped line still has the words someone wrote. */}
+                <span className="recipe-line-name">{ing?.[lang] || line.rawText || line.ingredientId}</span>
                 {line.isOptional && <span className="recipe-line-note">{t('recipeOptional')}</span>}
                 {line.isGarnish && <span className="recipe-line-note">{t('recipeGarnish')}</span>}
                 {/* Said in words, not only by colour: the list is read by someone
                     deciding what to pour, sometimes in a dark bar. */}
                 <span className="recipe-line-stock">
-                  {isMissing ? t('recipeOutOfStock') : t('recipeInStock')}
+                  {isUnmapped ? t('recipeUnknownStock') : isMissing ? t('recipeOutOfStock') : t('recipeInStock')}
                 </span>
               </li>
             )
