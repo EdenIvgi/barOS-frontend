@@ -222,12 +222,22 @@ export function BarBookPage() {
               {TABLE_TYPES.includes(activePage.type) && (
                 <TableView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
               )}
-              {/* A page whose recipes failed to migrate is kept on purpose so the next
-                  read can retry; say where the recipes live instead of showing nothing. */}
+              {/* A recipes page survives only when the move failed, so it may still be
+                  the one copy of these recipes. While it holds items, warn instead of
+                  pointing elsewhere: deleting it here would garbage-collect the photos. */}
               {activePage.type === 'recipes' && (
                 <div className="empty-detail">
-                  <p>{t('recipesMovedNote')}</p>
-                  <Link to="/recipes" className="btn-shell is-primary">{t('recipesMovedLink')}</Link>
+                  {activePage.items?.length ? (
+                    <>
+                      <p>{t('recipesMovePendingTitle')}</p>
+                      <p>{t('recipesMovePendingNote')}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>{t('recipesMovedNote')}</p>
+                      <Link to="/recipes" className="btn-shell is-primary">{t('recipesMovedLink')}</Link>
+                    </>
+                  )}
                 </div>
               )}
               {activePage.type === 'info' && (
