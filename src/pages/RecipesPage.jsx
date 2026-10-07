@@ -10,6 +10,7 @@ import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 
 const AVAILABILITY = ['all', 'canMake', 'missingOne']
 const KINDS = ['all', 'cocktail', 'syrup']
+const SCOPES = ['all', 'bar', 'library']
 
 /**
  * The recipe library.
@@ -154,6 +155,20 @@ export function RecipesPage() {
               onClick={() => setFilter({ kind: value })}
             >
               {t(`recipesKind_${value}`)}
+            </button>
+          ))}
+        </div>
+
+        <div className="recipes-chips" role="group" aria-label={t('recipesFilterScope')}>
+          {SCOPES.map(value => (
+            <button
+              key={value}
+              type="button"
+              className={'chip' + (filterBy.scope === value ? ' is-on' : '')}
+              aria-pressed={filterBy.scope === value}
+              onClick={() => setFilter({ scope: value })}
+            >
+              {t(`recipesScope_${value}`)}
             </button>
           ))}
         </div>
