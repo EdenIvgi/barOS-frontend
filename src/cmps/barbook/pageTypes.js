@@ -30,7 +30,9 @@ export const PAGE_TYPES = [
   // table with a narrower name, so it keeps rendering and keeps its icon, but a
   // new one is not worth offering beside the table it is a special case of.
   { type: 'stock',      Icon: IconTable,      labelKey: 'typeStock', isLegacy: true },
-  { type: 'recipes',    Icon: IconRecipes,    labelKey: 'typeRecipes' },
+  // Recipes live in the /recipes route now. The row stays so a book read before
+  // its recipes page was migrated still gets a tab label.
+  { type: 'recipes',    Icon: IconRecipes,    labelKey: 'typeRecipes', isLegacy: true },
   { type: 'info',       Icon: IconInfo,       labelKey: 'typeInfo' },
   { type: 'contacts',   Icon: IconContacts,   labelKey: 'typeContacts' },
   { type: 'links',      Icon: IconLinks,      labelKey: 'typeLinks' },

@@ -9,7 +9,6 @@ import { AddPageModal } from '../cmps/barbook/AddPageModal.jsx'
 import { BarBookTabs } from '../cmps/barbook/BarBookTabs.jsx'
 import { ChecklistBoard } from '../cmps/barbook/ChecklistBoard.jsx'
 import { TableView } from '../cmps/barbook/TableView.jsx'
-import { RecipesView } from '../cmps/barbook/RecipesView.jsx'
 import { InfoView } from '../cmps/barbook/InfoView.jsx'
 import { ContactsView } from '../cmps/barbook/ContactsView.jsx'
 import { LinksView } from '../cmps/barbook/LinksView.jsx'
@@ -221,9 +220,6 @@ export function BarBookPage() {
               )}
               {TABLE_TYPES.includes(activePage.type) && (
                 <TableView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
-              )}
-              {activePage.type === 'recipes' && (
-                <RecipesView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
               )}
               {activePage.type === 'info' && (
                 <InfoView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
