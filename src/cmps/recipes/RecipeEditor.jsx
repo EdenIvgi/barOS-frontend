@@ -4,6 +4,9 @@ import { IngredientPicker } from './IngredientPicker'
 import { emptyLine } from './recipeDraft'
 import { ImagePicker } from '../ImagePicker'
 
+// The same unit list as UNIT_ALIASES in the backend's ingredientCatalog.service.js
+// and UNIT_TOKENS in RecipeImportModal.jsx; the three live in two repos, so a
+// unit added anywhere has to be added in all of them.
 const UNITS = ['ml', 'cl', 'oz', 'g', 'dash', 'drop', 'tsp', 'tbsp', 'leaf', 'sprig', 'piece', 'slice', 'rim', 'pinch', 'wedge']
 const METHODS = ['', 'stirred', 'shaken', 'built', 'blended', 'prep']
 

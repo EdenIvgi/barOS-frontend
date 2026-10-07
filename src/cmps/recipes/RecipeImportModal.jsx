@@ -263,6 +263,19 @@ const UNIT_TOKENS = {
 }
 
 /**
+ * The unit a written token means, or ''.
+ *
+ * Own-property lookup only: the literal word "constructor" would otherwise come
+ * back as a function off the prototype chain.
+ */
+function lookupUnit(token) {
+  const key = String(token || '').toLowerCase()
+  if (Object.hasOwn(UNIT_TOKENS, key)) return UNIT_TOKENS[key]
+  if (Object.hasOwn(UNIT_TOKENS, token)) return UNIT_TOKENS[token]
+  return ''
+}
+
+/**
  * A spreadsheet row per recipe: a name, ingredients one to a line, steps one to
  * a line. Ingredients are matched against the catalogue here rather than by a
  * model, so a spreadsheet import costs nothing and still arrives mapped.
@@ -284,18 +297,31 @@ function rowsToRecipes(rows, ingredients) {
     const rawSteps = pick(row, ['הוראות', 'instructions', 'method', 'steps', 'הכנה'])
 
     const lines = rawIngredients.split(/[\n;]/).map(s => s.trim()).filter(Boolean).map(line => {
-      // Mirrors parseFreeText in the backend's ingredientCatalog.service.js; the
-      // two live in separate repos, so change both together.
-      // "60 ml gin" and "gin 60" both appear in the wild; take the first number
-      // as the amount and whatever is left as the ingredient's name. Units are
-      // matched by whole token because a word-boundary regex does not work on Hebrew.
-      const amountMatch = line.match(/\d+(?:[.,]\d+)?/)
-      const amount = amountMatch ? Number(amountMatch[0].replace(',', '.')) : null
-      const rest = amountMatch ? line.replace(amountMatch[0], ' ') : line
+      // Mirrors parseFreeText in the backend's ingredientCatalog.service.js and
+      // shares its unit list with RecipeEditor.jsx; the three live in two repos,
+      // so change them together.
+      // "60 ml gin" and "gin 60" both appear in the wild; take the first
+      // standalone number as the amount and whatever is left as the ingredient's
+      // name. The number has to be a token of its own (or carry a known unit) so
+      // that "7up" stays a name and "1/2" stays a fraction. Units are matched by
+      // whole token because a word-boundary regex does not work on Hebrew.
+      let amount = null
       let unit = ''
       const nameTokens = []
-      for (const token of rest.split(/\s+/).filter(Boolean)) {
-        const found = UNIT_TOKENS[token.toLowerCase()]
+      for (const token of line.split(/\s+/).filter(Boolean)) {
+        const numeric = amount === null ? token.match(/^(\d+(?:[.,]\d+)?)(.*)$/) : null
+        if (numeric) {
+          const suffix = lookupUnit(numeric[2])
+          if (!numeric[2] || suffix) {
+            const value = Number(numeric[1].replace(',', '.'))
+            if (Number.isFinite(value)) {
+              amount = value
+              if (suffix) unit ||= suffix
+              continue
+            }
+          }
+        }
+        const found = lookupUnit(token)
         if (found) unit ||= found
         else nameTokens.push(token)
       }
