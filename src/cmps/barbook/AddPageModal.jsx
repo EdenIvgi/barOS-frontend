@@ -7,7 +7,9 @@ import { translateField } from '../../services/translate.service.js'
 export function AddPageModal({ onAdd, onClose }) {
   const { t, i18n } = useTranslation()
   const lang = i18n.resolvedLanguage || 'he'
-  const [type, setType] = useState('checklist')
+  // The first offered format, so the dialog never opens with nothing selected -
+  // and never defaults to one that has been retired.
+  const [type, setType] = useState(ADDABLE_PAGE_TYPES[0].type)
   const [title, setTitle] = useState('')
   const [presetKey, setPresetKey] = useState(null)
   const inputRef = useRef(null)

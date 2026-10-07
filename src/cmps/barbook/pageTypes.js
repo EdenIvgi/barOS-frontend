@@ -21,7 +21,10 @@ import {
  */
 export const PAGE_TYPES = [
   { type: 'checklists', Icon: IconChecklists, labelKey: 'typeChecklists' },
-  { type: 'checklist',  Icon: IconChecklist,  labelKey: 'typeChecklist' },
+  // A page that holds one list is the same page holding one list; `checklist`
+  // froze that count at creation and lost the ring, the counter and run mode for
+  // it. migrations.js turns these into boards.
+  { type: 'checklist',  Icon: IconChecklist,  labelKey: 'typeChecklist', isLegacy: true },
   { type: 'table',      Icon: IconTable,      labelKey: 'typeTable' },
   // Books made before the plain table existed still hold `stock` pages. It is a
   // table with a narrower name, so it keeps rendering and keeps its icon, but a

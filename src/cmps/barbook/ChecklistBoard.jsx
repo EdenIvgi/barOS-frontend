@@ -10,6 +10,12 @@ import { ChecklistRunner } from './ChecklistRunner.jsx'
  * Replaces an index nested inside a page sidebar inside the rail — three levels
  * of list to reach one checkbox. Here the board is the top level and opening a
  * checklist is one tap, going back another.
+ *
+ * A page holding a single list skips the board and runs that list directly: a
+ * board of one card is a tap that asks a question with only one answer. How many
+ * lists a page holds stays the bar's to change, so the list below it to add
+ * another is still there — the page grows into a board when a second one
+ * arrives, rather than being declared one when it was created.
  */
 export function ChecklistBoard({ page, lang, isAdmin, isEditing, onPageChange }) {
   const { t } = useTranslation()
@@ -17,7 +23,8 @@ export function ChecklistBoard({ page, lang, isAdmin, isEditing, onPageChange })
   const [newTitle, setNewTitle] = useState('')
 
   const lists = page.lists || []
-  const open = lists.find(l => l._id === openId) || null
+  const isSolo = lists.length === 1
+  const open = lists.find(l => l._id === openId) || (isSolo ? lists[0] : null)
 
   function updateList(updated) {
     onPageChange({ ...page, lists: lists.map(l => (l._id === updated._id ? updated : l)) })
@@ -42,16 +49,36 @@ export function ChecklistBoard({ page, lang, isAdmin, isEditing, onPageChange })
     onPageChange({ ...page, lists: lists.filter(l => l._id !== id) })
   }
 
+  const addListForm = (
+    <form className="bb-card is-new" onSubmit={addList}>
+      <input
+        value={newTitle}
+        onChange={e => setNewTitle(e.target.value)}
+        placeholder={t('addList')}
+        aria-label={t('addList')}
+      />
+      <button type="submit" className="btn-shell is-primary" disabled={!newTitle.trim()}>
+        {t('addList')}
+      </button>
+    </form>
+  )
+
   if (open) {
     return (
-      <ChecklistRunner
-        list={open}
-        lang={lang}
-        isAdmin={isAdmin}
-        isEditing={isEditing}
-        onChange={updateList}
-        onBack={() => setOpenId(null)}
-      />
+      <>
+        <ChecklistRunner
+          list={open}
+          lang={lang}
+          isAdmin={isAdmin}
+          isEditing={isEditing}
+          onChange={updateList}
+          // The only list on the page has nowhere to go back to.
+          onBack={isSolo ? null : () => setOpenId(null)}
+        />
+        {isSolo && isAdmin && isEditing && (
+          <div className="bb-board is-solo-add">{addListForm}</div>
+        )}
+      </>
     )
   }
 
@@ -90,19 +117,7 @@ export function ChecklistBoard({ page, lang, isAdmin, isEditing, onPageChange })
         )
       })}
 
-      {isAdmin && isEditing && (
-        <form className="bb-card is-new" onSubmit={addList}>
-          <input
-            value={newTitle}
-            onChange={e => setNewTitle(e.target.value)}
-            placeholder={t('addList')}
-            aria-label={t('addList')}
-          />
-          <button type="submit" className="btn-shell is-primary" disabled={!newTitle.trim()}>
-            {t('addList')}
-          </button>
-        </form>
-      )}
+      {isAdmin && isEditing && addListForm}
     </div>
   )
 }

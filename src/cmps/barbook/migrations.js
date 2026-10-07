@@ -34,6 +34,39 @@ function toRows(entry) {
 }
 
 /**
+ * A single checklist becomes a board holding one list.
+ *
+ * `checklist` was never a different kind of page from `checklists` - it was the
+ * same page with the number of lists frozen at one when it was created, and it
+ * paid for that by having no progress ring, no counter and no run mode. The list
+ * takes the page's own name, so the tab reads exactly as it did before.
+ */
+export function migrateSingleChecklists(pages) {
+  let changed = false
+
+  const migrated = (pages || []).map(page => {
+    if (page?.type !== 'checklist') return page
+    changed = true
+
+    const { items, ...rest } = page
+    return {
+      ...rest,
+      type: 'checklists',
+      lists: [
+        {
+          _id: crypto.randomUUID(),
+          title: page.customTitle ?? page.title ?? { he: '', en: '' },
+          items: items || [],
+        },
+        ...(page.lists || []),
+      ],
+    }
+  })
+
+  return { pages: migrated, changed }
+}
+
+/**
  * Converts legacy daily pages to plain tables. Returns { pages, changed }.
  *
  * The type is rewritten whether or not the old `tasks` array is still there: a

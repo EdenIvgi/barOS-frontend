@@ -1150,6 +1150,15 @@ $book-page-shadow: 0 1px 6px shade(0.12);
     overflow-y: auto;
   }
 
+  // Sitting under the one list a page is running, rather than beside cards: it
+  // is an offer to add a second list, so it should not stretch like a column of
+  // a grid that is not there.
+  .bb-board.is-solo-add {
+    overflow: visible;
+    padding-top: 0;
+    grid-template-columns: minmax(0, 320px);
+  }
+
   .bb-card {
     display: flex;
     align-items: center;

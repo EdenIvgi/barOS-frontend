@@ -18,7 +18,7 @@ export function createPage(type, title, headers) {
     _id: crypto.randomUUID(),
     type,
     customTitle: title,
-    ...defaultPageData(type),
+    ...defaultPageData(type, title),
     ...(headers?.length ? { headers, rows: [headers.map(() => '')] } : {}),
   }
 }
@@ -30,9 +30,13 @@ const TABLE_COLUMNS = [
   { he: 'עמודה 2', en: 'Column 2' },
 ]
 
-function defaultPageData(type) {
+function defaultPageData(type, title) {
   switch (type) {
-    case 'checklists': return { lists: [] }
+    // One list to start with, named after the page, so a new checklist opens
+    // ready to type into. An empty board would ask you to name a list before you
+    // could write a single item - a step nobody wants on a page you just named.
+    case 'checklists': return { lists: [{ _id: crypto.randomUUID(), title, items: [] }] }
+    // No longer offered - migrations.js turns these into boards.
     case 'checklist':  return { items: [] }
     // An empty first row is there so the page opens with somewhere to type.
     case 'table':      return { headers: TABLE_COLUMNS, rows: [['', '']] }

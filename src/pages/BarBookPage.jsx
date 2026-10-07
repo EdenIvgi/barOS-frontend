@@ -9,14 +9,13 @@ import { AddPageModal } from '../cmps/barbook/AddPageModal.jsx'
 import { BarBookTabs } from '../cmps/barbook/BarBookTabs.jsx'
 import { ChecklistBoard } from '../cmps/barbook/ChecklistBoard.jsx'
 import { TableView } from '../cmps/barbook/TableView.jsx'
-import { SingleChecklistView } from '../cmps/barbook/SingleChecklistView.jsx'
 import { RecipesView } from '../cmps/barbook/RecipesView.jsx'
 import { InfoView } from '../cmps/barbook/InfoView.jsx'
 import { ContactsView } from '../cmps/barbook/ContactsView.jsx'
 import { LinksView } from '../cmps/barbook/LinksView.jsx'
 import { GalleryView } from '../cmps/barbook/GalleryView.jsx'
 import { resetChecks, countChecks } from '../cmps/barbook/shiftReset.js'
-import { migrateDailyPages } from '../cmps/barbook/migrations.js'
+import { migrateDailyPages, migrateSingleChecklists } from '../cmps/barbook/migrations.js'
 import { SetupResumeCard } from '../cmps/setup/SetupResumeCard'
 
 /**
@@ -60,8 +59,9 @@ export function BarBookPage() {
         // Strings become { he, en } first, so the table conversion below carries
         // whole bilingual values across rather than bare Hebrew.
         const { pages: translated, changed: textChanged } = await migrateAllContent(loaded)
-        const { pages: migrated, changed: shapeChanged } = migrateDailyPages(translated)
-        const changed = textChanged || shapeChanged
+        const { pages: tabled, changed: tableChanged } = migrateDailyPages(translated)
+        const { pages: migrated, changed: listChanged } = migrateSingleChecklists(tabled)
+        const changed = textChanged || tableChanged || listChanged
         setPages(migrated)
         if (changed) {
           save(migrated).catch(err => console.error('migration save failed', err))
@@ -218,9 +218,6 @@ export function BarBookPage() {
             <div className="page-content-area">
               {activePage.type === 'checklists' && (
                 <ChecklistBoard page={activePage} lang={lang} isAdmin={isAdmin} isEditing={isEditing} onPageChange={updateActivePage} />
-              )}
-              {activePage.type === 'checklist' && (
-                <SingleChecklistView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
               )}
               {TABLE_TYPES.includes(activePage.type) && (
                 <TableView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />

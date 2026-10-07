@@ -51,9 +51,12 @@ export function ChecklistRunner({ list, lang, isAdmin, isEditing, onChange, onBa
   return (
     <section className="runner">
       <header className="runner-head">
-        <button type="button" className="runner-back" onClick={onBack} aria-label={t('back')}>
-          ‹
-        </button>
+        {/* A page with one list is run directly, and has no board behind it. */}
+        {onBack && (
+          <button type="button" className="runner-back" onClick={onBack} aria-label={t('back')}>
+            ‹
+          </button>
+        )}
         <div className="runner-id">
           <h2>{getLangText(list.title, lang)}</h2>
           <p>{t('doneOfTotal', { done, total: items.length })}</p>
