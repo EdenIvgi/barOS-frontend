@@ -138,13 +138,6 @@ export const IconChecklist = () => (
   </svg>
 )
 
-export const IconDaily = () => (
-  <svg {...base}>
-    <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
-    <path d="M3.5 10h17M8 3.5v3M16 3.5v3" />
-  </svg>
-)
-
 export const IconTable = () => (
   <svg {...base}>
     <rect x="3.5" y="4.5" width="17" height="15" rx="2" />

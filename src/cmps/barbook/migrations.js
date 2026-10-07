@@ -6,6 +6,11 @@
  * keeps both languages of every value, because the cells carry { he, en } just as
  * the old fields did — nothing written in a bar's book is dropped to change how
  * it is drawn.
+ *
+ * It is also no longer its own format. What a table is for is the bar's business,
+ * so declaring one "daily tasks" up front decided something that was not ours to
+ * decide; the columns say it better and the manager can change them. A daily page
+ * therefore becomes a plain table, keeping the headers and rows it already had.
  */
 
 const DAY_COLUMN = { he: 'יום', en: 'Day' }
@@ -28,19 +33,28 @@ function toRows(entry) {
   return [[day, entry?.task ?? entry?.text ?? '']]
 }
 
-/** Converts the legacy daily shape to a table. Returns { pages, changed }. */
+/**
+ * Converts legacy daily pages to plain tables. Returns { pages, changed }.
+ *
+ * The type is rewritten whether or not the old `tasks` array is still there: a
+ * book migrated by an earlier version holds table rows under the `daily` type,
+ * and that type no longer names a format.
+ */
 export function migrateDailyPages(pages) {
   let changed = false
 
   const migrated = (pages || []).map(page => {
-    if (page?.type !== 'daily' || !Array.isArray(page.tasks)) return page
+    if (page?.type !== 'daily') return page
     changed = true
 
     const { tasks, ...rest } = page
+    const legacy = Array.isArray(tasks) ? tasks.flatMap(toRows) : []
+
     return {
       ...rest,
+      type: 'table',
       headers: page.headers?.length ? page.headers : [DAY_COLUMN, TASK_COLUMN],
-      rows: [...(page.rows || []), ...tasks.flatMap(toRows)],
+      rows: [...(page.rows || []), ...legacy],
     }
   })
 

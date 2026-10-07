@@ -848,6 +848,30 @@ $book-page-shadow: 0 1px 6px shade(0.12);
     gap: 0.5rem;
   }
 
+  // A preset reads as its own column names, so the chips are as wide as the
+  // names are and wrap rather than truncate - a shortcut you cannot read is
+  // not a shortcut.
+  .column-presets {
+    margin-top: 0.85rem;
+  }
+
+  .column-presets-label {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: fg(0.5);
+    margin-bottom: 0.4rem;
+  }
+
+  .column-presets-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+
+    .chip { white-space: normal; }
+  }
+
   .page-type-btn {
     display: flex;
     flex-direction: column;

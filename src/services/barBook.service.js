@@ -6,7 +6,12 @@ export function getEmptyContent() {
   return { pages: [] }
 }
 
-export function createPage(type, title) {
+/**
+ * `headers` names the columns of a new table, when one was picked from a preset.
+ * Everything else about the page is the same either way — a preset is a shortcut
+ * past the blank page, not a different kind of page.
+ */
+export function createPage(type, title, headers) {
   // The tab strip renders `customTitle`, so a page created with a name must set it
   // here — otherwise the name is stored but never displayed.
   return {
@@ -14,16 +19,12 @@ export function createPage(type, title) {
     type,
     customTitle: title,
     ...defaultPageData(type),
+    ...(headers?.length ? { headers, rows: [headers.map(() => '')] } : {}),
   }
 }
 
 // Column names are written out in both languages rather than translated at
 // creation time: a new page should not wait on a network call to be usable.
-const DAILY_COLUMNS = [
-  { he: 'יום', en: 'Day' },
-  { he: 'משימה', en: 'Task' },
-]
-
 const TABLE_COLUMNS = [
   { he: 'עמודה 1', en: 'Column 1' },
   { he: 'עמודה 2', en: 'Column 2' },
@@ -33,10 +34,11 @@ function defaultPageData(type) {
   switch (type) {
     case 'checklists': return { lists: [] }
     case 'checklist':  return { items: [] }
-    // A day-by-day plan is a table whose columns are already named. An empty
-    // first row is there so the page opens with somewhere to type.
-    case 'daily':      return { headers: DAILY_COLUMNS, rows: [['', '']] }
+    // An empty first row is there so the page opens with somewhere to type.
     case 'table':      return { headers: TABLE_COLUMNS, rows: [['', '']] }
+    // `daily` is no longer offered - migrations.js turns these into tables - but
+    // the shape stays here so an unmigrated page still has somewhere to land.
+    case 'daily':      return { headers: TABLE_COLUMNS, rows: [['', '']] }
     case 'stock':      return { headers: [], rows: [] }
     case 'recipes':    return { items: [] }
     case 'info':       return { sections: [] }

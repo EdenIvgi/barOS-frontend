@@ -1,7 +1,6 @@
 import {
   IconChecklists,
   IconChecklist,
-  IconDaily,
   IconTable,
   IconRecipes,
   IconInfo,
@@ -23,7 +22,6 @@ import {
 export const PAGE_TYPES = [
   { type: 'checklists', Icon: IconChecklists, labelKey: 'typeChecklists' },
   { type: 'checklist',  Icon: IconChecklist,  labelKey: 'typeChecklist' },
-  { type: 'daily',      Icon: IconDaily,      labelKey: 'typeDaily' },
   { type: 'table',      Icon: IconTable,      labelKey: 'typeTable' },
   // Books made before the plain table existed still hold `stock` pages. It is a
   // table with a narrower name, so it keeps rendering and keeps its icon, but a
@@ -41,6 +39,33 @@ export const ADDABLE_PAGE_TYPES = PAGE_TYPES.filter(pt => !pt.isLegacy)
 
 /** Formats whose page is a table of named columns. */
 export const TABLE_TYPES = ['table', 'daily', 'stock']
+
+/**
+ * Opening column names a table can be started from.
+ *
+ * What a table is for is the bar's business, not ours - a day plan and a
+ * delivery log are the same page with different headers. These are shortcuts
+ * past the blank page, nothing more: picking one only writes the column names,
+ * which stay editable like any other cell, and picking none is the default.
+ */
+export const COLUMN_PRESETS = [
+  {
+    key: 'days',
+    columns: [{ he: 'יום', en: 'Day' }, { he: 'משימה', en: 'Task' }],
+  },
+  {
+    key: 'stock',
+    columns: [{ he: 'מוצר', en: 'Product' }, { he: 'ספק', en: 'Supplier' }, { he: 'כמות', en: 'Quantity' }],
+  },
+  {
+    key: 'equipment',
+    columns: [{ he: 'ציוד', en: 'Equipment' }, { he: 'תאריך בדיקה', en: 'Checked On' }],
+  },
+  {
+    key: 'shifts',
+    columns: [{ he: 'משמרת', en: 'Shift' }, { he: 'ברמן', en: 'Bartender' }, { he: 'הערות', en: 'Notes' }],
+  },
+]
 
 export function getPageType(type) {
   return PAGE_TYPES.find(pt => pt.type === type) || null

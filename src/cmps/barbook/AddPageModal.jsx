@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createPage } from '../../services/barBook.service.js'
-import { ADDABLE_PAGE_TYPES } from './pageTypes.js'
+import { ADDABLE_PAGE_TYPES, COLUMN_PRESETS } from './pageTypes.js'
 import { translateField } from '../../services/translate.service.js'
 
 export function AddPageModal({ onAdd, onClose }) {
@@ -9,6 +9,7 @@ export function AddPageModal({ onAdd, onClose }) {
   const lang = i18n.resolvedLanguage || 'he'
   const [type, setType] = useState('checklist')
   const [title, setTitle] = useState('')
+  const [presetKey, setPresetKey] = useState(null)
   const inputRef = useRef(null)
 
   useEffect(() => { inputRef.current?.focus() }, [])
@@ -19,7 +20,8 @@ export function AddPageModal({ onAdd, onClose }) {
     e.preventDefault()
     const trimmed = title.trim()
     if (!trimmed) return
-    onAdd(createPage(type, await translateField(trimmed, lang)))
+    const preset = COLUMN_PRESETS.find(p => p.key === presetKey)
+    onAdd(createPage(type, await translateField(trimmed, lang), preset?.columns))
     onClose()
   }
 
@@ -34,13 +36,35 @@ export function AddPageModal({ onAdd, onClose }) {
                 key={pt.type}
                 type="button"
                 className={`page-type-btn ${type === pt.type ? 'active' : ''}`}
-                onClick={() => setType(pt.type)}
+                onClick={() => { setType(pt.type); setPresetKey(null) }}
               >
                 <span className="pt-symbol"><pt.Icon /></span>
                 <span className="pt-label">{t(pt.labelKey)}</span>
               </button>
             ))}
           </div>
+          {/* What a table is for is the bar's business. These only fill in the
+              column names, which stay editable like any other cell, so the
+              shortcut never decides anything the manager cannot undo. */}
+          {type === 'table' && (
+            <div className="column-presets">
+              <span className="column-presets-label">{t('columnPresetsLabel')}</span>
+              <div className="column-presets-chips">
+                {COLUMN_PRESETS.map(preset => (
+                  <button
+                    key={preset.key}
+                    type="button"
+                    className={`chip ${presetKey === preset.key ? 'is-on' : ''}`}
+                    aria-pressed={presetKey === preset.key}
+                    onClick={() => setPresetKey(presetKey === preset.key ? null : preset.key)}
+                  >
+                    {preset.columns.map(col => col[lang] || col.en).join(' · ')}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <input
             ref={inputRef}
             type="text"
