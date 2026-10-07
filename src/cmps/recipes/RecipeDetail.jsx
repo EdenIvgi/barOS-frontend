@@ -18,9 +18,12 @@ export function RecipeDetail({ recipe, ingredientsBySlug, lang, onCopyToMine, is
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  const steps = recipe.instructions?.[lang]?.length
-    ? recipe.instructions[lang]
-    : recipe.instructions?.he || recipe.instructions?.en || []
+  // Non-empty content, not length: a migrated recipe written in one language can
+  // carry an array of blank strings for the other, and a count would read that as
+  // steps to show and render an empty numbered list.
+  const hasText = steps => (steps || []).some(step => String(step || '').trim())
+  const steps = [recipe.instructions?.[lang], recipe.instructions?.he, recipe.instructions?.en]
+    .find(hasText) || []
 
   const missing = new Set(recipe.missing || [])
   const missingOptional = new Set(recipe.missingOptional || [])
