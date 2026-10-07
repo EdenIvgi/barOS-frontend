@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { barBookService } from '../services/barBook.service.js'
 import { AppShell } from '../cmps/AppShell'
 import { translateField, getLangText, migrateAllContent } from '../services/translate.service.js'
@@ -220,6 +221,14 @@ export function BarBookPage() {
               )}
               {TABLE_TYPES.includes(activePage.type) && (
                 <TableView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+              )}
+              {/* A page whose recipes failed to migrate is kept on purpose so the next
+                  read can retry; say where the recipes live instead of showing nothing. */}
+              {activePage.type === 'recipes' && (
+                <div className="empty-detail">
+                  <p>{t('recipesMovedNote')}</p>
+                  <Link to="/recipes" className="btn-shell is-primary">{t('recipesMovedLink')}</Link>
+                </div>
               )}
               {activePage.type === 'info' && (
                 <InfoView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
