@@ -255,7 +255,10 @@ function pick(row, names) {
 }
 
 const UNIT_TOKENS = {
-  ml: 'ml', cl: 'cl', oz: 'oz', g: 'g', dash: 'dash', tsp: 'tsp', tbsp: 'tbsp',
+  ml: 'ml', cl: 'cl', oz: 'oz', g: 'g',
+  dash: 'dash', drop: 'drop', tsp: 'tsp', tbsp: 'tbsp',
+  leaf: 'leaf', sprig: 'sprig', piece: 'piece', slice: 'slice',
+  rim: 'rim', pinch: 'pinch', wedge: 'wedge',
   'מ"ל': 'ml', 'מ״ל': 'ml', 'גרם': 'g',
 }
 
