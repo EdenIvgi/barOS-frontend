@@ -82,13 +82,19 @@ export function RecipesPage() {
     // as state and worded during render instead.
   }, [filterBy, reloadToken])
 
-  async function onAddToBook(recipe) {
+  // The library's copy is read-only and shared, so the bar gets its own to
+  // adapt. Identity fields stay behind: sending the library's _id would update
+  // rather than create. librarySlug is kept so the origin is still known.
+  async function onCopyToMine(recipe) {
+    const copy = { ...recipe, librarySlug: recipe.slug }
+    for (const key of ['_id', 'slug', 'source', 'isLibrary']) delete copy[key]
     try {
-      const res = await recipeService.addToBarBook(recipe, ingredientsBySlug)
-      if (res.added) showSuccessMsg(t('recipeAddedToBook'))
-      else showErrorMsg(t('recipeAlreadyInBook'))
-    } catch (err) {
-      showErrorMsg(t('recipeAddToBookError'))
+      await recipeService.save(copy)
+      setSelected(null)
+      setReloadToken(n => n + 1)
+      showSuccessMsg(t('recipeCopied'))
+    } catch {
+      setHasLoadError(true)
     }
   }
 
@@ -201,7 +207,7 @@ export function RecipesPage() {
           recipe={selected}
           ingredientsBySlug={ingredientsBySlug}
           lang={lang}
-          onAddToBook={onAddToBook}
+          onCopyToMine={onCopyToMine}
           onClose={() => setSelected(null)}
         />
       )}
