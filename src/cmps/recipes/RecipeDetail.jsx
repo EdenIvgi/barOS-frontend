@@ -9,7 +9,7 @@ import { recipeService } from '../../services/recipe.service'
  * whether that bottle is in stock, so a missing measure is visible where it
  * matters rather than only as a count on the card.
  */
-export function RecipeDetail({ recipe, ingredientsBySlug, lang, onAddToBook, onClose }) {
+export function RecipeDetail({ recipe, ingredientsBySlug, lang, onCopyToMine, isCopied, onClose }) {
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -18,9 +18,12 @@ export function RecipeDetail({ recipe, ingredientsBySlug, lang, onAddToBook, onC
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  const steps = recipe.instructions?.[lang]?.length
-    ? recipe.instructions[lang]
-    : recipe.instructions?.he || recipe.instructions?.en || []
+  // Non-empty content, not length: a migrated recipe written in one language can
+  // carry an array of blank strings for the other, and a count would read that as
+  // steps to show and render an empty numbered list.
+  const hasText = steps => (steps || []).some(step => String(step || '').trim())
+  const steps = [recipe.instructions?.[lang], recipe.instructions?.he, recipe.instructions?.en]
+    .find(hasText) || []
 
   const missing = new Set(recipe.missing || [])
   const missingOptional = new Set(recipe.missingOptional || [])
@@ -32,6 +35,8 @@ export function RecipeDetail({ recipe, ingredientsBySlug, lang, onAddToBook, onC
           <h2>{getLangText(recipe.title, lang)}</h2>
           <button type="button" className="btn-icon" aria-label={t('close')} onClick={onClose}>×</button>
         </header>
+
+        {recipe.imageUrl && <img className="recipe-detail-image" src={recipe.imageUrl} alt="" />}
 
         <p className="recipe-modal-meta">
           {[
@@ -78,9 +83,12 @@ export function RecipeDetail({ recipe, ingredientsBySlug, lang, onAddToBook, onC
         )}
 
         <footer className="recipe-modal-foot">
-          <button type="button" className="btn-shell is-primary" onClick={() => onAddToBook(recipe)}>
-            {t('recipeAddToBook')}
-          </button>
+          {/* A recipe the bar already owns is edited, so only the shared library's has anything to copy. */}
+          {recipe.source === 'library' && (
+            <button type="button" className="btn-shell is-primary" disabled={isCopied} onClick={() => onCopyToMine(recipe)}>
+              {isCopied ? t('recipeAlreadyCopied') : t('recipeCopyToMine')}
+            </button>
+          )}
           <button type="button" className="btn-shell" onClick={onClose}>{t('close')}</button>
         </footer>
       </div>

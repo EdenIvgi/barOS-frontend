@@ -2,7 +2,11 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { IngredientPicker } from './IngredientPicker'
 import { emptyLine } from './recipeDraft'
+import { ImagePicker } from '../ImagePicker'
 
+// The same unit list as UNIT_ALIASES in the backend's ingredientCatalog.service.js
+// and UNIT_TOKENS in RecipeImportModal.jsx; the three live in two repos, so a
+// unit added anywhere has to be added in all of them.
 const UNITS = ['ml', 'cl', 'oz', 'g', 'dash', 'drop', 'tsp', 'tbsp', 'leaf', 'sprig', 'piece', 'slice', 'rim', 'pinch', 'wedge']
 const METHODS = ['', 'stirred', 'shaken', 'built', 'blended', 'prep']
 
@@ -87,6 +91,12 @@ export function RecipeEditor({ recipe, ingredients, lang, onChange, onCreateIngr
             onCreate={onCreateIngredient}
           />
         </div>
+      </div>
+
+      <div className="form-group">
+        <label>{t('recipePhoto')}</label>
+        {recipe.imageUrl && <img className="recipe-detail-image" src={recipe.imageUrl} alt="" />}
+        <ImagePicker value={recipe.imageUrl || ''} onChange={url => setField({ imageUrl: url })} />
       </div>
 
       <label className="recipe-editor-label">{t('ingredients')}</label>

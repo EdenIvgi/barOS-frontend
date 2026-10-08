@@ -43,6 +43,37 @@
   gap: 10px;
 }
 
+// The bar's own recipes and the shared catalogue are two areas, never one mixed
+// list. The heading is what makes the boundary readable while scrolling past it.
+.recipe-section + .recipe-section {
+  border-top: 1px solid fg(0.08);
+}
+
+.recipe-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding: 16px 18px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.recipe-section-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: $text-muted;
+  background: fg(0.06);
+  border-radius: $radius-pill;
+  padding: 1px 8px;
+}
+
+// A heading with nothing under it still needs the gap its grid would have given.
+.recipe-section .empty-detail {
+  padding: 12px 18px 18px;
+}
+
 .recipe-card {
   display: flex;
   flex-direction: column;
@@ -64,6 +95,23 @@
   // A drink the bar can actually pour is marked on the inline edge as well as
   // being said in words below, so it is not colour alone that carries it.
   &.can-make { border-inline-start: 3px solid $color-success; }
+}
+
+.recipe-card-thumb {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: $radius;
+}
+
+.recipe-detail-image {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  margin-bottom: 12px;
+  object-fit: cover;
+  border-radius: $radius;
 }
 
 .recipe-card-head {

@@ -254,6 +254,27 @@ function pick(row, names) {
   return ''
 }
 
+const UNIT_TOKENS = {
+  ml: 'ml', cl: 'cl', oz: 'oz', g: 'g',
+  dash: 'dash', drop: 'drop', tsp: 'tsp', tbsp: 'tbsp',
+  leaf: 'leaf', sprig: 'sprig', piece: 'piece', slice: 'slice',
+  rim: 'rim', pinch: 'pinch', wedge: 'wedge',
+  'מ"ל': 'ml', 'מ״ל': 'ml', 'גרם': 'g',
+}
+
+/**
+ * The unit a written token means, or ''.
+ *
+ * Own-property lookup only: the literal word "constructor" would otherwise come
+ * back as a function off the prototype chain.
+ */
+function lookupUnit(token) {
+  const key = String(token || '').toLowerCase()
+  if (Object.hasOwn(UNIT_TOKENS, key)) return UNIT_TOKENS[key]
+  if (Object.hasOwn(UNIT_TOKENS, token)) return UNIT_TOKENS[token]
+  return ''
+}
+
 /**
  * A spreadsheet row per recipe: a name, ingredients one to a line, steps one to
  * a line. Ingredients are matched against the catalogue here rather than by a
@@ -276,21 +297,41 @@ function rowsToRecipes(rows, ingredients) {
     const rawSteps = pick(row, ['הוראות', 'instructions', 'method', 'steps', 'הכנה'])
 
     const lines = rawIngredients.split(/[\n;]/).map(s => s.trim()).filter(Boolean).map(line => {
-      // "60 ml gin" and "gin 60" both appear in the wild; take the first number
-      // as the amount and whatever is left as the ingredient's name.
-      const amountMatch = line.match(/(\d+(?:[.,]\d+)?)/)
-      const amount = amountMatch ? Number(amountMatch[1].replace(',', '.')) : null
-      const unitMatch = line.match(/\b(ml|cl|oz|g|dash|tsp|tbsp)\b/i)
-      const rawText = line
-        .replace(/\d+(?:[.,]\d+)?/, '')
-        .replace(/\b(ml|cl|oz|g|dash|tsp|tbsp|מ"ל|מ״ל|גרם)\b/gi, '')
-        .trim()
+      // Mirrors parseFreeText in the backend's ingredientCatalog.service.js and
+      // shares its unit list with RecipeEditor.jsx; the three live in two repos,
+      // so change them together.
+      // "60 ml gin" and "gin 60" both appear in the wild; take the first
+      // standalone number as the amount and whatever is left as the ingredient's
+      // name. The number has to be a token of its own (or carry a known unit) so
+      // that "7up" stays a name and "1/2" stays a fraction. Units are matched by
+      // whole token because a word-boundary regex does not work on Hebrew.
+      let amount = null
+      let unit = ''
+      const nameTokens = []
+      for (const token of line.split(/\s+/).filter(Boolean)) {
+        const numeric = amount === null ? token.match(/^(\d+(?:[.,]\d+)?)(.*)$/) : null
+        if (numeric) {
+          const suffix = lookupUnit(numeric[2])
+          if (!numeric[2] || suffix) {
+            const value = Number(numeric[1].replace(',', '.'))
+            if (Number.isFinite(value)) {
+              amount = value
+              if (suffix) unit ||= suffix
+              continue
+            }
+          }
+        }
+        const found = lookupUnit(token)
+        if (found) unit ||= found
+        else nameTokens.push(token)
+      }
+      const rawText = nameTokens.join(' ')
 
       return {
         ingredientId: byText.get(rawText.toLowerCase()) || '',
         rawText: rawText || line,
         amount,
-        unit: unitMatch ? unitMatch[1].toLowerCase() : 'ml',
+        unit: unit || 'ml',
         isOptional: false,
         isGarnish: false,
       }

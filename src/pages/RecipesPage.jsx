@@ -34,7 +34,7 @@ export function RecipesPage() {
   const [hasLoadError, setHasLoadError] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
   const [reloadToken, setReloadToken] = useState(0)
-  const [filterBy, setFilterBy] = useState({ q: '', availability: 'all', kind: 'all', scope: 'all' })
+  const [filterBy, setFilterBy] = useState({ q: '', availability: 'all', kind: 'all' })
 
   const ingredientsBySlug = useMemo(
     () => Object.fromEntries(ingredients.map(ing => [ing.slug, ing])),
@@ -57,7 +57,6 @@ export function RecipesPage() {
       q: filterBy.q || undefined,
       availability: filterBy.availability === 'all' ? undefined : filterBy.availability,
       kind: filterBy.kind === 'all' ? undefined : filterBy.kind,
-      scope: filterBy.scope === 'all' ? undefined : filterBy.scope,
       limit: 200,
     }
 
@@ -81,13 +80,35 @@ export function RecipesPage() {
     // as state and worded during render instead.
   }, [filterBy, reloadToken])
 
-  async function onAddToBook(recipe) {
+  // Both areas are always loaded, so a prior copy is always in hand - there is
+  // no filter left that can hide the bar's own recipes from this check.
+  const copiedSlugs = useMemo(
+    () => new Set(recipes.filter(r => r.source === 'bar' && r.librarySlug).map(r => r.librarySlug)),
+    [recipes]
+  )
+
+  const ownRecipes = useMemo(() => recipes.filter(r => r.source === 'bar'), [recipes])
+  const libraryRecipes = useMemo(() => recipes.filter(r => r.source !== 'bar'), [recipes])
+
+  // The library's copy is read-only and shared, so the bar gets its own to
+  // adapt. Identity fields stay behind: sending the library's _id would update
+  // rather than create. librarySlug is kept so the origin is still known.
+  async function onCopyToMine(recipe) {
+    const copy = { ...recipe, librarySlug: recipe.slug }
+    // Identity belongs to the library's copy; the availability fields are
+    // computed per read and must not be stored inside the recipe.
+    for (const key of ['_id', 'slug', 'source', 'isLibrary', 'canMake', 'missing', 'missingOptional', 'missingCount']) {
+      delete copy[key]
+    }
     try {
-      const res = await recipeService.addToBarBook(recipe, ingredientsBySlug)
-      if (res.added) showSuccessMsg(t('recipeAddedToBook'))
-      else showErrorMsg(t('recipeAlreadyInBook'))
-    } catch (err) {
-      showErrorMsg(t('recipeAddToBookError'))
+      await recipeService.save(copy)
+      setSelected(null)
+      setReloadToken(n => n + 1)
+      showSuccessMsg(t('recipeCopied'))
+    } catch {
+      // The detail stays open so the copy can be retried. This is a failed
+      // write, not a failed load, so the list is left alone.
+      showErrorMsg(t('recipeCopyError'))
     }
   }
 
@@ -162,13 +183,26 @@ export function RecipesPage() {
       {isLoading && <Loader />}
       {!isLoading && hasLoadError && <p className="empty-detail">{t('recipesLoadError')}</p>}
 
+      {/* Two areas, never one mixed list. A bar's own recipes are its own work
+          and belong above the catalogue everyone shares, not sorted in among it. */}
       {!isLoading && !hasLoadError && (
-        <RecipeList
-          recipes={recipes}
-          ingredientsBySlug={ingredientsBySlug}
-          lang={lang}
-          onSelect={setSelected}
-        />
+        <>
+          <RecipeList
+            recipes={ownRecipes}
+            ingredientsBySlug={ingredientsBySlug}
+            lang={lang}
+            onSelect={setSelected}
+            title={t('recipesSectionOwn')}
+            emptyText={t('recipesSectionOwnEmpty')}
+          />
+          <RecipeList
+            recipes={libraryRecipes}
+            ingredientsBySlug={ingredientsBySlug}
+            lang={lang}
+            onSelect={setSelected}
+            title={t('recipesSectionLibrary')}
+          />
+        </>
       )}
 
       {isImporting && (
@@ -186,7 +220,8 @@ export function RecipesPage() {
           recipe={selected}
           ingredientsBySlug={ingredientsBySlug}
           lang={lang}
-          onAddToBook={onAddToBook}
+          onCopyToMine={onCopyToMine}
+          isCopied={copiedSlugs.has(selected.slug)}
           onClose={() => setSelected(null)}
         />
       )}

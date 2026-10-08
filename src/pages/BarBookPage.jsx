@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { barBookService } from '../services/barBook.service.js'
 import { AppShell } from '../cmps/AppShell'
 import { translateField, getLangText, migrateAllContent } from '../services/translate.service.js'
@@ -9,7 +10,6 @@ import { AddPageModal } from '../cmps/barbook/AddPageModal.jsx'
 import { BarBookTabs } from '../cmps/barbook/BarBookTabs.jsx'
 import { ChecklistBoard } from '../cmps/barbook/ChecklistBoard.jsx'
 import { TableView } from '../cmps/barbook/TableView.jsx'
-import { RecipesView } from '../cmps/barbook/RecipesView.jsx'
 import { InfoView } from '../cmps/barbook/InfoView.jsx'
 import { ContactsView } from '../cmps/barbook/ContactsView.jsx'
 import { LinksView } from '../cmps/barbook/LinksView.jsx'
@@ -222,8 +222,23 @@ export function BarBookPage() {
               {TABLE_TYPES.includes(activePage.type) && (
                 <TableView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
               )}
+              {/* A recipes page survives only when the move failed, so it may still be
+                  the one copy of these recipes. While it holds items, warn instead of
+                  pointing elsewhere: deleting it here would garbage-collect the photos. */}
               {activePage.type === 'recipes' && (
-                <RecipesView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
+                <div className="empty-detail">
+                  {activePage.items?.length ? (
+                    <>
+                      <p>{t('recipesMovePendingTitle')}</p>
+                      <p>{t('recipesMovePendingNote')}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>{t('recipesMovedNote')}</p>
+                      <Link to="/recipes" className="btn-shell is-primary">{t('recipesMovedLink')}</Link>
+                    </>
+                  )}
+                </div>
               )}
               {activePage.type === 'info' && (
                 <InfoView page={activePage} isAdmin={canEdit} onPageChange={updateActivePage} />
