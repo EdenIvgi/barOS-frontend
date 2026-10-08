@@ -10,7 +10,6 @@ import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 
 const AVAILABILITY = ['all', 'canMake', 'missingOne']
 const KINDS = ['all', 'cocktail', 'syrup']
-const SCOPES = ['all', 'bar', 'library']
 
 /**
  * The recipe library.
@@ -35,7 +34,7 @@ export function RecipesPage() {
   const [hasLoadError, setHasLoadError] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
   const [reloadToken, setReloadToken] = useState(0)
-  const [filterBy, setFilterBy] = useState({ q: '', availability: 'all', kind: 'all', scope: 'all' })
+  const [filterBy, setFilterBy] = useState({ q: '', availability: 'all', kind: 'all' })
 
   const ingredientsBySlug = useMemo(
     () => Object.fromEntries(ingredients.map(ing => [ing.slug, ing])),
@@ -58,7 +57,6 @@ export function RecipesPage() {
       q: filterBy.q || undefined,
       availability: filterBy.availability === 'all' ? undefined : filterBy.availability,
       kind: filterBy.kind === 'all' ? undefined : filterBy.kind,
-      scope: filterBy.scope === 'all' ? undefined : filterBy.scope,
       limit: 200,
     }
 
@@ -82,12 +80,15 @@ export function RecipesPage() {
     // as state and worded during render instead.
   }, [filterBy, reloadToken])
 
-  // Only as good as the loaded list: a scope filter that hides the bar's own
-  // recipes also hides a prior copy.
+  // Both areas are always loaded, so a prior copy is always in hand - there is
+  // no filter left that can hide the bar's own recipes from this check.
   const copiedSlugs = useMemo(
     () => new Set(recipes.filter(r => r.source === 'bar' && r.librarySlug).map(r => r.librarySlug)),
     [recipes]
   )
+
+  const ownRecipes = useMemo(() => recipes.filter(r => r.source === 'bar'), [recipes])
+  const libraryRecipes = useMemo(() => recipes.filter(r => r.source !== 'bar'), [recipes])
 
   // The library's copy is read-only and shared, so the bar gets its own to
   // adapt. Identity fields stay behind: sending the library's _id would update
@@ -177,32 +178,31 @@ export function RecipesPage() {
             </button>
           ))}
         </div>
-
-        <div className="recipes-chips" role="group" aria-label={t('recipesFilterScope')}>
-          {SCOPES.map(value => (
-            <button
-              key={value}
-              type="button"
-              className={'chip' + (filterBy.scope === value ? ' is-on' : '')}
-              aria-pressed={filterBy.scope === value}
-              onClick={() => setFilter({ scope: value })}
-            >
-              {t(`recipesScope_${value}`)}
-            </button>
-          ))}
-        </div>
       </div>
 
       {isLoading && <Loader />}
       {!isLoading && hasLoadError && <p className="empty-detail">{t('recipesLoadError')}</p>}
 
+      {/* Two areas, never one mixed list. A bar's own recipes are its own work
+          and belong above the catalogue everyone shares, not sorted in among it. */}
       {!isLoading && !hasLoadError && (
-        <RecipeList
-          recipes={recipes}
-          ingredientsBySlug={ingredientsBySlug}
-          lang={lang}
-          onSelect={setSelected}
-        />
+        <>
+          <RecipeList
+            recipes={ownRecipes}
+            ingredientsBySlug={ingredientsBySlug}
+            lang={lang}
+            onSelect={setSelected}
+            title={t('recipesSectionOwn')}
+            emptyText={t('recipesSectionOwnEmpty')}
+          />
+          <RecipeList
+            recipes={libraryRecipes}
+            ingredientsBySlug={ingredientsBySlug}
+            lang={lang}
+            onSelect={setSelected}
+            title={t('recipesSectionLibrary')}
+          />
+        </>
       )}
 
       {isImporting && (

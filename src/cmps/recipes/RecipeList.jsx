@@ -2,16 +2,36 @@ import { useTranslation } from 'react-i18next'
 import { getLangText } from '../../services/translate.service'
 
 /**
+ * One titled area of recipes.
+ *
  * A card says three things: what it is, whether you can make it, and if not,
  * what you are missing. The third is the one that gets acted on - "you are one
  * bottle away" is a shopping list, "unavailable" is a dead end.
+ *
+ * The area keeps its heading when it is empty rather than disappearing: a bar
+ * that has written nothing yet still needs to see where its own recipes will go.
  */
-export function RecipeList({ recipes, ingredientsBySlug, lang, onSelect }) {
+export function RecipeList({ recipes, ingredientsBySlug, lang, onSelect, title, emptyText }) {
   const { t } = useTranslation()
 
-  if (!recipes.length) {
-    return <p className="empty-detail">{t('recipesNone')}</p>
-  }
+  return (
+    <section className="recipe-section">
+      {title && (
+        <h2 className="recipe-section-head">
+          <span className="recipe-section-title">{title}</span>
+          <span className="recipe-section-count">{recipes.length}</span>
+        </h2>
+      )}
+
+      {!recipes.length
+        ? <p className="empty-detail">{emptyText || t('recipesNone')}</p>
+        : <RecipeGrid recipes={recipes} ingredientsBySlug={ingredientsBySlug} lang={lang} onSelect={onSelect} />}
+    </section>
+  )
+}
+
+function RecipeGrid({ recipes, ingredientsBySlug, lang, onSelect }) {
+  const { t } = useTranslation()
 
   return (
     <ul className="recipe-grid">
@@ -26,7 +46,6 @@ export function RecipeList({ recipes, ingredientsBySlug, lang, onSelect }) {
             <span className="recipe-card-head">
               <span className="recipe-card-title">{getLangText(recipe.title, lang)}</span>
               {recipe.produces && <span className="recipe-tag">{t('recipesKind_syrup')}</span>}
-              {recipe.source === 'bar' && <span className="recipe-tag is-own">{t('recipeOwn')}</span>}
             </span>
 
             <span className="recipe-card-ingredients">
